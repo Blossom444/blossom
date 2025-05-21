@@ -1,15 +1,20 @@
 import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import Navigation from '@/components/Navigation'
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ['latin', 'cyrillic'] })
 
 export const metadata: Metadata = {
-  title: 'BLOSSOM - Meditation & Self-Development',
-  description: 'Your personal journey to mindfulness and self-improvement',
+  title: 'BLOSSOM - Платформа для медитації',
+  description: 'Медитації та практики для вашого духовного розвитку',
   manifest: '/manifest.json',
-  themeColor: '#4F46E5',
-  viewport: 'width=device-width, initial-scale=1, maximum-scale=1',
+  icons: {
+    apple: [
+      { url: '/icons/icon-192x192.png' },
+      { url: '/icons/icon-512x512.png' },
+    ],
+  },
 }
 
 export default function RootLayout({
@@ -18,9 +23,30 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <main className="min-h-screen bg-gray-50">
+    <html lang="uk">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function() {
+                  navigator.serviceWorker.register('/sw.js').then(
+                    function(registration) {
+                      console.log('ServiceWorker registration successful');
+                    },
+                    function(err) {
+                      console.log('ServiceWorker registration failed: ', err);
+                    }
+                  );
+                });
+              }
+            `,
+          }}
+        />
+      </head>
+      <body className={`${inter.className} min-h-screen bg-gray-50`}>
+        <Navigation />
+        <main className="min-h-[calc(100vh-4rem)] pt-16">
           {children}
         </main>
       </body>
