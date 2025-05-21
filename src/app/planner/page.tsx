@@ -1,43 +1,126 @@
 'use client';
 
-export default function Planner() {
+import PlannerCard from '@/components/PlannerCard';
+import GradientCover from '@/components/GradientCover';
+
+const planners = [
+  {
+    color: '#FFB6C1',
+    colorName: 'Рожевий',
+    imageUrl: '/images/planners/pink-planner.png',
+    isAvailable: true,
+    price: 1600
+  },
+  {
+    color: '#8B4513',
+    colorName: 'Коричневий',
+    imageUrl: '/images/planners/brown-planner.png',
+    isAvailable: true,
+    price: 1600
+  },
+  {
+    color: '#F5F5DC',
+    colorName: 'Бежевий',
+    imageUrl: '/images/planners/beige-planner.png',
+    isAvailable: true,
+    price: 1600
+  },
+  {
+    color: '#808080',
+    colorName: 'Сірий',
+    imageUrl: '/images/planners/gray-planner.png',
+    isAvailable: true,
+    price: 1600
+  }
+];
+
+export default function PlannerPage() {
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold text-center mb-8">
-        Книга Змін
-      </h1>
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-          <h2 className="text-2xl font-semibold mb-4">Ваш Щоденний План</h2>
-          <div className="space-y-4">
-            <div className="flex items-center space-x-4">
-              <input
-                type="checkbox"
-                className="w-5 h-5 text-primary rounded border-gray-300 focus:ring-primary"
-              />
-              <input
-                type="text"
-                placeholder="Додайте нову ціль..."
-                className="flex-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-              />
+    <div>
+      <GradientCover
+        title="Книга змін BLOSSOM"
+        subtitle="Ваш особистий путівник до трансформації"
+      />
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="prose prose-indigo max-w-none mb-12">
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">
+            Комплект BLOSSOM для особистісного розвитку
+          </h2>
+          
+          <div className="bg-indigo-50 p-6 rounded-lg mb-8">
+            <h3 className="text-xl font-semibold text-indigo-900 mb-4">
+              До кожного комплекту входить:
+            </h3>
+            <ul className="list-disc list-inside space-y-2 text-gray-700">
+              <li>Річний планер "Книга змін" у велюровій обкладинці на твердій підкладці</li>
+              <li>Блокнот "Blossom завжди поруч"</li>
+              <li>Пакет медитацій та практик для початківців</li>
+              <li>Спеціальні сторінки для планування та рефлексії</li>
+            </ul>
+          </div>
+
+          <div className="bg-amber-50 p-6 rounded-lg mb-8">
+            <h3 className="text-xl font-semibold text-amber-900 mb-4">
+              Ексклюзивний подарунок для перших 1000 покупців
+            </h3>
+            <div className="space-y-4">
+              <p className="text-gray-700">
+                Отримайте безкоштовний доступ до колекції авторських україномовних медитацій, 
+                створених у співпраці з професійною командою експертів:
+              </p>
+              <ul className="list-disc list-inside space-y-2 text-gray-700">
+                <li>Професійні психологи та психотерапевти</li>
+                <li>Досвідчені автори медитативних практик</li>
+                <li>Команда звукорежисерів та саунд-дизайнерів</li>
+                <li>Професійні актори озвучування</li>
+              </ul>
+              <p className="text-gray-700">
+                Кожна медитація пройшла ретельне тестування фокусною групою та була 
+                адаптована для максимальної ефективності та комфорту користувачів.
+              </p>
+            </div>
+          </div>
+
+          <div className="bg-green-50 p-6 rounded-lg mb-8">
+            <div className="flex items-center justify-between flex-wrap gap-4">
+              <div>
+                <h3 className="text-2xl font-bold text-green-900 mb-2">
+                  Спеціальна ціна на повний комплект
+                </h3>
+                <p className="text-lg text-green-800">
+                  Повний комплект BLOSSOM для вашого розвитку та усвідомленості
+                </p>
+                <ul className="list-disc list-inside mt-4 space-y-1 text-green-700">
+                  <li>Річна Книга змін у велюровій обкладинці</li>
+                  <li>Блокнот "Blossom завжди поруч"</li>
+                  <li>Пакет медитацій та практик для початківців</li>
+                  <li className="font-medium">+ Подарунковий набір авторських медитацій</li>
+                </ul>
+              </div>
+              <div className="flex flex-col items-end gap-2">
+                <span className="text-3xl font-bold text-green-600">1600₴</span>
+                <button className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium">
+                  Замовити комплект
+                </button>
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-2xl font-semibold mb-4">Ваші Досягнення</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="p-4 bg-gray-50 rounded-lg">
-              <h3 className="text-lg font-medium mb-2">Цього Тижня</h3>
-              <p className="text-gray-600">Завершено завдань: 0</p>
-            </div>
-            <div className="p-4 bg-gray-50 rounded-lg">
-              <h3 className="text-lg font-medium mb-2">Цього Місяця</h3>
-              <p className="text-gray-600">Завершено завдань: 0</p>
-            </div>
-          </div>
+        <h3 className="text-2xl font-bold text-gray-900 mb-6">
+          Оберіть свій колір планера:
+        </h3>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {planners.map((planner) => (
+            <PlannerCard
+              key={planner.colorName}
+              {...planner}
+            />
+          ))}
         </div>
       </div>
     </div>
-  )
+  );
 } 
