@@ -2,6 +2,7 @@ import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import Navigation from '@/components/Navigation'
+import UpdateNotification from '@/components/UpdateNotification'
 
 const inter = Inter({ subsets: ['latin', 'cyrillic'] })
 
@@ -49,6 +50,7 @@ export default function RootLayout({
         <main className="min-h-[calc(100vh-4rem)] pt-16">
           {children}
         </main>
+        <UpdateNotification />
       </body>
     </html>
   )
