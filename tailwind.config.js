@@ -39,6 +39,7 @@ module.exports = {
       },
       fontFamily: {
         sans: ['var(--font-inter)'],
+        serif: ['Playfair Display', 'Georgia', 'serif'],
       },
     },
   },

@@ -4,22 +4,15 @@ interface GradientCoverProps {
   variant?: 'orange' | 'blue' | 'purple' | 'green';
 }
 
-export default function GradientCover({ title, subtitle, variant = 'purple' }: GradientCoverProps) {
-  const gradientClasses = {
-    orange: 'from-orange-500 to-red-600',
-    blue: 'from-blue-500 to-indigo-600',
-    purple: 'from-indigo-500 to-purple-600',
-    green: 'from-green-500 to-teal-600'
-  };
-
+export default function GradientCover({ title, subtitle }: GradientCoverProps) {
   return (
-    <div className={`relative bg-gradient-to-r ${gradientClasses[variant]} py-16`}>
+    <div className="relative bg-black/20 backdrop-blur-sm py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h1 className="text-4xl font-bold text-white mb-4">
+        <h1 className="text-4xl font-bold text-white mb-4 font-serif">
           {title}
         </h1>
         {subtitle && (
-          <p className="text-xl text-indigo-100">
+          <p className="text-xl text-white/90 font-light">
             {subtitle}
           </p>
         )}
