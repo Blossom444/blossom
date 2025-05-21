@@ -27,7 +27,7 @@ export default function Gallery({ images }: GalleryProps) {
               src={image.src}
               alt={image.alt}
               fill
-              className="object-cover hover:scale-110 transition-transform duration-300"
+              className="object-contain hover:scale-110 transition-transform duration-300"
               sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
             />
           </div>

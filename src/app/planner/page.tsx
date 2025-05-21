@@ -2,7 +2,6 @@
 
 import PlannerCard from '@/components/PlannerCard';
 import GradientCover from '@/components/GradientCover';
-import Gallery from '@/components/Gallery';
 
 const planners = [
   {
@@ -35,57 +34,6 @@ const planners = [
   }
 ];
 
-const galleryImages = [
-  {
-    src: '/images/planners/pink-planner.png',
-    alt: 'Рожевий планер BLOSSOM - вид спереду'
-  },
-  {
-    src: '/images/planners/pink-planner-back.jpg',
-    alt: 'Рожевий планер BLOSSOM - вид ззаду'
-  },
-  {
-    src: '/images/planners/pink-planner-open.jpg',
-    alt: 'Рожевий планер BLOSSOM - розгорнутий вигляд'
-  },
-  {
-    src: '/images/planners/brown-planner.png',
-    alt: 'Коричневий планер BLOSSOM - вид спереду'
-  },
-  {
-    src: '/images/planners/brown-planner-side.jpg',
-    alt: 'Коричневий планер BLOSSOM - вид збоку'
-  },
-  {
-    src: '/images/planners/beige-planner.png',
-    alt: 'Бежевий планер BLOSSOM - вид спереду'
-  },
-  {
-    src: '/images/planners/beige-planner-desk.jpg',
-    alt: 'Бежевий планер BLOSSOM на робочому столі'
-  },
-  {
-    src: '/images/planners/gray-planner.png',
-    alt: 'Сірий планер BLOSSOM - вид спереду'
-  },
-  {
-    src: '/images/planners/gray-planner-lifestyle.jpg',
-    alt: 'Сірий планер BLOSSOM у використанні'
-  },
-  {
-    src: '/images/planners/planner-details.jpg',
-    alt: 'Деталі та оздоблення планера BLOSSOM'
-  },
-  {
-    src: '/images/planners/planner-spread.jpg',
-    alt: 'Розворот планера з прикладом заповнення'
-  },
-  {
-    src: '/images/planners/planner-accessories.jpg',
-    alt: 'Планер BLOSSOM з додатковими аксесуарами'
-  }
-];
-
 export default function PlannerPage() {
   return (
     <div>
@@ -112,14 +60,6 @@ export default function PlannerPage() {
             </ul>
           </div>
 
-          {/* Галерея фотографій */}
-          <div className="my-12">
-            <h3 className="text-2xl font-bold text-gray-900 mb-6">
-              Галерея фотографій:
-            </h3>
-            <Gallery images={galleryImages} />
-          </div>
-
           <div className="bg-amber-50 p-6 rounded-lg mb-8">
             <h3 className="text-xl font-semibold text-amber-900 mb-4">
               Ексклюзивний подарунок для перших 1000 покупців
@@ -131,9 +71,8 @@ export default function PlannerPage() {
               </p>
               <ul className="list-disc list-inside space-y-2 text-gray-700">
                 <li>Професійні психологи та психотерапевти</li>
-                <li>Досвідчені автори медитативних практик</li>
-                <li>Команда звукорежисерів та саунд-дизайнерів</li>
-                <li>Професійні актори озвучування</li>
+                <li>Професійні тренери з медитації</li>
+                <li>Команда професійного звукозапису</li>
               </ul>
               <p className="text-gray-700">
                 Кожна медитація пройшла ретельне тестування фокусною групою та була 
@@ -146,7 +85,7 @@ export default function PlannerPage() {
             <div className="flex items-center justify-between flex-wrap gap-4">
               <div>
                 <h3 className="text-2xl font-bold text-green-900 mb-2">
-                  Спеціальна ціна на повний комплект
+                  Спеціальна пропозиція
                 </h3>
                 <p className="text-lg text-green-800">
                   Повний комплект BLOSSOM для вашого розвитку та усвідомленості
@@ -154,15 +93,11 @@ export default function PlannerPage() {
                 <ul className="list-disc list-inside mt-4 space-y-1 text-green-700">
                   <li>Річна Книга змін у велюровій обкладинці</li>
                   <li>Блокнот "Blossom завжди поруч"</li>
-                  <li>Пакет медитацій та практик для початківців</li>
-                  <li className="font-medium">+ Подарунковий набір авторських медитацій</li>
+                  <li>Пакет авторських медитацій та практик</li>
                 </ul>
               </div>
-              <div className="flex flex-col items-end gap-2">
+              <div className="flex flex-col items-end">
                 <span className="text-3xl font-bold text-green-600">1600₴</span>
-                <button className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium">
-                  Замовити комплект
-                </button>
               </div>
             </div>
           </div>

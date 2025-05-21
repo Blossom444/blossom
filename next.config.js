@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  output: 'export',
+  distDir: '.next',
   webpack: (config) => {
     config.module.rules.push({
       test: /\.(mp3|wav)$/,
@@ -16,10 +16,14 @@ const nextConfig = {
     });
     return config;
   },
-  // Network configuration
   images: {
+    domains: ['localhost'],
     unoptimized: true,
   },
+  // Static file serving configuration
+  assetPrefix: '',
+  basePath: '',
+  output: 'standalone'
 }
 
 module.exports = nextConfig 

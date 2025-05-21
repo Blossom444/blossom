@@ -23,7 +23,7 @@ export default function PlannerCard({ color, colorName, imageUrl, isAvailable, p
             src={imageUrl}
             alt={`Планер ${colorName}`}
             fill
-            className="object-cover"
+            className="object-contain"
           />
         </div>
         <div className="p-6">
@@ -41,7 +41,7 @@ export default function PlannerCard({ color, colorName, imageUrl, isAvailable, p
             <span className="text-2xl font-bold text-gray-900">{price}₴</span>
           </div>
           <button
-            className={`w-full py-3 px-4 rounded-lg font-medium ${
+            className={`w-full py-2.5 px-4 rounded-lg font-medium flex items-center justify-center ${
               isAvailable
                 ? 'bg-indigo-600 text-white hover:bg-indigo-700'
                 : 'bg-gray-200 text-gray-500 cursor-not-allowed'
