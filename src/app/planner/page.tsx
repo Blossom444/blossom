@@ -2,6 +2,7 @@
 
 import PlannerCard from '@/components/PlannerCard';
 import GradientCover from '@/components/GradientCover';
+import Gallery from '@/components/Gallery';
 
 const planners = [
   {
@@ -34,6 +35,57 @@ const planners = [
   }
 ];
 
+const galleryImages = [
+  {
+    src: '/images/planners/pink-planner.png',
+    alt: 'Рожевий планер BLOSSOM - вид спереду'
+  },
+  {
+    src: '/images/planners/pink-planner-back.jpg',
+    alt: 'Рожевий планер BLOSSOM - вид ззаду'
+  },
+  {
+    src: '/images/planners/pink-planner-open.jpg',
+    alt: 'Рожевий планер BLOSSOM - розгорнутий вигляд'
+  },
+  {
+    src: '/images/planners/brown-planner.png',
+    alt: 'Коричневий планер BLOSSOM - вид спереду'
+  },
+  {
+    src: '/images/planners/brown-planner-side.jpg',
+    alt: 'Коричневий планер BLOSSOM - вид збоку'
+  },
+  {
+    src: '/images/planners/beige-planner.png',
+    alt: 'Бежевий планер BLOSSOM - вид спереду'
+  },
+  {
+    src: '/images/planners/beige-planner-desk.jpg',
+    alt: 'Бежевий планер BLOSSOM на робочому столі'
+  },
+  {
+    src: '/images/planners/gray-planner.png',
+    alt: 'Сірий планер BLOSSOM - вид спереду'
+  },
+  {
+    src: '/images/planners/gray-planner-lifestyle.jpg',
+    alt: 'Сірий планер BLOSSOM у використанні'
+  },
+  {
+    src: '/images/planners/planner-details.jpg',
+    alt: 'Деталі та оздоблення планера BLOSSOM'
+  },
+  {
+    src: '/images/planners/planner-spread.jpg',
+    alt: 'Розворот планера з прикладом заповнення'
+  },
+  {
+    src: '/images/planners/planner-accessories.jpg',
+    alt: 'Планер BLOSSOM з додатковими аксесуарами'
+  }
+];
+
 export default function PlannerPage() {
   return (
     <div>
@@ -58,6 +110,14 @@ export default function PlannerPage() {
               <li>Пакет медитацій та практик для початківців</li>
               <li>Спеціальні сторінки для планування та рефлексії</li>
             </ul>
+          </div>
+
+          {/* Галерея фотографій */}
+          <div className="my-12">
+            <h3 className="text-2xl font-bold text-gray-900 mb-6">
+              Галерея фотографій:
+            </h3>
+            <Gallery images={galleryImages} />
           </div>
 
           <div className="bg-amber-50 p-6 rounded-lg mb-8">
