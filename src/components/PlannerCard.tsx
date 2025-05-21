@@ -41,7 +41,7 @@ export default function PlannerCard({ color, colorName, imageUrl, isAvailable, p
             <span className="text-2xl font-bold text-gray-900">{price}₴</span>
           </div>
           <button
-            className={`w-full py-2.5 px-4 rounded-lg font-medium flex items-center justify-center ${
+            className={`w-full h-10 rounded-lg font-medium flex items-center justify-center ${
               isAvailable
                 ? 'bg-indigo-600 text-white hover:bg-indigo-700'
                 : 'bg-gray-200 text-gray-500 cursor-not-allowed'
