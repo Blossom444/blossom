@@ -28,6 +28,7 @@ export default function Gallery({ images }: GalleryProps) {
               alt={image.alt}
               fill
               className="object-cover hover:scale-110 transition-transform duration-300"
+              sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
             />
           </div>
         ))}
@@ -45,11 +46,16 @@ export default function Gallery({ images }: GalleryProps) {
               alt={images[selectedImage].alt}
               fill
               className="object-contain"
+              sizes="(max-width: 1536px) 100vw, 1536px"
+              priority
             />
           </div>
           <button
             className="absolute top-4 right-4 text-white text-4xl hover:text-gray-300"
-            onClick={() => setSelectedImage(null)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedImage(null);
+            }}
           >
             ×
           </button>

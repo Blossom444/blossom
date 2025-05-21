@@ -2,266 +2,202 @@
 
 import { useState } from 'react';
 import { OrderFormData } from '@/types';
+import { sendOrderToTelegram } from '@/utils/telegram';
 
 interface OrderFormProps {
-  onSubmit: (data: OrderFormData) => void;
-  selectedColor?: string;
+  productName: string;
+  price: number;
+  onClose: () => void;
 }
 
-export default function OrderForm({ onSubmit, selectedColor }: OrderFormProps) {
-  const [formData, setFormData] = useState<OrderFormData>({
-    name: '',
-    email: '',
-    phone: '',
-    street: '',
-    city: '',
-    postalCode: '',
-    region: '',
-    plannerColor: selectedColor || 'Рожевий',
-    quantity: 1
+export default function OrderForm({ productName, price, onClose }: OrderFormProps) {
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    contact: '',
+    contactType: 'phone',
   });
 
-  const [errors, setErrors] = useState<Partial<OrderFormData>>({});
+  const [errors, setErrors] = useState({
+    firstName: '',
+    lastName: '',
+    contact: '',
+  });
 
-  const validateForm = (): boolean => {
-    const newErrors: Partial<OrderFormData> = {};
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
-    if (!formData.name.trim()) {
-      newErrors.name = "Ім'я обов'язкове";
+  const validateForm = () => {
+    let isValid = true;
+    const newErrors = {
+      firstName: '',
+      lastName: '',
+      contact: '',
+    };
+
+    if (!formData.firstName.trim()) {
+      newErrors.firstName = "Ім'я обов'язкове";
+      isValid = false;
     }
 
-    if (!formData.email.trim()) {
-      newErrors.email = "Email обов'язковий";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = "Невірний формат email";
+    if (!formData.lastName.trim()) {
+      newErrors.lastName = "Прізвище обов'язкове";
+      isValid = false;
     }
 
-    if (!formData.phone.trim()) {
-      newErrors.phone = "Телефон обов'язковий";
-    } else if (!/^\+?\d{10,12}$/.test(formData.phone.replace(/\s/g, ''))) {
-      newErrors.phone = "Невірний формат телефону";
-    }
-
-    if (!formData.street.trim()) {
-      newErrors.street = "Адреса обов'язкова";
-    }
-
-    if (!formData.city.trim()) {
-      newErrors.city = "Місто обов'язкове";
-    }
-
-    if (!formData.postalCode.trim()) {
-      newErrors.postalCode = "Поштовий індекс обов'язковий";
-    }
-
-    if (!formData.region.trim()) {
-      newErrors.region = "Область обов'язкова";
+    if (!formData.contact.trim()) {
+      newErrors.contact = "Контактні дані обов'язкові";
+      isValid = false;
+    } else if (formData.contactType === 'phone') {
+      const phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/;
+      if (!phoneRegex.test(formData.contact)) {
+        newErrors.contact = 'Невірний формат номера телефону';
+        isValid = false;
+      }
     }
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    return isValid;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (validateForm()) {
-      onSubmit(formData);
-    }
-  };
+    if (!validateForm()) return;
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    if (errors[name as keyof OrderFormData]) {
-      setErrors(prev => ({ ...prev, [name]: undefined }));
+    setIsSubmitting(true);
+    setSubmitError('');
+
+    try {
+      const success = await sendOrderToTelegram({
+        ...formData,
+        productName,
+        price,
+      });
+
+      if (success) {
+        onClose();
+      } else {
+        setSubmitError('Помилка при відправці замовлення. Будь ласка, спробуйте пізніше.');
+      }
+    } catch (error) {
+      setSubmitError('Щось пішло не так. Будь ласка, спробуйте пізніше.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="bg-white p-6 rounded-lg shadow-lg">
-        <h3 className="text-xl font-semibold text-gray-900 mb-6">Інформація для замовлення</h3>
-        
-        <div className="space-y-4">
-          {/* Контактна інформація */}
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div className="bg-white rounded-lg p-6 max-w-md w-full">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-bold text-gray-900">Замовлення планера</h2>
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700"
+            disabled={isSubmitting}
+          >
+            ×
+          </button>
+        </div>
+
+        <div className="mb-4">
+          <p className="text-lg text-gray-700">Товар: {productName}</p>
+          <p className="text-lg font-semibold text-gray-900">Ціна: {price}₴</p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-              Ім'я та прізвище
+            <label className="block text-sm font-medium text-gray-700">
+              Ім'я
             </label>
             <input
               type="text"
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 ${
-                errors.name ? 'border-red-500' : ''
-              }`}
+              value={formData.firstName}
+              onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              disabled={isSubmitting}
             />
-            {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
+            {errors.firstName && (
+              <p className="mt-1 text-sm text-red-600">{errors.firstName}</p>
+            )}
           </div>
 
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-              Email
+            <label className="block text-sm font-medium text-gray-700">
+              Прізвище
             </label>
             <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 ${
-                errors.email ? 'border-red-500' : ''
-              }`}
+              type="text"
+              value={formData.lastName}
+              onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              disabled={isSubmitting}
             />
-            {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
+            {errors.lastName && (
+              <p className="mt-1 text-sm text-red-600">{errors.lastName}</p>
+            )}
           </div>
 
           <div>
-            <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
-              Телефон
+            <label className="block text-sm font-medium text-gray-700">
+              Тип зв'язку
+            </label>
+            <select
+              value={formData.contactType}
+              onChange={(e) => setFormData({ ...formData, contactType: e.target.value })}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              disabled={isSubmitting}
+            >
+              <option value="phone">Телефон</option>
+              <option value="telegram">Telegram</option>
+              <option value="viber">Viber</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              {formData.contactType === 'phone' ? 'Номер телефону' : 'Контактні дані'}
             </label>
             <input
-              type="tel"
-              id="phone"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              placeholder="+380"
-              className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 ${
-                errors.phone ? 'border-red-500' : ''
-              }`}
+              type={formData.contactType === 'phone' ? 'tel' : 'text'}
+              value={formData.contact}
+              onChange={(e) => setFormData({ ...formData, contact: e.target.value })}
+              placeholder={
+                formData.contactType === 'phone'
+                  ? '+380XXXXXXXXX'
+                  : `Ваш ${formData.contactType === 'telegram' ? 'Telegram' : 'Viber'}`
+              }
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              disabled={isSubmitting}
             />
-            {errors.phone && <p className="mt-1 text-sm text-red-600">{errors.phone}</p>}
+            {errors.contact && (
+              <p className="mt-1 text-sm text-red-600">{errors.contact}</p>
+            )}
           </div>
 
-          {/* Адреса доставки */}
-          <div className="pt-4">
-            <h4 className="text-lg font-medium text-gray-900 mb-4">Адреса доставки</h4>
-            
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div>
-                <label htmlFor="street" className="block text-sm font-medium text-gray-700">
-                  Вулиця та номер будинку
-                </label>
-                <input
-                  type="text"
-                  id="street"
-                  name="street"
-                  value={formData.street}
-                  onChange={handleChange}
-                  className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 ${
-                    errors.street ? 'border-red-500' : ''
-                  }`}
-                />
-                {errors.street && <p className="mt-1 text-sm text-red-600">{errors.street}</p>}
-              </div>
+          {submitError && (
+            <p className="text-red-600 text-sm">{submitError}</p>
+          )}
 
-              <div>
-                <label htmlFor="city" className="block text-sm font-medium text-gray-700">
-                  Місто
-                </label>
-                <input
-                  type="text"
-                  id="city"
-                  name="city"
-                  value={formData.city}
-                  onChange={handleChange}
-                  className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 ${
-                    errors.city ? 'border-red-500' : ''
-                  }`}
-                />
-                {errors.city && <p className="mt-1 text-sm text-red-600">{errors.city}</p>}
-              </div>
-
-              <div>
-                <label htmlFor="postalCode" className="block text-sm font-medium text-gray-700">
-                  Поштовий індекс
-                </label>
-                <input
-                  type="text"
-                  id="postalCode"
-                  name="postalCode"
-                  value={formData.postalCode}
-                  onChange={handleChange}
-                  className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 ${
-                    errors.postalCode ? 'border-red-500' : ''
-                  }`}
-                />
-                {errors.postalCode && <p className="mt-1 text-sm text-red-600">{errors.postalCode}</p>}
-              </div>
-
-              <div>
-                <label htmlFor="region" className="block text-sm font-medium text-gray-700">
-                  Область
-                </label>
-                <input
-                  type="text"
-                  id="region"
-                  name="region"
-                  value={formData.region}
-                  onChange={handleChange}
-                  className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 ${
-                    errors.region ? 'border-red-500' : ''
-                  }`}
-                />
-                {errors.region && <p className="mt-1 text-sm text-red-600">{errors.region}</p>}
-              </div>
-            </div>
+          <div className="flex justify-end space-x-3 mt-6">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+              disabled={isSubmitting}
+            >
+              Скасувати
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:bg-indigo-400"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Відправка...' : 'Замовити'}
+            </button>
           </div>
-
-          {/* Деталі замовлення */}
-          <div className="pt-4">
-            <h4 className="text-lg font-medium text-gray-900 mb-4">Деталі замовлення</h4>
-            
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div>
-                <label htmlFor="plannerColor" className="block text-sm font-medium text-gray-700">
-                  Колір планера
-                </label>
-                <select
-                  id="plannerColor"
-                  name="plannerColor"
-                  value={formData.plannerColor}
-                  onChange={handleChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                >
-                  <option value="Рожевий">Рожевий</option>
-                  <option value="Коричневий">Коричневий</option>
-                  <option value="Бежевий">Бежевий</option>
-                  <option value="Сірий">Сірий</option>
-                </select>
-              </div>
-
-              <div>
-                <label htmlFor="quantity" className="block text-sm font-medium text-gray-700">
-                  Кількість
-                </label>
-                <input
-                  type="number"
-                  id="quantity"
-                  name="quantity"
-                  min="1"
-                  max="10"
-                  value={formData.quantity}
-                  onChange={handleChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-8">
-          <button
-            type="submit"
-            className="w-full bg-indigo-600 text-white py-3 px-4 rounded-lg hover:bg-indigo-700 transition-colors font-medium"
-          >
-            Оформити замовлення
-          </button>
-        </div>
+        </form>
       </div>
-    </form>
+    </div>
   );
 } 

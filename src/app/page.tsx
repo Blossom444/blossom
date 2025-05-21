@@ -36,7 +36,7 @@ export default function HomePage() {
               Почати медитацію
             </Link>
             <Link
-              href="/book"
+              href="/planner"
               className="bg-white/20 backdrop-blur-sm text-white border-2 border-white px-8 py-4 rounded-lg hover:bg-white/30 transition-all duration-300 text-lg font-medium"
             >
               Книга змін
