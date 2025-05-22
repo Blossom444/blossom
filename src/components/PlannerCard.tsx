@@ -18,12 +18,12 @@ export default function PlannerCard({ color, colorName, imageUrl, isAvailable, p
   return (
     <>
       <div className="bg-white rounded-lg shadow-md overflow-hidden">
-        <div className="aspect-w-3 aspect-h-4 relative">
+        <div className="relative h-[400px]">
           <Image
             src={imageUrl}
             alt={`Планер ${colorName}`}
             fill
-            className="object-cover"
+            className="object-contain"
           />
         </div>
         <div className="p-4">

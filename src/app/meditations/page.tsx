@@ -15,36 +15,36 @@ export default function MeditationsPage() {
   const meditations: Meditation[] = [
     {
       id: 'meditation-1',
-      title: "Ранкова медитація",
+      title: "Наміри на новий день",
       duration: "15 хв",
-      description: "Почніть свій день з гармонії та спокою",
+      description: "Медитація для встановлення позитивних намірів та цілей на день. Допоможе сфокусуватися на важливому та налаштуватися на продуктивність.",
       variant: 'orange',
       audioUrl: "/audio/morning-meditation.mp3",
       isPremium: false
     },
     {
       id: 'meditation-2',
-      title: "Медитація для зняття стресу",
+      title: "Тут і зараз",
       duration: "20 хв",
-      description: "Звільніться від напруги та тривоги",
+      description: "Практика усвідомленості для повного занурення в теперішній момент. Допоможе відпустити тривоги про майбутнє та жаль про минуле.",
       variant: 'blue',
       audioUrl: "/audio/stress-relief.mp3",
       isPremium: false
     },
     {
       id: 'meditation-3',
-      title: "Вечірня медитація",
+      title: "Внутрішня гармонія",
       duration: "10 хв",
-      description: "Заспокійливий практика перед сном",
+      description: "Медитація для досягнення балансу між розумом та емоціями. Допоможе відновити внутрішній спокій та знайти рівновагу.",
       variant: 'purple',
       audioUrl: "/audio/evening-meditation.mp3",
-      isPremium: true
+      isPremium: false
     },
     {
       id: 'meditation-4',
-      title: "Медитація для концентрації",
+      title: "Глибоке розслаблення",
       duration: "12 хв",
-      description: "Підвищіть ясність розуму та зосередженість",
+      description: "Практика для повного розслаблення тіла та розуму. Ідеально підходить для зняття напруги та відновлення енергії.",
       variant: 'green',
       audioUrl: "/audio/focus-meditation.mp3",
       isPremium: true
