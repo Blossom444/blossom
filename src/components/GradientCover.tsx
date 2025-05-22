@@ -32,17 +32,18 @@ export default function GradientCover({
           alt={title}
           fill
           className="object-cover"
-          sizes="(max-width: 768px) 100vw, 50vw"
+          sizes="(max-width: 640px) 100vw, (max-width: 768px) 80vw, 50vw"
+          priority
         />
       )}
       <div className={`${imageUrl ? 'absolute inset-0 bg-black/30 z-10' : ''}`}></div>
       {showTitle && (
-        <div className="text-center relative z-20">
-          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">
+        <div className="text-center relative z-20 px-2">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-1 sm:mb-2">
             {title}
           </h2>
           {subtitle && (
-            <p className="text-lg sm:text-xl text-white/90">
+            <p className="text-base sm:text-lg md:text-xl text-white/90">
               {subtitle}
             </p>
           )}

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import GradientCover from '@/components/GradientCover';
 
 // Повний список всіх медитацій
 const allMeditations = [
@@ -161,7 +162,8 @@ const allMeditations = [
 export default function MeditationsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const itemsPerPage = 8; // Кількість медитацій на сторінці
+  const [isMobile, setIsMobile] = useState(false);
+  const itemsPerPage = isMobile ? 4 : 8; // Менше медитацій на сторінці для мобільних пристроїв
 
   // Усі унікальні категорії для фільтра
   const categories = ['all', ...Array.from(new Set(allMeditations.map(m => m.category)))];
@@ -179,6 +181,20 @@ export default function MeditationsPage() {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
+
+  // Перевіряємо, чи це мобільний пристрій
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+    };
+  }, []);
 
   // Скидаємо сторінку на першу при зміні категорії
   useEffect(() => {
@@ -218,22 +234,20 @@ export default function MeditationsPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl sm:text-3xl font-bold mb-6 text-gray-900">
-        Медитації ({filteredMeditations.length})
-      </h1>
+      <h1 className="text-2xl sm:text-3xl font-bold text-center mb-8">Медитації</h1>
       
       {/* Фільтр категорій */}
-      <div className="mb-6 overflow-x-auto">
-        <div className="flex flex-nowrap gap-2 pb-2">
+      <div className="mb-8 overflow-x-auto">
+        <div className="flex space-x-2 sm:space-x-4 min-w-max pb-2">
           {categories.map((category) => (
             <button
               key={category}
               onClick={() => setSelectedCategory(category)}
-              className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors
-                ${selectedCategory === category
+              className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-sm sm:text-base whitespace-nowrap transition-colors ${
+                selectedCategory === category
                   ? 'bg-primary text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
+              }`}
             >
               {category === 'all' ? 'Всі' : category}
             </button>
@@ -252,121 +266,79 @@ export default function MeditationsPage() {
       </div>
       
       {/* Сітка медитацій */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {currentMeditations.map((meditation) => (
-          <Link 
+          <Link
             key={meditation.id}
             href={`/meditations/${meditation.id}`}
-            className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow h-full flex flex-col"
+            className="block transform transition-transform hover:scale-[1.02]"
           >
-            <div className="aspect-w-16 aspect-h-9 relative">
-              <Image
-                src={`/images/meditations/${meditation.id}.jpg`}
-                alt={meditation.title}
-                fill
-                className="object-cover"
-                sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                loading="lazy"
-              />
-              {meditation.isPremium && (
-                <div className="absolute bottom-2 right-2 text-amber-400 font-semibold text-xs z-10 drop-shadow-md px-2 py-0.5 rounded-full backdrop-blur-sm">
-                  Преміум
-                </div>
-              )}
-            </div>
-            <div className="p-3 flex-1 flex flex-col">
-              <h3 className="text-base font-medium mb-1 line-clamp-1">{meditation.title}</h3>
-              <p className="text-sm text-gray-600 mb-2 line-clamp-2 flex-grow">{meditation.description}</p>
-              <div className="flex items-center justify-between mt-auto">
-                <span className="text-xs text-gray-500 flex items-center">
-                  <svg className="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  {meditation.duration}
-                </span>
-                <span className="text-primary hover:text-primary-600 font-medium text-sm">
-                  Почати →
-                </span>
+            <div className="bg-white rounded-lg shadow-md overflow-hidden">
+              <div className="relative aspect-square">
+                <GradientCover
+                  title={meditation.title}
+                  variant={meditation.variant as any}
+                />
+                {meditation.isPremium && (
+                  <div className="absolute top-2 right-2 bg-yellow-400 text-xs sm:text-sm px-2 py-1 rounded-full">
+                    Premium
+                  </div>
+                )}
               </div>
-              {meditation.category && (
-                <div className="mt-1">
-                  <span className="text-xs bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded">
-                    {meditation.category}
-                  </span>
-                </div>
-              )}
+              <div className="p-3 sm:p-4">
+                <h3 className="font-semibold text-base sm:text-lg mb-1">{meditation.title}</h3>
+                <p className="text-sm sm:text-base text-gray-600 mb-2">{meditation.duration}</p>
+                <p className="text-xs sm:text-sm text-gray-500 line-clamp-2">{meditation.description}</p>
+              </div>
             </div>
           </Link>
         ))}
       </div>
       
       {/* Пагінація */}
-      <div className="mt-8 flex justify-center">
-        <div className="flex flex-wrap items-center justify-center gap-1 sm:gap-2">
-          <button 
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center space-x-2 mt-8">
+          <button
             onClick={goToPrevPage}
             disabled={currentPage === 1}
-            className={`px-2 sm:px-3 py-1 rounded-md text-sm flex items-center ${currentPage === 1 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+            className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-sm sm:text-base ${
+              currentPage === 1
+                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                : 'bg-primary text-white hover:bg-primary-600'
+            }`}
           >
-            <svg className="w-4 h-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            <span className="hidden sm:inline">Назад</span>
+            Попередня
           </button>
           
-          {/* Перша сторінка, якщо поточна далеко від початку */}
-          {currentPage > 3 && (
-            <>
+          <div className="flex space-x-1 sm:space-x-2">
+            {getPageNumbers().map((pageNum) => (
               <button
-                onClick={() => goToPage(1)}
-                className="w-7 h-7 sm:w-8 sm:h-8 rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200 text-sm"
+                key={pageNum}
+                onClick={() => goToPage(pageNum)}
+                className={`w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg text-sm sm:text-base ${
+                  currentPage === pageNum
+                    ? 'bg-primary text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
               >
-                1
+                {pageNum}
               </button>
-              {currentPage > 4 && (
-                <span className="px-1 text-gray-500">...</span>
-              )}
-            </>
-          )}
-          
-          {/* Кнопки номерів сторінок */}
-          {getPageNumbers().map(page => (
-            <button
-              key={page}
-              onClick={() => goToPage(page)}
-              className={`w-7 h-7 sm:w-8 sm:h-8 rounded-md text-sm ${page === currentPage ? 'bg-primary text-white font-medium' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
-            >
-              {page}
-            </button>
-          ))}
-          
-          {/* Остання сторінка, якщо поточна далеко від кінця */}
-          {currentPage < totalPages - 2 && (
-            <>
-              {currentPage < totalPages - 3 && (
-                <span className="px-1 text-gray-500">...</span>
-              )}
-              <button
-                onClick={() => goToPage(totalPages)}
-                className="w-7 h-7 sm:w-8 sm:h-8 rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200 text-sm"
-              >
-                {totalPages}
-              </button>
-            </>
-          )}
-          
-          <button 
+            ))}
+          </div>
+
+          <button
             onClick={goToNextPage}
             disabled={currentPage === totalPages}
-            className={`px-2 sm:px-3 py-1 rounded-md text-sm flex items-center ${currentPage === totalPages ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+            className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-sm sm:text-base ${
+              currentPage === totalPages
+                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                : 'bg-primary text-white hover:bg-primary-600'
+            }`}
           >
-            <span className="hidden sm:inline">Далі</span>
-            <svg className="w-4 h-4 ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
+            Наступна
           </button>
         </div>
-      </div>
+      )}
     </div>
   );
 } 

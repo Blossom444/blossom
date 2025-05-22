@@ -18,9 +18,24 @@ export default function AudioPlayer({ src, title, initialDuration, variant = 'pu
   const [duration, setDuration] = useState(initialDuration);
   const [volume, setVolume] = useState(1);
   const [playbackRate, setPlaybackRate] = useState(1);
+  const [isMobile, setIsMobile] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const playbackRates = [0.5, 0.75, 1, 1.25, 1.5, 2];
+
+  useEffect(() => {
+    // Перевіряємо, чи це мобільний пристрій
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+    };
+  }, []);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -99,14 +114,14 @@ export default function AudioPlayer({ src, title, initialDuration, variant = 'pu
   };
 
   return (
-    <div className={`bg-white rounded-lg p-3 sm:p-4 shadow-md ${disabled ? 'opacity-90' : ''}`}>
-      <div className="relative aspect-square mb-3 sm:mb-4 rounded-lg overflow-hidden">
+    <div className={`bg-white rounded-lg p-2 sm:p-4 shadow-md ${disabled ? 'opacity-90' : ''}`}>
+      <div className="relative aspect-square mb-2 sm:mb-4 rounded-lg overflow-hidden">
         <GradientCover title={title} variant={variant} />
       </div>
 
       <audio ref={audioRef} src={src} />
       
-      <div className="mb-3 sm:mb-4">
+      <div className="mb-2 sm:mb-4">
         <input
           type="range"
           min={0}
@@ -123,57 +138,61 @@ export default function AudioPlayer({ src, title, initialDuration, variant = 'pu
       </div>
 
       <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2 sm:space-x-4">
+        <div className="flex items-center space-x-1 sm:space-x-4">
           <button
             onClick={togglePlay}
             disabled={disabled}
-            className={`w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full text-white transition-colors ${
+            className={`w-8 h-8 sm:w-12 sm:h-12 flex items-center justify-center rounded-full text-white transition-colors ${
               disabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-primary hover:bg-primary-600'
             }`}
           >
             {isPlaying ? (
-              <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 9v6m4-6v6" />
               </svg>
             ) : (
-              <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
               </svg>
             )}
           </button>
 
-          <div className="flex items-center space-x-2">
-            <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072M17.95 6.05a8 8 0 010 11.9M6.5 8.788l-1.77.9A1 1 0 004 10.527v2.946a1 1 0 00.73.839l1.77.9A1 1 0 007.5 14.273V9.727a1 1 0 00-1-1z M11 5.882V18.118a1 1 0 01-1.553.832l-3.7-2.466" />
-            </svg>
-            <input
-              type="range"
-              min={0}
-              max={1}
-              step={0.1}
-              value={volume}
-              onChange={handleVolumeChange}
-              disabled={disabled}
-              className={`w-16 sm:w-24 h-1.5 sm:h-2 bg-gray-200 rounded-lg appearance-none ${
-                disabled ? 'cursor-not-allowed opacity-70' : 'cursor-pointer'
-              }`}
-            />
-          </div>
+          {!isMobile && (
+            <div className="flex items-center space-x-2">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072M17.95 6.05a8 8 0 010 11.9M6.5 8.788l-1.77.9A1 1 0 004 10.527v2.946a1 1 0 00.73.839l1.77.9A1 1 0 007.5 14.273V9.727a1 1 0 00-1-1z M11 5.882V18.118a1 1 0 01-1.553.832l-3.7-2.466" />
+              </svg>
+              <input
+                type="range"
+                min={0}
+                max={1}
+                step={0.1}
+                value={volume}
+                onChange={handleVolumeChange}
+                disabled={disabled}
+                className={`w-16 sm:w-24 h-1.5 sm:h-2 bg-gray-200 rounded-lg appearance-none ${
+                  disabled ? 'cursor-not-allowed opacity-70' : 'cursor-pointer'
+                }`}
+              />
+            </div>
+          )}
 
-          <select
-            value={playbackRate}
-            onChange={handlePlaybackRateChange}
-            disabled={disabled}
-            className={`rounded px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs sm:text-sm ${
-              disabled ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-gray-100 text-gray-700'
-            }`}
-          >
-            {playbackRates.map((rate) => (
-              <option key={rate} value={rate}>
-                {rate}x
-              </option>
-            ))}
-          </select>
+          {!isMobile && (
+            <select
+              value={playbackRate}
+              onChange={handlePlaybackRateChange}
+              disabled={disabled}
+              className={`rounded px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs sm:text-sm ${
+                disabled ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-gray-100 text-gray-700'
+              }`}
+            >
+              {playbackRates.map((rate) => (
+                <option key={rate} value={rate}>
+                  {rate}x
+                </option>
+              ))}
+            </select>
+          )}
         </div>
       </div>
     </div>
