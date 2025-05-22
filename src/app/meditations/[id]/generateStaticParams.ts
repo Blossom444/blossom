@@ -119,8 +119,8 @@ export const meditations: Record<string, Meditation> = {
   },
   'meditation-13': {
     id: 'meditation-13',
-    title: 'Медитація вдячності',
-    description: 'Практика для розвитку почуття вдячності та позитивного світосприйняття.',
+    title: 'Впевненість в собі',
+    description: 'Медитація для зміцнення впевненості в собі та розкриття внутрішньої сили. Допомагає подолати сумніви та страхи.',
     duration: '18 хв',
     variant: 'green',
     audioUrl: '/audio/meditations/gratitude.mp3',

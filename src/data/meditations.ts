@@ -132,9 +132,9 @@ export const meditations: Meditation[] = [
   },
   {
     id: 'meditation-13',
-    title: "Медитація вдячності",
+    title: "Впевненість в собі",
     duration: "18 хв",
-    description: "Практика для розвитку почуття вдячності та позитивного світосприйняття.",
+    description: "Медитація для зміцнення впевненості в собі та розкриття внутрішньої сили. Допомагає подолати сумніви та страхи.",
     variant: 'green',
     audioUrl: "/audio/meditations/gratitude.mp3",
     isPremium: false,
