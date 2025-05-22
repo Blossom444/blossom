@@ -11,8 +11,8 @@ interface Meditation {
 export const meditations: Record<string, Meditation> = {
   'meditation-1': {
     id: 'meditation-1',
-    title: 'Ранкова медитація',
-    description: 'Почніть свій день з гармонії та спокою. Ця медитація допоможе вам налаштуватися на продуктивний день та зарядитися позитивною енергією.',
+    title: 'Наміри на новий день',
+    description: 'Медитація для встановлення позитивних намірів та цілей на день. Допоможе сфокусуватися на важливому та налаштуватися на продуктивність.',
     duration: '15 хв',
     variant: 'orange',
     audioUrl: '/audio/morning-meditation.mp3',
@@ -20,8 +20,8 @@ export const meditations: Record<string, Meditation> = {
   },
   'meditation-2': {
     id: 'meditation-2',
-    title: 'Медитація для зняття стресу',
-    description: 'Медитація для глибокої релаксації та відновлення внутрішнього балансу. Ця практика допоможе вам знизити рівень стресу та відновити емоційну рівновагу.',
+    title: 'Тут і зараз',
+    description: 'Практика усвідомленості для повного занурення в теперішній момент. Допоможе відпустити тривоги про майбутнє та жаль про минуле.',
     duration: '20 хв',
     variant: 'blue',
     audioUrl: '/audio/stress-relief.mp3',
@@ -29,17 +29,17 @@ export const meditations: Record<string, Meditation> = {
   },
   'meditation-3': {
     id: 'meditation-3',
-    title: 'Вечірня медитація',
-    description: 'Заспокійлива медитація для завершення дня та підготовки до здорового сну. Допоможе розслабитися та налаштуватися на спокійний сон.',
+    title: 'Внутрішня гармонія',
+    description: 'Медитація для досягнення балансу між розумом та емоціями. Допоможе відновити внутрішній спокій та знайти рівновагу.',
     duration: '10 хв',
     variant: 'purple',
     audioUrl: '/audio/evening-meditation.mp3',
-    isPremium: true
+    isPremium: false
   },
   'meditation-4': {
     id: 'meditation-4',
-    title: 'Медитація для концентрації',
-    description: 'Практика для покращення ментальної ясності та концентрації. Ідеально підходить для виконання перед важливими завданнями або навчанням.',
+    title: 'Глибоке розслаблення',
+    description: 'Практика для повного розслаблення тіла та розуму. Ідеально підходить для зняття напруги та відновлення енергії.',
     duration: '12 хв',
     variant: 'green',
     audioUrl: '/audio/focus-meditation.mp3',
