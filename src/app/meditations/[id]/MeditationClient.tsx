@@ -59,7 +59,7 @@ export default function MeditationClient({ meditation }: MeditationClientProps) 
             imageUrl={`/images/meditations/${meditation.id}.jpg`}
           />
           {meditation.isPremium && (
-            <div className="absolute top-4 right-4 bg-amber-500 text-white px-3 py-1.5 rounded-md text-sm font-medium">
+            <div className="absolute bottom-4 right-4 text-amber-400 font-semibold text-sm z-10 drop-shadow-md px-3 py-1 rounded-full backdrop-blur-sm">
               Преміум
             </div>
           )}
@@ -92,14 +92,40 @@ export default function MeditationClient({ meditation }: MeditationClientProps) 
           </div>
 
           {meditation.isPremium && !canAccessPremium ? (
-            <div className="bg-amber-50 p-4 rounded-lg text-center">
-              <p className="text-amber-800 mb-4">Ця медитація доступна в преміум версії</p>
-              <Link
-                href="/planner"
-                className="inline-block bg-amber-500 text-white px-6 py-2 rounded-md hover:bg-amber-600 transition-colors"
-              >
-                Придбати преміум
-              </Link>
+            <div className="space-y-6">
+              <div className="relative">
+                <AudioPlayer 
+                  src={meditation.audioUrl}
+                  title={meditation.title}
+                  variant={meditation.variant}
+                  initialDuration={convertDurationToSeconds(meditation.duration)}
+                  disabled={true}
+                />
+                <div className="absolute inset-0 backdrop-blur-[1px] flex items-center justify-center rounded-lg">
+                  <div className="bg-white/95 backdrop-blur-sm px-4 py-3 rounded-lg shadow-lg text-center">
+                    <svg className="w-6 h-6 text-amber-500 mx-auto mb-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z" clipRule="evenodd" />
+                    </svg>
+                    <p className="text-gray-700 font-medium">Повна версія доступна з Преміум</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-amber-50/50 backdrop-blur-sm p-4 sm:p-6 rounded-xl text-center border border-amber-200 shadow-inner">
+                <h3 className="text-amber-800 font-medium mb-2 flex items-center justify-center gap-1">
+                  <svg className="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z" clipRule="evenodd" />
+                  </svg>
+                  <span>Преміум медитація</span>
+                </h3>
+                <p className="text-amber-700 mb-4">Ця медитація доступна у преміум версії, але ви можете послухати безкоштовні медитації</p>
+                <Link
+                  href="/planner"
+                  className="inline-block bg-gradient-to-r from-amber-400 to-amber-500 text-white px-6 py-2 rounded-full hover:from-amber-500 hover:to-amber-600 transition-all shadow-md"
+                >
+                  Отримати преміум
+                </Link>
+              </div>
             </div>
           ) : (
           <AudioPlayer 

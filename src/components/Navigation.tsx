@@ -8,7 +8,12 @@ import { useAuth } from '@/contexts/AuthContext';
 export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
-  const { user, loading, isAdmin, logout } = useAuth();
+  const { user, loading, logout } = useAuth();
+
+  // Функція для перевірки чи користувач є адміністратором
+  const isAdmin = () => {
+    return user?.role === 'admin';
+  };
 
   // Закриваємо меню при зміні маршруту
   useEffect(() => {

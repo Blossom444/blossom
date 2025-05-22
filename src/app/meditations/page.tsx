@@ -197,6 +197,24 @@ export default function MeditationsPage() {
   const goToPage = (page: number) => {
     setCurrentPage(page);
   };
+  
+  // Визначаємо, які сторінки показувати в пагінації для мобільних
+  const getPageNumbers = () => {
+    const pageNumbers = [];
+    
+    // Завжди показуємо поточну сторінку
+    pageNumbers.push(currentPage);
+    
+    // Додаємо одну сторінку до і після поточної, якщо вони існують
+    if (currentPage > 1) pageNumbers.unshift(currentPage - 1);
+    if (currentPage < totalPages) pageNumbers.push(currentPage + 1);
+    
+    // Якщо є місце, додаємо ще по одній сторінці
+    if (currentPage > 2 && pageNumbers.length < 3) pageNumbers.unshift(currentPage - 2);
+    if (currentPage < totalPages - 1 && pageNumbers.length < 3) pageNumbers.push(currentPage + 2);
+    
+    return pageNumbers;
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -224,22 +242,22 @@ export default function MeditationsPage() {
       </div>
       
       {/* Відображення інформації про сторінки */}
-      <div className="mb-4 text-sm text-gray-500 flex justify-between items-center">
-        <div>
+      <div className="mb-4 text-xs sm:text-sm text-gray-500 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1">
+        <div className="bg-gray-100 rounded-full px-2 py-1 inline-block w-fit">
           Сторінка {currentPage} з {totalPages}
         </div>
         <div>
-          Показано {currentMeditations.length} з {filteredMeditations.length} медитацій
+          Показано <span className="font-medium">{currentMeditations.length}</span> з <span className="font-medium">{filteredMeditations.length}</span> медитацій
         </div>
       </div>
       
       {/* Сітка медитацій */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
         {currentMeditations.map((meditation) => (
           <Link 
             key={meditation.id}
             href={`/meditations/${meditation.id}`}
-            className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+            className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow h-full flex flex-col"
           >
             <div className="aspect-w-16 aspect-h-9 relative">
               <Image
@@ -248,18 +266,24 @@ export default function MeditationsPage() {
                 fill
                 className="object-cover"
                 sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                loading="lazy"
               />
               {meditation.isPremium && (
-                <div className="absolute top-2 right-2 bg-amber-500 text-white px-2 py-0.5 rounded text-xs font-medium z-10">
+                <div className="absolute bottom-2 right-2 text-amber-400 font-semibold text-xs z-10 drop-shadow-md px-2 py-0.5 rounded-full backdrop-blur-sm">
                   Преміум
                 </div>
               )}
             </div>
-            <div className="p-3">
-              <h3 className="text-base font-medium mb-1">{meditation.title}</h3>
-              <p className="text-sm text-gray-600 mb-2">{meditation.description}</p>
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-gray-500">{meditation.duration}</span>
+            <div className="p-3 flex-1 flex flex-col">
+              <h3 className="text-base font-medium mb-1 line-clamp-1">{meditation.title}</h3>
+              <p className="text-sm text-gray-600 mb-2 line-clamp-2 flex-grow">{meditation.description}</p>
+              <div className="flex items-center justify-between mt-auto">
+                <span className="text-xs text-gray-500 flex items-center">
+                  <svg className="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  {meditation.duration}
+                </span>
                 <span className="text-primary hover:text-primary-600 font-medium text-sm">
                   Почати →
                 </span>
@@ -278,32 +302,68 @@ export default function MeditationsPage() {
       
       {/* Пагінація */}
       <div className="mt-8 flex justify-center">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center justify-center gap-1 sm:gap-2">
           <button 
             onClick={goToPrevPage}
             disabled={currentPage === 1}
-            className={`px-3 py-1 rounded-md ${currentPage === 1 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+            className={`px-2 sm:px-3 py-1 rounded-md text-sm flex items-center ${currentPage === 1 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
           >
-            Назад
+            <svg className="w-4 h-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            <span className="hidden sm:inline">Назад</span>
           </button>
           
+          {/* Перша сторінка, якщо поточна далеко від початку */}
+          {currentPage > 3 && (
+            <>
+              <button
+                onClick={() => goToPage(1)}
+                className="w-7 h-7 sm:w-8 sm:h-8 rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200 text-sm"
+              >
+                1
+              </button>
+              {currentPage > 4 && (
+                <span className="px-1 text-gray-500">...</span>
+              )}
+            </>
+          )}
+          
           {/* Кнопки номерів сторінок */}
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+          {getPageNumbers().map(page => (
             <button
               key={page}
               onClick={() => goToPage(page)}
-              className={`w-8 h-8 rounded-md ${page === currentPage ? 'bg-primary text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+              className={`w-7 h-7 sm:w-8 sm:h-8 rounded-md text-sm ${page === currentPage ? 'bg-primary text-white font-medium' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
             >
               {page}
             </button>
           ))}
           
+          {/* Остання сторінка, якщо поточна далеко від кінця */}
+          {currentPage < totalPages - 2 && (
+            <>
+              {currentPage < totalPages - 3 && (
+                <span className="px-1 text-gray-500">...</span>
+              )}
+              <button
+                onClick={() => goToPage(totalPages)}
+                className="w-7 h-7 sm:w-8 sm:h-8 rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200 text-sm"
+              >
+                {totalPages}
+              </button>
+            </>
+          )}
+          
           <button 
             onClick={goToNextPage}
             disabled={currentPage === totalPages}
-            className={`px-3 py-1 rounded-md ${currentPage === totalPages ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+            className={`px-2 sm:px-3 py-1 rounded-md text-sm flex items-center ${currentPage === totalPages ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
           >
-            Далі
+            <span className="hidden sm:inline">Далі</span>
+            <svg className="w-4 h-4 ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
           </button>
         </div>
       </div>

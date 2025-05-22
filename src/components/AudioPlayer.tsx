@@ -8,9 +8,10 @@ interface AudioPlayerProps {
   title: string;
   initialDuration: number;
   variant?: 'purple' | 'blue' | 'green' | 'orange' | 'red' | 'yellow';
+  disabled?: boolean;
 }
 
-export default function AudioPlayer({ src, title, initialDuration, variant = 'purple' }: AudioPlayerProps) {
+export default function AudioPlayer({ src, title, initialDuration, variant = 'purple', disabled = false }: AudioPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
@@ -50,7 +51,7 @@ export default function AudioPlayer({ src, title, initialDuration, variant = 'pu
   }, []);
 
   const togglePlay = () => {
-    if (!audioRef.current) return;
+    if (!audioRef.current || disabled) return;
     
     if (isPlaying) {
       audioRef.current.pause();
@@ -61,14 +62,14 @@ export default function AudioPlayer({ src, title, initialDuration, variant = 'pu
   };
 
   const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!audioRef.current) return;
+    if (!audioRef.current || disabled) return;
     const time = parseFloat(e.target.value);
     audioRef.current.currentTime = time;
     setCurrentTime(time);
   };
 
   const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!audioRef.current) return;
+    if (!audioRef.current || disabled) return;
     const bounds = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - bounds.left;
     const width = bounds.width;
@@ -78,14 +79,14 @@ export default function AudioPlayer({ src, title, initialDuration, variant = 'pu
   };
 
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!audioRef.current) return;
+    if (!audioRef.current || disabled) return;
     const value = parseFloat(e.target.value);
     audioRef.current.volume = value;
     setVolume(value);
   };
 
   const handlePlaybackRateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    if (!audioRef.current) return;
+    if (!audioRef.current || disabled) return;
     const rate = parseFloat(e.target.value);
     audioRef.current.playbackRate = rate;
     setPlaybackRate(rate);
@@ -98,7 +99,7 @@ export default function AudioPlayer({ src, title, initialDuration, variant = 'pu
   };
 
   return (
-    <div className="bg-white rounded-lg p-3 sm:p-4 shadow-md">
+    <div className={`bg-white rounded-lg p-3 sm:p-4 shadow-md ${disabled ? 'opacity-90' : ''}`}>
       <div className="relative aspect-square mb-3 sm:mb-4 rounded-lg overflow-hidden">
         <GradientCover title={title} variant={variant} />
       </div>
@@ -112,7 +113,8 @@ export default function AudioPlayer({ src, title, initialDuration, variant = 'pu
           max={duration || 0}
           value={currentTime}
           onChange={handleTimeChange}
-          className="w-full h-1.5 sm:h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+          disabled={disabled}
+          className={`w-full h-1.5 sm:h-2 bg-gray-200 rounded-lg appearance-none ${disabled ? 'cursor-not-allowed opacity-70' : 'cursor-pointer'}`}
         />
         <div className="flex justify-between text-xs sm:text-sm text-gray-500 mt-1">
           <span>{formatTime(currentTime)}</span>
@@ -124,7 +126,10 @@ export default function AudioPlayer({ src, title, initialDuration, variant = 'pu
         <div className="flex items-center space-x-2 sm:space-x-4">
           <button
             onClick={togglePlay}
-            className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-primary text-white hover:bg-primary-600 transition-colors"
+            disabled={disabled}
+            className={`w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full text-white transition-colors ${
+              disabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-primary hover:bg-primary-600'
+            }`}
           >
             {isPlaying ? (
               <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -148,14 +153,20 @@ export default function AudioPlayer({ src, title, initialDuration, variant = 'pu
               step={0.1}
               value={volume}
               onChange={handleVolumeChange}
-              className="w-16 sm:w-24 h-1.5 sm:h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+              disabled={disabled}
+              className={`w-16 sm:w-24 h-1.5 sm:h-2 bg-gray-200 rounded-lg appearance-none ${
+                disabled ? 'cursor-not-allowed opacity-70' : 'cursor-pointer'
+              }`}
             />
           </div>
 
           <select
             value={playbackRate}
             onChange={handlePlaybackRateChange}
-            className="bg-gray-100 text-gray-700 rounded px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs sm:text-sm"
+            disabled={disabled}
+            className={`rounded px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs sm:text-sm ${
+              disabled ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-gray-100 text-gray-700'
+            }`}
           >
             {playbackRates.map((rate) => (
               <option key={rate} value={rate}>
