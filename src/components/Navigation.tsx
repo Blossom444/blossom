@@ -3,10 +3,12 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
+  const { user } = useAuth();
 
   // Закриваємо меню при зміні маршруту
   useEffect(() => {
@@ -26,6 +28,87 @@ export default function Navigation() {
   }, [isMenuOpen]);
 
   const isActive = (path: string) => pathname === path;
+
+  const AuthButtons = () => {
+    if (user) {
+      console.log('Current user:', user);
+      return (
+        <>
+          {user.role === 'admin' && (
+            <Link 
+              href="/admin"
+              className={`${isActive('/admin') ? 'text-primary' : 'text-gray-600'} hover:text-primary transition-colors`}
+            >
+              Адмін-панель
+            </Link>
+          )}
+          <Link 
+            href="/profile"
+            className={`${isActive('/profile') ? 'text-primary' : 'text-gray-600'} hover:text-primary transition-colors`}
+          >
+            Мій профіль
+          </Link>
+        </>
+      );
+    }
+
+    return (
+      <>
+        <Link 
+          href="/login"
+          className="text-gray-600 hover:text-primary transition-colors"
+        >
+          Увійти
+        </Link>
+        <Link 
+          href="/register"
+          className="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary/90 transition-colors"
+        >
+          Реєстрація
+        </Link>
+      </>
+    );
+  };
+
+  const MobileAuthButtons = () => {
+    if (user) {
+      return (
+        <>
+          {user.role === 'admin' && (
+            <Link 
+              href="/admin"
+              className={`block text-xl ${isActive('/admin') ? 'text-primary font-semibold' : 'text-gray-600'} hover:text-primary transition-colors`}
+            >
+              Адмін-панель
+            </Link>
+          )}
+          <Link 
+            href="/profile"
+            className={`block text-xl ${isActive('/profile') ? 'text-primary font-semibold' : 'text-gray-600'} hover:text-primary transition-colors`}
+          >
+            Мій профіль
+          </Link>
+        </>
+      );
+    }
+
+    return (
+      <>
+        <Link 
+          href="/login"
+          className="block text-xl text-gray-600 hover:text-primary transition-colors"
+        >
+          Увійти
+        </Link>
+        <Link 
+          href="/register"
+          className="block bg-primary text-white text-xl px-4 py-3 rounded-md hover:bg-primary/90 transition-colors text-center mt-8"
+        >
+          Реєстрація
+        </Link>
+      </>
+    );
+  };
 
   return (
     <nav className="bg-white shadow-md fixed w-full top-0 z-50">
@@ -55,18 +138,7 @@ export default function Navigation() {
             >
               Книга Змін
             </Link>
-            <Link 
-              href="/login"
-              className="text-gray-600 hover:text-primary transition-colors"
-            >
-              Увійти
-            </Link>
-            <Link 
-              href="/register"
-              className="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary/90 transition-colors"
-            >
-              Реєстрація
-            </Link>
+            <AuthButtons />
           </div>
 
           {/* Мобільна кнопка меню */}
@@ -127,18 +199,7 @@ export default function Navigation() {
             >
               Книга Змін
             </Link>
-            <Link 
-              href="/login"
-              className="block text-xl text-gray-600 hover:text-primary transition-colors"
-            >
-              Увійти
-            </Link>
-            <Link 
-              href="/register"
-              className="block bg-primary text-white text-xl px-4 py-3 rounded-md hover:bg-primary/90 transition-colors text-center mt-8"
-            >
-              Реєстрація
-            </Link>
+            <MobileAuthButtons />
           </div>
         </div>
       </div>

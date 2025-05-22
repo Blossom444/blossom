@@ -1,6 +1,36 @@
 'use client';
 
+import { useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+
 export default function Login() {
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  });
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const { login } = useAuth();
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setIsLoading(true);
+
+    try {
+      await login(formData.email, formData.password);
+      router.push('/profile');
+    } catch (err) {
+      setError('Невірний email або пароль');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-md mx-auto">
@@ -8,7 +38,7 @@ export default function Login() {
           Вхід
         </h1>
         <div className="bg-white p-6 rounded-lg shadow-md">
-          <form className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
                 Email
@@ -16,7 +46,8 @@ export default function Login() {
               <input
                 type="email"
                 id="email"
-                name="email"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                 required
               />
@@ -28,20 +59,31 @@ export default function Login() {
               <input
                 type="password"
                 id="password"
-                name="password"
+                value={formData.password}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                 required
               />
             </div>
+            {error && (
+              <p className="text-red-500 text-sm">{error}</p>
+            )}
             <button
               type="submit"
-              className="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-primary/90 transition-colors"
+              disabled={isLoading}
+              className="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50"
             >
-              Увійти
+              {isLoading ? 'Вхід...' : 'Увійти'}
             </button>
+            <p className="text-center text-sm text-gray-600">
+              Немає акаунту?{' '}
+              <Link href="/register" className="text-primary hover:underline">
+                Зареєструватися
+              </Link>
+            </p>
           </form>
         </div>
       </div>
     </div>
-  )
+  );
 } 
