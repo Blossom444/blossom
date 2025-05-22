@@ -8,6 +8,7 @@ interface User {
   name: string;
   isPremium: boolean;
   role: 'user' | 'admin';
+  accessibleMeditations: string[]; // Масив ID медитацій, до яких має доступ користувач
 }
 
 interface AuthContextType {
@@ -19,7 +20,10 @@ interface AuthContextType {
   logout: () => Promise<void>;
   grantPremiumAccess: (userId: string) => Promise<void>;
   revokePremiumAccess: (userId: string) => Promise<void>;
+  grantMeditationAccess: (targetUserId: string, meditationId: string) => Promise<void>;
+  revokeMeditationAccess: (targetUserId: string, meditationId: string) => Promise<void>;
   hasPremiumAccess: () => boolean;
+  hasMeditationAccess: (meditationId: string) => boolean;
   getAllUsers: () => User[];
   clearError: () => void;
 }
@@ -32,14 +36,16 @@ const INITIAL_USERS: User[] = [
     email: 'admin@blossom.com',
     name: 'Адміністратор',
     isPremium: true,
-    role: 'admin'
+    role: 'admin',
+    accessibleMeditations: [] // Адмін має доступ до всіх медитацій
   },
   {
     id: '2',
     email: 'user@example.com',
     name: 'Тестовий користувач',
     isPremium: false,
-    role: 'user'
+    role: 'user',
+    accessibleMeditations: []
   }
 ];
 
@@ -128,7 +134,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         email,
         name,
         isPremium: false,
-        role: 'user'
+        role: 'user',
+        accessibleMeditations: []
       };
 
       const updatedUsers = [...allUsers, newUser];
@@ -206,8 +213,81 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const grantMeditationAccess = async (targetUserId: string, meditationId: string) => {
+    if (!user || user.role !== 'admin') {
+      setError('Немає прав адміністратора');
+      throw new Error('Немає прав адміністратора');
+    }
+
+    try {
+      const allUsers = getAllUsers();
+      const updatedUsers = allUsers.map((u: User) => {
+        if (u.id === targetUserId) {
+          const accessibleMeditations = new Set([...u.accessibleMeditations, meditationId]);
+          return { ...u, accessibleMeditations: Array.from(accessibleMeditations) };
+        }
+        return u;
+      });
+      
+      localStorage.setItem('allUsers', JSON.stringify(updatedUsers));
+      
+      // Якщо це поточний користувач, оновлюємо його стан
+      if (user.id === targetUserId) {
+        const updatedUser = { 
+          ...user, 
+          accessibleMeditations: [...new Set([...user.accessibleMeditations, meditationId])]
+        };
+        localStorage.setItem('userData', JSON.stringify(updatedUser));
+        setUser(updatedUser);
+      }
+    } catch (error) {
+      setError('Помилка надання доступу до медитації');
+      throw error;
+    }
+  };
+
+  const revokeMeditationAccess = async (targetUserId: string, meditationId: string) => {
+    if (!user || user.role !== 'admin') {
+      setError('Немає прав адміністратора');
+      throw new Error('Немає прав адміністратора');
+    }
+
+    try {
+      const allUsers = getAllUsers();
+      const updatedUsers = allUsers.map((u: User) => {
+        if (u.id === targetUserId) {
+          return { 
+            ...u, 
+            accessibleMeditations: u.accessibleMeditations.filter(id => id !== meditationId)
+          };
+        }
+        return u;
+      });
+      
+      localStorage.setItem('allUsers', JSON.stringify(updatedUsers));
+      
+      // Якщо це поточний користувач, оновлюємо його стан
+      if (user.id === targetUserId) {
+        const updatedUser = { 
+          ...user, 
+          accessibleMeditations: user.accessibleMeditations.filter(id => id !== meditationId)
+        };
+        localStorage.setItem('userData', JSON.stringify(updatedUser));
+        setUser(updatedUser);
+      }
+    } catch (error) {
+      setError('Помилка відкликання доступу до медитації');
+      throw error;
+    }
+  };
+
   const hasPremiumAccess = () => {
     return Boolean(user?.isPremium || user?.role === 'admin');
+  };
+
+  const hasMeditationAccess = (meditationId: string) => {
+    if (!user) return false;
+    return user.isPremium || user.role === 'admin' || user.accessibleMeditations.includes(meditationId);
   };
 
   const value = {
@@ -219,7 +299,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     logout,
     grantPremiumAccess,
     revokePremiumAccess,
+    grantMeditationAccess,
+    revokeMeditationAccess,
     hasPremiumAccess,
+    hasMeditationAccess,
     getAllUsers,
     clearError
   };
