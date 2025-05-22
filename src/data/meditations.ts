@@ -16,7 +16,7 @@ export const meditations: Meditation[] = [
     duration: "15 хв",
     description: "Медитація для встановлення позитивних намірів та цілей на день. Допоможе сфокусуватися на важливому та налаштуватися на продуктивність.",
     variant: 'orange',
-    audioUrl: "/audio/morning-meditation.mp3",
+    audioUrl: "/audio/meditations/morning-meditation.mp3",
     isPremium: false,
     category: 'Ранкові медитації'
   },
@@ -26,7 +26,7 @@ export const meditations: Meditation[] = [
     duration: "20 хв",
     description: "Практика усвідомленості для повного занурення в теперішній момент. Допоможе відпустити тривоги про майбутнє та жаль про минуле.",
     variant: 'blue',
-    audioUrl: "/audio/stress-relief.mp3",
+    audioUrl: "/audio/meditations/mindfulness.mp3",
     isPremium: false,
     category: 'Усвідомленість'
   },
@@ -36,7 +36,7 @@ export const meditations: Meditation[] = [
     duration: "10 хв",
     description: "Медитація для досягнення балансу між розумом та емоціями. Допоможе відновити внутрішній спокій та знайти рівновагу.",
     variant: 'purple',
-    audioUrl: "/audio/evening-meditation.mp3",
+    audioUrl: "/audio/meditations/harmony.mp3",
     isPremium: false,
     category: 'Вечірні медитації'
   },
@@ -46,42 +46,52 @@ export const meditations: Meditation[] = [
     duration: "12 хв",
     description: "Практика для повного розслаблення тіла та розуму. Ідеально підходить для зняття напруги та відновлення енергії.",
     variant: 'green',
-    audioUrl: "/audio/focus-meditation.mp3",
+    audioUrl: "/audio/meditations/relaxation.mp3",
     isPremium: true,
     category: 'Розслаблення'
   },
   {
     id: 'meditation-5',
-    title: "Усвідомлення дня",
+    title: "Зцілення та відновлення",
     duration: "18 хв",
-    description: "Медитація для глибокого усвідомлення поточного моменту та подій дня. Допомагає краще розуміти свої емоції та реакції.",
+    description: "Медитація для активації природних сил самозцілення організму. Допомагає відновити енергію та життєві сили.",
     variant: 'red',
-    audioUrl: "/audio/meditations/awareness-day.mp3",
+    audioUrl: "/audio/meditations/healing.mp3",
     isPremium: true,
-    category: 'Антистрес'
+    category: "Здоров'я"
   },
   {
     id: 'meditation-6',
-    title: "На прийняття і усвідомлення",
+    title: "Спокійний сон",
     duration: "25 хв",
-    description: "Практика для розвитку прийняття себе та навколишнього світу. Допомагає знаходити внутрішній спокій.",
+    description: "Вечірня практика для глибокого розслаблення та підготовки до здорового сну. Допомагає позбутися тривожних думок.",
     variant: 'blue',
-    audioUrl: "/audio/meditations/acceptance.mp3",
+    audioUrl: "/audio/meditations/sleep.mp3",
     isPremium: true,
     category: 'Сон'
   },
   {
     id: 'meditation-7',
-    title: "Наповнення енергією",
+    title: "Енергія та бадьорість",
     duration: "10 хв",
-    description: "Енергетична медитація для відновлення життєвих сил та підвищення рівня енергії.",
+    description: "Ранкова медитація для пробудження тіла та розуму. Наповнює енергією та готує до продуктивного дня.",
     variant: 'yellow',
-    audioUrl: "/audio/meditations/energy-boost.mp3",
+    audioUrl: "/audio/meditations/energy.mp3",
     isPremium: true,
     category: 'Енергія'
   },
   {
     id: 'meditation-8',
+    title: "Прийняття себе",
+    duration: "15 хв",
+    description: "Практика для розвитку самоприйняття та любові до себе. Допомагає побудувати здорові стосунки з собою.",
+    variant: 'purple',
+    audioUrl: "/audio/meditations/self-love.mp3",
+    isPremium: false,
+    category: 'Усвідомленість'
+  },
+  {
+    id: 'meditation-9',
     title: "На досягнення цілей",
     duration: "15 хв",
     description: "Медитація для фокусування на важливих цілях та посилення мотивації для їх досягнення.",
@@ -91,7 +101,7 @@ export const meditations: Meditation[] = [
     category: 'Концентрація'
   },
   {
-    id: 'meditation-9',
+    id: 'meditation-10',
     title: "Знайомство зі своїм внутрішнім світом",
     duration: "20 хв",
     description: "Подорож у свій внутрішній світ для кращого саморозуміння та самопізнання.",
@@ -101,7 +111,7 @@ export const meditations: Meditation[] = [
     category: 'Усвідомленість'
   },
   {
-    id: 'meditation-10',
+    id: 'meditation-11',
     title: "Пізнання Власного Я",
     duration: "30 хв",
     description: "Глибока медитація для дослідження власної особистості та розкриття внутрішнього потенціалу.",
@@ -111,8 +121,8 @@ export const meditations: Meditation[] = [
     category: 'Усвідомленість'
   },
   {
-    id: 'meditation-11',
-    title: "Прийняття себе",
+    id: 'meditation-12',
+    title: "Впевненість в собі",
     duration: "12 хв",
     description: "Практика для розвитку самоприйняття та любові до себе.",
     variant: 'yellow',
@@ -121,7 +131,7 @@ export const meditations: Meditation[] = [
     category: 'Усвідомленість'
   },
   {
-    id: 'meditation-12',
+    id: 'meditation-13',
     title: "Впевненість в собі",
     duration: "15 хв",
     description: "Медитація для посилення впевненості в собі та віри у власні сили.",
@@ -131,7 +141,7 @@ export const meditations: Meditation[] = [
     category: 'Антистрес'
   },
   {
-    id: 'meditation-13',
+    id: 'meditation-14',
     title: "Впевненість в собі",
     duration: "18 хв",
     description: "Медитація для зміцнення впевненості в собі та розкриття внутрішньої сили. Допомагає подолати сумніви та страхи.",
@@ -141,7 +151,7 @@ export const meditations: Meditation[] = [
     category: 'Усвідомленість'
   },
   {
-    id: 'meditation-14',
+    id: 'meditation-15',
     title: "Медитація вдячності",
     duration: "22 хв",
     description: "Практика для розвитку почуття вдячності та позитивного світосприйняття.",
@@ -151,7 +161,7 @@ export const meditations: Meditation[] = [
     category: 'Концентрація'
   },
   {
-    id: 'meditation-15',
+    id: 'meditation-16',
     title: "Медитація для міцного сну",
     duration: "25 хв",
     description: "Заспокійлива медитація для глибокого розслаблення та якісного сну.",
