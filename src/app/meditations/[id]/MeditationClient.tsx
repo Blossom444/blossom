@@ -56,6 +56,7 @@ export default function MeditationClient({ meditation }: MeditationClientProps) 
           <GradientCover 
             title={meditation.title}
             variant={meditation.variant}
+            imageUrl={`/images/meditations/${meditation.id}.jpg`}
           />
           {meditation.isPremium && (
             <div className="absolute top-4 right-4 bg-amber-500 text-white px-3 py-1.5 rounded-md text-sm font-medium">

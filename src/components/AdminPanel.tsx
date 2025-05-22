@@ -114,7 +114,61 @@ export default function AdminPanel() {
         </div>
       )}
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      {/* Мобільний перегляд */}
+      <div className="md:hidden">
+        {users.map((u) => (
+          <div 
+            key={u.id} 
+            className={`mb-4 p-4 rounded-lg border ${actionInProgress === u.id ? 'bg-gray-50' : 'bg-white'}`}
+          >
+            <div className="flex justify-between items-center mb-2">
+              <div className="font-medium text-gray-900">{u.name}</div>
+              <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                u.role === 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'
+              }`}>
+                {u.role === 'admin' ? 'Адмін' : 'Користувач'}
+              </span>
+            </div>
+            
+            <div className="text-sm text-gray-500 mb-2">{u.email}</div>
+            
+            <div className="flex justify-between items-center mb-3">
+              <div className="text-sm font-medium">Преміум статус:</div>
+              <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                u.isPremium ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+              }`}>
+                {u.isPremium ? 'Так' : 'Ні'}
+              </span>
+            </div>
+            
+            {u.role !== 'admin' && (
+              <button
+                onClick={() => handlePremiumToggle(u)}
+                disabled={actionInProgress === u.id}
+                className={`w-full px-4 py-2 rounded-md text-sm font-medium text-white ${
+                  actionInProgress === u.id
+                    ? 'bg-gray-400 cursor-not-allowed'
+                    : u.isPremium 
+                      ? 'bg-red-600 hover:bg-red-700'
+                      : 'bg-green-600 hover:bg-green-700'
+                }`}
+              >
+                {actionInProgress === u.id ? (
+                  <span className="flex items-center justify-center">
+                    <span className="animate-spin h-4 w-4 mr-2 border-b-2 border-white rounded-full"></span>
+                    Обробка...
+                  </span>
+                ) : (
+                  u.isPremium ? 'Відкликати преміум' : 'Надати преміум'
+                )}
+              </button>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Десктопний перегляд */}
+      <div className="hidden md:block bg-white rounded-lg shadow overflow-hidden">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>

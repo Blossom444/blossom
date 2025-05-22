@@ -8,9 +8,9 @@ interface OrderData {
 }
 
 export async function sendOrderToTelegram(orderData: OrderData) {
-  // Використовуємо прямо значення з ENV для надійності
-  const token = "7941074643:AAFPIHXsAOdtjuByZS5cWGi-sK_GqOU6Y2w";
-  const chatId = "-1002399101337";
+  // Отримуємо токени з env змінних або використовуємо резервні значення
+  const token = process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN || "7941074643:AAFPIHXsAOdtjuByZS5cWGi-sK_GqOU6Y2w";
+  const chatId = process.env.NEXT_PUBLIC_TELEGRAM_CHAT_ID || "-1002399101337";
 
   if (!token || !chatId) {
     console.error('Telegram credentials are not configured');
@@ -45,6 +45,7 @@ ${orderData.firstName} ${orderData.lastName}
       return false;
     }
 
+    console.log('Message sent successfully to Telegram');
     return true;
   } catch (error) {
     console.error('Error sending message to Telegram:', error);
