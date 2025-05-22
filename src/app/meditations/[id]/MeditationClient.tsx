@@ -9,7 +9,7 @@ interface Meditation {
   title: string;
   description: string;
   duration: string;
-  variant: 'orange' | 'blue' | 'purple' | 'green';
+  variant: 'orange' | 'blue' | 'purple' | 'green' | 'red' | 'yellow';
   audioUrl: string;
   isPremium: boolean;
 }

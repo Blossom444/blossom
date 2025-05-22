@@ -1,11 +1,18 @@
 import './globals.css'
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import Navigation from '@/components/Navigation'
 import UpdateNotification from '@/components/UpdateNotification'
 import { AuthProvider } from '@/contexts/AuthContext'
 
 const inter = Inter({ subsets: ['latin', 'cyrillic'] })
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  themeColor: '#8B4513',
+}
 
 export const metadata: Metadata = {
   title: 'BLOSSOM - Медитації та духовні практики',
@@ -32,12 +39,6 @@ export const metadata: Metadata = {
     statusBarStyle: 'default',
     title: 'BLOSSOM',
   },
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
-  },
-  themeColor: '#8B4513',
 }
 
 export default function RootLayout({

@@ -8,7 +8,7 @@ import { useAuth } from '@/contexts/AuthContext';
 export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
 
   // Закриваємо меню при зміні маршруту
   useEffect(() => {
@@ -30,8 +30,11 @@ export default function Navigation() {
   const isActive = (path: string) => pathname === path;
 
   const AuthButtons = () => {
+    if (loading) {
+      return null; // Don't show anything while loading
+    }
+
     if (user) {
-      console.log('Current user:', user);
       return (
         <>
           {user.role === 'admin' && (
@@ -71,6 +74,10 @@ export default function Navigation() {
   };
 
   const MobileAuthButtons = () => {
+    if (loading) {
+      return null; // Don't show anything while loading
+    }
+
     if (user) {
       return (
         <>

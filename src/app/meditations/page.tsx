@@ -1,61 +1,48 @@
+'use client';
+
+import { useState } from 'react';
 import Link from 'next/link';
 import GradientCover from '@/components/GradientCover';
-
-interface Meditation {
-  id: string;
-  title: string;
-  duration: string;
-  description: string;
-  variant: 'purple' | 'blue' | 'green' | 'orange';
-  audioUrl: string;
-  isPremium: boolean;
-}
+import { meditations, Meditation } from '@/data/meditations';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function MeditationsPage() {
-  const meditations: Meditation[] = [
-    {
-      id: 'meditation-1',
-      title: "Наміри на новий день",
-      duration: "15 хв",
-      description: "Медитація для встановлення позитивних намірів та цілей на день. Допоможе сфокусуватися на важливому та налаштуватися на продуктивність.",
-      variant: 'orange',
-      audioUrl: "/audio/morning-meditation.mp3",
-      isPremium: false
-    },
-    {
-      id: 'meditation-2',
-      title: "Тут і зараз",
-      duration: "20 хв",
-      description: "Практика усвідомленості для повного занурення в теперішній момент. Допоможе відпустити тривоги про майбутнє та жаль про минуле.",
-      variant: 'blue',
-      audioUrl: "/audio/stress-relief.mp3",
-      isPremium: false
-    },
-    {
-      id: 'meditation-3',
-      title: "Внутрішня гармонія",
-      duration: "10 хв",
-      description: "Медитація для досягнення балансу між розумом та емоціями. Допоможе відновити внутрішній спокій та знайти рівновагу.",
-      variant: 'purple',
-      audioUrl: "/audio/evening-meditation.mp3",
-      isPremium: false
-    },
-    {
-      id: 'meditation-4',
-      title: "Глибоке розслаблення",
-      duration: "12 хв",
-      description: "Практика для повного розслаблення тіла та розуму. Ідеально підходить для зняття напруги та відновлення енергії.",
-      variant: 'green',
-      audioUrl: "/audio/focus-meditation.mp3",
-      isPremium: true
-    }
-  ];
+  const { user } = useAuth();
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+
+  // Get unique categories
+  const categories = ['all', ...Array.from(new Set(meditations.map(m => m.category || 'Інші')))];
+
+  // Filter meditations by category
+  const filteredMeditations = selectedCategory === 'all'
+    ? meditations
+    : meditations.filter(m => m.category === selectedCategory);
 
   return (
     <div className="container mx-auto px-4 py-6 sm:py-8">
       <h1 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-gray-900">Медитації</h1>
+      
+      {/* Categories filter */}
+      <div className="mb-6">
+        <div className="flex flex-wrap gap-2">
+          {categories.map((category) => (
+            <button
+              key={category}
+              onClick={() => setSelectedCategory(category)}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors
+                ${selectedCategory === category
+                  ? 'bg-primary text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+            >
+              {category === 'all' ? 'Всі' : category}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-        {meditations.map((meditation) => (
+        {filteredMeditations.map((meditation) => (
           <Link 
             key={meditation.id}
             href={`/meditations/${meditation.id}`}
@@ -81,6 +68,13 @@ export default function MeditationsPage() {
                   Почати →
                 </span>
               </div>
+              {meditation.category && (
+                <div className="mt-2">
+                  <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
+                    {meditation.category}
+                  </span>
+                </div>
+              )}
             </div>
           </Link>
         ))}

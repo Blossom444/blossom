@@ -1,10 +1,10 @@
 {
-  "name": "BLOSSOM - Платформа для медитації",
+  "name": "BLOSSOM - Медитації та духовні практики",
   "short_name": "BLOSSOM",
-  "description": "Медитації та практики для вашого духовного розвитку українською мовою",
+  "description": "Платформа для медитацій та духовного розвитку",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#FFFFFF",
+  "background_color": "#ffffff",
   "theme_color": "#8B4513",
   "orientation": "portrait",
   "icons": [
