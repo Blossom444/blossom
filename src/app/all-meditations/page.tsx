@@ -2,17 +2,26 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useAuth } from '@/contexts/AuthContext';
 
-// Вбудовані дані медитацій для уникнення проблем імпорту
-const hardcodedMeditations = [
+// Визначаємо інтерфейс для медитацій
+interface Meditation {
+  id: string;
+  title: string;
+  duration: string;
+  description: string;
+  variant: 'purple' | 'blue' | 'green' | 'orange' | 'red' | 'yellow';
+  isPremium: boolean;
+  category?: string;
+}
+
+// Розширений список медитацій - 8 штук
+const extendedMeditations: Meditation[] = [
   {
     id: 'meditation-1',
     title: "Наміри на новий день",
     duration: "15 хв",
     description: "Медитація для встановлення позитивних намірів та цілей на день.",
     variant: 'orange',
-    audioUrl: "/audio/meditations/morning-meditation.mp3",
     isPremium: false,
     category: 'Ранкові'
   },
@@ -22,7 +31,6 @@ const hardcodedMeditations = [
     duration: "20 хв",
     description: "Практика усвідомленості для повного занурення в теперішній момент.",
     variant: 'blue',
-    audioUrl: "/audio/meditations/mindfulness.mp3",
     isPremium: false,
     category: 'Усвідомленість'
   },
@@ -32,7 +40,6 @@ const hardcodedMeditations = [
     duration: "10 хв",
     description: "Медитація для досягнення балансу між розумом та емоціями.",
     variant: 'purple',
-    audioUrl: "/audio/meditations/harmony.mp3",
     isPremium: false,
     category: 'Вечірні'
   },
@@ -42,24 +49,57 @@ const hardcodedMeditations = [
     duration: "12 хв",
     description: "Практика для повного розслаблення тіла та розуму.",
     variant: 'green',
-    audioUrl: "/audio/meditations/relaxation.mp3",
     isPremium: false,
     category: 'Розслаблення'
+  },
+  {
+    id: 'meditation-5',
+    title: "Зцілення та відновлення",
+    duration: "18 хв",
+    description: "Медитація для активації природних сил самозцілення організму.",
+    variant: 'red',
+    isPremium: false,
+    category: "Здоров'я"
+  },
+  {
+    id: 'meditation-6',
+    title: "Спокійний сон",
+    duration: "25 хв",
+    description: "Вечірня практика для глибокого розслаблення та підготовки до здорового сну.",
+    variant: 'blue',
+    isPremium: false,
+    category: 'Сон'
+  },
+  {
+    id: 'meditation-7',
+    title: "Енергія та бадьорість",
+    duration: "10 хв",
+    description: "Ранкова медитація для пробудження тіла та розуму.",
+    variant: 'yellow',
+    isPremium: false,
+    category: 'Енергія'
+  },
+  {
+    id: 'meditation-8',
+    title: "Прийняття себе",
+    duration: "15 хв",
+    description: "Практика для розвитку самоприйняття та любові до себе.",
+    variant: 'purple',
+    isPremium: false,
+    category: 'Усвідомленість'
   }
 ];
 
-export default function MeditationsPage() {
-  const { user } = useAuth();
+export default function AllMeditationsPage() {
   const [loaded, setLoaded] = useState(false);
-  const [displayTime, setDisplayTime] = useState('');
+  const [time, setTime] = useState('');
 
   useEffect(() => {
     setLoaded(true);
-    setDisplayTime(new Date().toLocaleTimeString());
+    setTime(new Date().toLocaleTimeString());
     
-    // Оновлювати час кожну секунду для демонстрації активності компонента
     const timer = setInterval(() => {
-      setDisplayTime(new Date().toLocaleTimeString());
+      setTime(new Date().toLocaleTimeString());
     }, 1000);
     
     return () => clearInterval(timer);
@@ -67,35 +107,17 @@ export default function MeditationsPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl sm:text-3xl font-bold mb-6 text-gray-900">
-        Медитації ({hardcodedMeditations.length})
-      </h1>
+      <h1 className="text-2xl font-bold mb-6">Всі медитації ({extendedMeditations.length})</h1>
       
       <div className="mb-4 p-3 bg-blue-50 rounded-lg">
         <p className="text-sm">✅ Сторінка завантажена: {loaded ? 'Так' : 'Ні'}</p>
-        <p className="text-sm">⏰ Час: {displayTime}</p>
-      </div>
-      
-      {/* Навігаційне меню */}
-      <div className="mb-6 p-3 bg-gray-100 rounded-lg">
-        <p className="text-sm font-bold mb-2">Тестові сторінки:</p>
-        <div className="flex flex-wrap gap-2">
-          <Link href="/test-meditations" className="px-3 py-1 bg-primary text-white text-sm rounded">
-            Тестові медитації (4)
-          </Link>
-          <Link href="/all-meditations" className="px-3 py-1 bg-green-500 text-white text-sm rounded">
-            Розширені медитації (8)
-          </Link>
-          <button onClick={() => window.location.reload()} className="px-3 py-1 bg-gray-500 text-white text-sm rounded">
-            Оновити сторінку
-          </button>
-        </div>
+        <p className="text-sm">⏰ Поточний час: {time}</p>
       </div>
       
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {hardcodedMeditations.map((meditation) => (
+        {extendedMeditations.map((meditation) => (
           <div key={meditation.id} className="bg-white rounded-lg shadow-md overflow-hidden">
-            <div className="aspect-w-16 aspect-h-9 relative"
+            <div className="bg-gradient-to-br aspect-w-16 aspect-h-9 relative"
                 style={{
                   backgroundColor: 
                     meditation.variant === 'purple' ? '#9061F9' :
@@ -116,12 +138,9 @@ export default function MeditationsPage() {
               <p className="text-sm text-gray-600 mb-2">{meditation.description}</p>
               <div className="flex items-center justify-between">
                 <span className="text-xs text-gray-500">{meditation.duration}</span>
-                <Link 
-                  href={`/meditations/${meditation.id}`}
-                  className="text-primary hover:text-primary-600 font-medium text-sm"
-                >
+                <span className="text-primary hover:text-primary-600 font-medium text-sm">
                   Почати →
-                </Link>
+                </span>
               </div>
               {meditation.category && (
                 <div className="mt-1">
@@ -134,20 +153,20 @@ export default function MeditationsPage() {
           </div>
         ))}
       </div>
-
-      <div className="mt-6 flex justify-center">
+      
+      <div className="mt-6 flex justify-center space-x-4">
         <button 
           onClick={() => window.location.reload()} 
           className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-600"
         >
           Оновити сторінку
         </button>
-      </div>
-      
-      <div className="mt-6">
-        <p className="text-center text-sm text-gray-500">
-          Якщо медитації не з'являються, спробуйте очистити кеш браузера або відкрити сторінку в режимі інкогніто.
-        </p>
+        <Link
+          href="/meditations"
+          className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+        >
+          До звичайних медитацій
+        </Link>
       </div>
     </div>
   );

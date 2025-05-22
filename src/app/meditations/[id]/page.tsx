@@ -42,7 +42,7 @@ const hardcodedMeditations = [
     description: "Практика для повного розслаблення тіла та розуму.",
     variant: 'green',
     audioUrl: "/audio/meditations/relaxation.mp3",
-    isPremium: true,
+    isPremium: false,
     category: 'Розслаблення'
   }
 ];

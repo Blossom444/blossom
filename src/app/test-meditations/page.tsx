@@ -34,7 +34,7 @@ const testMeditations: Meditation[] = [
     description: "Опис медитації 2",
     variant: 'blue',
     audioUrl: "/test.mp3",
-    isPremium: true,
+    isPremium: false,
     category: 'Тест'
   },
   {
@@ -54,7 +54,7 @@ const testMeditations: Meditation[] = [
     description: "Опис медитації 4",
     variant: 'orange',
     audioUrl: "/test.mp3",
-    isPremium: true,
+    isPremium: false,
     category: 'Тест'
   }
 ];
