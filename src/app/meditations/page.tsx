@@ -8,6 +8,7 @@ interface Meditation {
   description: string;
   variant: 'purple' | 'blue' | 'green' | 'orange';
   audioUrl: string;
+  isPremium: boolean;
 }
 
 export default function MeditationsPage() {
@@ -18,7 +19,8 @@ export default function MeditationsPage() {
       duration: "15 хв",
       description: "Почніть свій день з гармонії та спокою",
       variant: 'orange',
-      audioUrl: "/audio/morning-meditation.mp3"
+      audioUrl: "/audio/morning-meditation.mp3",
+      isPremium: false
     },
     {
       id: 'meditation-2',
@@ -26,7 +28,8 @@ export default function MeditationsPage() {
       duration: "20 хв",
       description: "Звільніться від напруги та тривоги",
       variant: 'blue',
-      audioUrl: "/audio/stress-relief.mp3"
+      audioUrl: "/audio/stress-relief.mp3",
+      isPremium: false
     },
     {
       id: 'meditation-3',
@@ -34,7 +37,8 @@ export default function MeditationsPage() {
       duration: "10 хв",
       description: "Заспокійливий практика перед сном",
       variant: 'purple',
-      audioUrl: "/audio/evening-meditation.mp3"
+      audioUrl: "/audio/evening-meditation.mp3",
+      isPremium: true
     },
     {
       id: 'meditation-4',
@@ -42,7 +46,8 @@ export default function MeditationsPage() {
       duration: "12 хв",
       description: "Підвищіть ясність розуму та зосередженість",
       variant: 'green',
-      audioUrl: "/audio/focus-meditation.mp3"
+      audioUrl: "/audio/focus-meditation.mp3",
+      isPremium: true
     }
   ];
 
@@ -56,11 +61,16 @@ export default function MeditationsPage() {
             href={`/meditations/${meditation.id}`}
             className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
           >
-            <div className="aspect-w-16 aspect-h-9 sm:aspect-square">
+            <div className="aspect-w-16 aspect-h-9 sm:aspect-square relative">
               <GradientCover 
                 title={meditation.title}
                 variant={meditation.variant}
               />
+              {meditation.isPremium && (
+                <div className="absolute top-2 right-2 bg-amber-500 text-white px-2 py-1 rounded text-sm font-medium">
+                  Преміум
+                </div>
+              )}
             </div>
             <div className="p-3 sm:p-4">
               <h3 className="text-lg sm:text-xl font-semibold mb-2">{meditation.title}</h3>

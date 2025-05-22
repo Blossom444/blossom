@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     initialScale: 1,
     maximumScale: 1,
   },
-  themeColor: '#7C3AED',
+  themeColor: '#8B4513',
 }
 
 export default function RootLayout({
@@ -49,7 +49,7 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-        <meta name="theme-color" content="#7C3AED" />
+        <meta name="theme-color" content="#8B4513" />
         <script
           dangerouslySetInnerHTML={{
             __html: `

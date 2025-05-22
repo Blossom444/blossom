@@ -5,6 +5,7 @@ interface Meditation {
   duration: string;
   variant: 'orange' | 'blue' | 'purple' | 'green';
   audioUrl: string;
+  isPremium: boolean;
 }
 
 export const meditations: Record<string, Meditation> = {
@@ -14,7 +15,8 @@ export const meditations: Record<string, Meditation> = {
     description: 'Почніть свій день з гармонії та спокою. Ця медитація допоможе вам налаштуватися на продуктивний день та зарядитися позитивною енергією.',
     duration: '15 хв',
     variant: 'orange',
-    audioUrl: '/audio/morning-meditation.mp3'
+    audioUrl: '/audio/morning-meditation.mp3',
+    isPremium: false
   },
   'meditation-2': {
     id: 'meditation-2',
@@ -22,7 +24,8 @@ export const meditations: Record<string, Meditation> = {
     description: 'Медитація для глибокої релаксації та відновлення внутрішнього балансу. Ця практика допоможе вам знизити рівень стресу та відновити емоційну рівновагу.',
     duration: '20 хв',
     variant: 'blue',
-    audioUrl: '/audio/stress-relief.mp3'
+    audioUrl: '/audio/stress-relief.mp3',
+    isPremium: false
   },
   'meditation-3': {
     id: 'meditation-3',
@@ -30,7 +33,8 @@ export const meditations: Record<string, Meditation> = {
     description: 'Заспокійлива медитація для завершення дня та підготовки до здорового сну. Допоможе розслабитися та налаштуватися на спокійний сон.',
     duration: '10 хв',
     variant: 'purple',
-    audioUrl: '/audio/evening-meditation.mp3'
+    audioUrl: '/audio/evening-meditation.mp3',
+    isPremium: true
   },
   'meditation-4': {
     id: 'meditation-4',
@@ -38,7 +42,8 @@ export const meditations: Record<string, Meditation> = {
     description: 'Практика для покращення ментальної ясності та концентрації. Ідеально підходить для виконання перед важливими завданнями або навчанням.',
     duration: '12 хв',
     variant: 'green',
-    audioUrl: '/audio/focus-meditation.mp3'
+    audioUrl: '/audio/focus-meditation.mp3',
+    isPremium: true
   }
 };
 

@@ -11,6 +11,7 @@ interface Meditation {
   duration: string;
   variant: 'orange' | 'blue' | 'purple' | 'green';
   audioUrl: string;
+  isPremium: boolean;
 }
 
 interface MeditationClientProps {
@@ -47,11 +48,16 @@ export default function MeditationClient({ meditation }: MeditationClientProps) 
       </Link>
 
       <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-        <div className="aspect-w-16 aspect-h-9 sm:aspect-square lg:aspect-w-16 lg:aspect-h-9">
+        <div className="aspect-w-16 aspect-h-9 sm:aspect-square lg:aspect-w-16 lg:aspect-h-9 relative">
           <GradientCover 
             title={meditation.title}
             variant={meditation.variant}
           />
+          {meditation.isPremium && (
+            <div className="absolute top-4 right-4 bg-amber-500 text-white px-3 py-1.5 rounded-md text-sm font-medium">
+              Преміум
+            </div>
+          )}
         </div>
         
         <div className="p-4 sm:p-6">
@@ -80,12 +86,24 @@ export default function MeditationClient({ meditation }: MeditationClientProps) 
             </div>
           </div>
 
-          <AudioPlayer 
-            src={meditation.audioUrl}
-            title={meditation.title}
-            variant={meditation.variant}
-            initialDuration={convertDurationToSeconds(meditation.duration)}
-          />
+          {meditation.isPremium ? (
+            <div className="bg-amber-50 p-4 rounded-lg text-center">
+              <p className="text-amber-800 mb-4">Ця медитація доступна в преміум версії</p>
+              <Link
+                href="/planner"
+                className="inline-block bg-amber-500 text-white px-6 py-2 rounded-md hover:bg-amber-600 transition-colors"
+              >
+                Придбати преміум
+              </Link>
+            </div>
+          ) : (
+            <AudioPlayer 
+              src={meditation.audioUrl}
+              title={meditation.title}
+              variant={meditation.variant}
+              initialDuration={convertDurationToSeconds(meditation.duration)}
+            />
+          )}
         </div>
       </div>
     </div>

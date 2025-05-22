@@ -17,39 +17,32 @@ export default function PlannerCard({ color, colorName, imageUrl, isAvailable, p
 
   return (
     <>
-      <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-        <div className="relative h-64 w-full">
+      <div className="bg-white rounded-lg shadow-md overflow-hidden">
+        <div className="aspect-w-3 aspect-h-4 relative">
           <Image
             src={imageUrl}
             alt={`Планер ${colorName}`}
             fill
-            className="object-contain"
+            className="object-cover"
           />
         </div>
-        <div className="p-6">
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">
-            Планер "{colorName}"
+        <div className="p-4">
+          <h3 className="text-lg font-semibold mb-2">
+            Планер {colorName}
           </h3>
-          <div className="flex items-center gap-2 mb-4">
+          <div className="flex items-center justify-between mb-4">
             <div 
               className="w-6 h-6 rounded-full border-2 border-gray-200" 
               style={{ backgroundColor: color }}
             />
-            <span className="text-gray-600">{colorName}</span>
+            <span className="text-lg font-bold">{price} грн</span>
           </div>
-          <div className="flex items-center justify-between mb-4">
-            <span className="text-2xl font-bold text-gray-900">{price}₴</span>
-          </div>
-          <button
-            className={`w-full h-10 rounded-lg font-medium flex items-center justify-center ${
-              isAvailable
-                ? 'bg-indigo-600 text-white hover:bg-indigo-700'
-                : 'bg-gray-200 text-gray-500 cursor-not-allowed'
-            }`}
+          <button 
+            className="w-full bg-white/20 backdrop-blur-sm text-primary border-2 border-primary px-4 py-2 rounded-lg hover:bg-primary hover:text-white transition-all duration-300 font-medium"
             onClick={() => isAvailable && setShowOrderForm(true)}
             disabled={!isAvailable}
           >
-            {isAvailable ? 'Замовити' : 'Немає в наявності'}
+            Замовити
           </button>
         </div>
       </div>
