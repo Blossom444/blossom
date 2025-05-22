@@ -1,19 +1,34 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
+import { useEffect, useState } from 'react';
 
 export default function HomePage() {
+  const [mounted, setMounted] = useState(false);
+
+  // Переконаємося, що компонент змонтовано
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <div className="relative min-h-screen">
       {/* Фонове зображення */}
       <div className="absolute inset-0 z-0">
-        <Image
-          src="/images/IMG_8991.jpg"
-          alt="Background"
-          fill
-          style={{ objectFit: 'cover' }}
-          priority
-          quality={100}
-        />
+        {mounted && (
+          <Image
+            src="/images/IMG_8991.jpg"
+            alt="Background"
+            fill
+            style={{ objectFit: 'cover' }}
+            priority
+            quality={100}
+          />
+        )}
+        {!mounted && (
+          <div className="w-full h-full bg-gray-300" />
+        )}
       </div>
 
       {/* Темний оверлей для кращої читабельності тексту */}
