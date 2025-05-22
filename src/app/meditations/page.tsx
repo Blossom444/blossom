@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import GradientCover from '@/components/GradientCover';
 import { meditations } from '@/data/meditations';
@@ -9,9 +9,12 @@ import { useAuth } from '@/contexts/AuthContext';
 export default function MeditationsPage() {
   const { user } = useAuth();
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [isLoaded, setIsLoaded] = useState(false);
 
-  console.log('All meditations:', meditations);
-  console.log('Meditations length:', meditations.length);
+  // Форсуємо перерендер для вирішення проблем з кешуванням
+  useEffect(() => {
+    setIsLoaded(true);
+  }, []);
 
   // Отримуємо унікальні категорії
   const categories = ['all', ...Array.from(new Set(meditations.map(m => m.category || 'Інші')))];
@@ -21,9 +24,17 @@ export default function MeditationsPage() {
     ? meditations
     : meditations.filter(m => m.category === selectedCategory);
 
+  if (!isLoaded) {
+    return (
+      <div className="container mx-auto px-4 py-12 flex justify-center">
+        <div className="animate-pulse bg-gray-200 h-8 w-40 rounded"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto px-4 py-6 sm:py-8">
-      <h1 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-gray-900">Медитації</h1>
+      <h1 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-gray-900">Медитації ({meditations.length})</h1>
       
       {/* Фільтр категорій */}
       <div className="mb-6 overflow-x-auto">
@@ -44,7 +55,7 @@ export default function MeditationsPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+      <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
         {filteredMeditations.map((meditation) => (
           <Link 
             key={meditation.id}

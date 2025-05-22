@@ -1,4 +1,4 @@
-import { meditations } from './generateStaticParams';
+import { meditations } from '@/data/meditations';
 import MeditationClient from './MeditationClient';
 
 export async function generateStaticParams() {
@@ -14,7 +14,7 @@ interface PageProps {
 }
 
 export default function MeditationPage({ params }: PageProps) {
-  const meditation = meditations[params.id as keyof typeof meditations];
+  const meditation = meditations.find(m => m.id === params.id);
 
   if (!meditation) {
     return (

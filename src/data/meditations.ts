@@ -102,7 +102,7 @@ export const meditations: Meditation[] = [
   },
   {
     id: 'meditation-10',
-    title: "Знайомство зі своїм внутрішнім світом",
+    title: "Знайомство з внутрішнім світом",
     duration: "20 хв",
     description: "Подорож у свій внутрішній світ для кращого саморозуміння та самопізнання.",
     variant: 'red',
@@ -124,7 +124,7 @@ export const meditations: Meditation[] = [
     id: 'meditation-12',
     title: "Впевненість в собі",
     duration: "12 хв",
-    description: "Практика для розвитку самоприйняття та любові до себе.",
+    description: "Практика для розвитку самоприйняття та впевненості у власних силах.",
     variant: 'yellow',
     audioUrl: "/audio/meditations/self-acceptance.mp3",
     isPremium: false,
@@ -132,23 +132,23 @@ export const meditations: Meditation[] = [
   },
   {
     id: 'meditation-13',
-    title: "Впевненість в собі",
+    title: "Медитація концентрації",
     duration: "15 хв",
-    description: "Медитація для посилення впевненості в собі та віри у власні сили.",
+    description: "Медитація для посилення концентрації та ментальної ясності.",
     variant: 'blue',
     audioUrl: "/audio/meditations/self-confidence.mp3",
     isPremium: true,
-    category: 'Антистрес'
+    category: 'Концентрація'
   },
   {
     id: 'meditation-14',
-    title: "Впевненість в собі",
+    title: "Подолання страхів",
     duration: "18 хв",
-    description: "Медитація для зміцнення впевненості в собі та розкриття внутрішньої сили. Допомагає подолати сумніви та страхи.",
+    description: "Медитація для зміцнення внутрішньої сили та подолання страхів і тривог.",
     variant: 'green',
-    audioUrl: "/audio/meditations/gratitude.mp3",
+    audioUrl: "/audio/meditations/overcoming-fear.mp3",
     isPremium: false,
-    category: 'Усвідомленість'
+    category: 'Антистрес'
   },
   {
     id: 'meditation-15',
@@ -158,16 +158,6 @@ export const meditations: Meditation[] = [
     variant: 'orange',
     audioUrl: "/audio/meditations/gratitude.mp3",
     isPremium: true,
-    category: 'Концентрація'
-  },
-  {
-    id: 'meditation-16',
-    title: "Медитація для міцного сну",
-    duration: "25 хв",
-    description: "Заспокійлива медитація для глибокого розслаблення та якісного сну.",
-    variant: 'purple',
-    audioUrl: "/audio/meditations/deep-sleep.mp3",
-    isPremium: true,
-    category: 'Сон'
+    category: 'Емоційний баланс'
   }
 ]; 
