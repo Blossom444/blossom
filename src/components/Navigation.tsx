@@ -8,7 +8,7 @@ import { useAuth } from '@/contexts/AuthContext';
 export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
-  const { user, loading } = useAuth();
+  const { user, loading, isAdmin, logout } = useAuth();
 
   // Закриваємо меню при зміні маршруту
   useEffect(() => {
@@ -37,7 +37,7 @@ export default function Navigation() {
     if (user) {
       return (
         <>
-          {user.role === 'admin' && (
+          {isAdmin() && (
             <Link 
               href="/admin"
               className={`${isActive('/admin') ? 'text-primary' : 'text-gray-600'} hover:text-primary transition-colors`}
@@ -51,6 +51,12 @@ export default function Navigation() {
           >
             Мій профіль
           </Link>
+          <button
+            onClick={() => logout()}
+            className="text-gray-600 hover:text-primary transition-colors"
+          >
+            Вийти
+          </button>
         </>
       );
     }
@@ -81,7 +87,7 @@ export default function Navigation() {
     if (user) {
       return (
         <>
-          {user.role === 'admin' && (
+          {isAdmin() && (
             <Link 
               href="/admin"
               className={`block text-xl ${isActive('/admin') ? 'text-primary font-semibold' : 'text-gray-600'} hover:text-primary transition-colors`}
@@ -95,6 +101,12 @@ export default function Navigation() {
           >
             Мій профіль
           </Link>
+          <button
+            onClick={() => logout()}
+            className="block text-xl text-gray-600 hover:text-primary transition-colors"
+          >
+            Вийти
+          </button>
         </>
       );
     }

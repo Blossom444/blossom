@@ -10,7 +10,8 @@ const inter = Inter({ subsets: ['latin', 'cyrillic'] })
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
+  maximumScale: 5,
+  userScalable: true,
   themeColor: '#8B4513',
 }
 
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
   manifest: '/manifest.json',
   icons: {
     icon: [
-      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/favicon.ico' },
       { url: '/icons/icon-72x72.png', sizes: '72x72', type: 'image/png' },
       { url: '/icons/icon-96x96.png', sizes: '96x96', type: 'image/png' },
       { url: '/icons/icon-128x128.png', sizes: '128x128', type: 'image/png' },
@@ -39,6 +40,12 @@ export const metadata: Metadata = {
     statusBarStyle: 'default',
     title: 'BLOSSOM',
   },
+  other: {
+    'msapplication-TileColor': '#8B4513',
+    'mobile-web-app-capable': 'yes',
+    'apple-mobile-web-app-capable': 'yes',
+    'apple-mobile-web-app-status-bar-style': 'default',
+  },
 }
 
 export default function RootLayout({
@@ -49,9 +56,10 @@ export default function RootLayout({
   return (
     <html lang="uk">
       <head>
-        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <meta name="theme-color" content="#8B4513" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes" />
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -73,11 +81,11 @@ export default function RootLayout({
       </head>
       <body className={`${inter.className} min-h-screen bg-gray-50`}>
         <AuthProvider>
-          <Navigation />
-          <main className="min-h-[calc(100vh-4rem)] pt-16">
-            {children}
-          </main>
-          <UpdateNotification />
+        <Navigation />
+        <main className="min-h-[calc(100vh-4rem)] pt-16">
+          {children}
+        </main>
+        <UpdateNotification />
         </AuthProvider>
       </body>
     </html>

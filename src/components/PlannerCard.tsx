@@ -15,6 +15,12 @@ interface PlannerCardProps {
 export default function PlannerCard({ color, colorName, imageUrl, isAvailable, price }: PlannerCardProps) {
   const [showOrderForm, setShowOrderForm] = useState(false);
 
+  const handleOrderClick = () => {
+    if (isAvailable) {
+      setShowOrderForm(true);
+    }
+  };
+
   return (
     <>
       <div className="bg-white rounded-lg shadow-md overflow-hidden">
@@ -24,6 +30,7 @@ export default function PlannerCard({ color, colorName, imageUrl, isAvailable, p
             alt={`Планер ${colorName}`}
             fill
             className="object-contain"
+            priority
           />
         </div>
         <div className="p-4">
@@ -37,12 +44,16 @@ export default function PlannerCard({ color, colorName, imageUrl, isAvailable, p
             />
             <span className="text-lg font-bold">{price} грн</span>
           </div>
-          <button 
-            className="w-full bg-white/20 backdrop-blur-sm text-primary border-2 border-primary px-4 py-2 rounded-lg hover:bg-primary hover:text-white transition-all duration-300 font-medium"
-            onClick={() => isAvailable && setShowOrderForm(true)}
+          <button
+            className={`w-full px-4 py-2 rounded-lg text-base font-medium transition-all duration-300
+              ${isAvailable 
+                ? 'bg-white/20 backdrop-blur-sm text-primary border-2 border-primary hover:bg-primary hover:text-white'
+                : 'bg-gray-100 text-gray-400 cursor-not-allowed border-2 border-gray-300'
+              }`}
+            onClick={handleOrderClick}
             disabled={!isAvailable}
           >
-            Замовити
+            {isAvailable ? 'Замовити' : 'Немає в наявності'}
           </button>
         </div>
       </div>

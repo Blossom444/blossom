@@ -101,12 +101,12 @@ export default function MeditationClient({ meditation }: MeditationClientProps) 
               </Link>
             </div>
           ) : (
-            <AudioPlayer 
-              src={meditation.audioUrl}
-              title={meditation.title}
-              variant={meditation.variant}
-              initialDuration={convertDurationToSeconds(meditation.duration)}
-            />
+          <AudioPlayer 
+            src={meditation.audioUrl}
+            title={meditation.title}
+            variant={meditation.variant}
+            initialDuration={convertDurationToSeconds(meditation.duration)}
+          />
           )}
         </div>
       </div>
