@@ -36,14 +36,14 @@ export default function GradientCover({
           priority
         />
       )}
-      <div className={`${imageUrl ? 'absolute inset-0 bg-black/30 z-10' : ''}`}></div>
+      <div className={`${imageUrl ? 'absolute inset-0 bg-black/40 z-10' : ''}`}></div>
       {showTitle && (
         <div className="text-center relative z-20 px-2">
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-1 sm:mb-2">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-1 sm:mb-2 drop-shadow-lg">
             {title}
           </h2>
           {subtitle && (
-            <p className="text-base sm:text-lg md:text-xl text-white/90">
+            <p className="text-base sm:text-lg md:text-xl text-white/90 drop-shadow-lg">
               {subtitle}
             </p>
           )}

@@ -278,6 +278,7 @@ export default function MeditationsPage() {
                 <GradientCover
                   title={meditation.title}
                   variant={meditation.variant as any}
+                  imageUrl={`/images/meditations/${meditation.id}.jpg`}
                 />
                 {meditation.isPremium && (
                   <div className="absolute top-2 right-2 bg-yellow-400 text-xs sm:text-sm px-2 py-1 rounded-full">
