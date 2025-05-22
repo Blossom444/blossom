@@ -10,6 +10,9 @@ export default function MeditationsPage() {
   const { user } = useAuth();
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
+  console.log('All meditations:', meditations);
+  console.log('Meditations length:', meditations.length);
+
   // Get unique categories
   const categories = ['all', ...Array.from(new Set(meditations.map(m => m.category || 'Інші')))];
 

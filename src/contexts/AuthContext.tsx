@@ -16,6 +16,10 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  grantPremiumAccess: (userId: string) => Promise<void>;
+  revokePremiumAccess: (userId: string) => Promise<void>;
+  isAdmin: () => boolean;
+  hasPremiumAccess: () => boolean;
 }
 
 const defaultContextValue: AuthContextType = {
@@ -30,6 +34,14 @@ const defaultContextValue: AuthContextType = {
   logout: async () => {
     throw new Error('AuthContext not initialized');
   },
+  grantPremiumAccess: async () => {
+    throw new Error('AuthContext not initialized');
+  },
+  revokePremiumAccess: async () => {
+    throw new Error('AuthContext not initialized');
+  },
+  isAdmin: () => false,
+  hasPremiumAccess: () => false,
 };
 
 const AuthContext = createContext<AuthContextType>(defaultContextValue);
@@ -56,7 +68,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         id: '1',
         email,
         name: 'Адміністратор',
-        isPremium: false,
+        isPremium: email === 'admin@blossom.com' ? true : false,
         role: email === 'admin@blossom.com' ? 'admin' : 'user'
       };
       
@@ -72,7 +84,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       // TODO: Замінити на реальний API-запит
       const mockUser: User = {
-        id: '1',
+        id: Date.now().toString(), // Унікальний ID для кожного користувача
         email,
         name,
         isPremium: false,
@@ -93,8 +105,50 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
   };
 
+  const grantPremiumAccess = async (userId: string) => {
+    if (!user || user.role !== 'admin') {
+      throw new Error('Немає прав адміністратора');
+    }
+    // TODO: Реалізувати API-запит для надання преміум-доступу
+    if (user.id === userId) {
+      const updatedUser = { ...user, isPremium: true };
+      localStorage.setItem('userData', JSON.stringify(updatedUser));
+      setUser(updatedUser);
+    }
+  };
+
+  const revokePremiumAccess = async (userId: string) => {
+    if (!user || user.role !== 'admin') {
+      throw new Error('Немає прав адміністратора');
+    }
+    // TODO: Реалізувати API-запит для відкликання преміум-доступу
+    if (user.id === userId) {
+      const updatedUser = { ...user, isPremium: false };
+      localStorage.setItem('userData', JSON.stringify(updatedUser));
+      setUser(updatedUser);
+    }
+  };
+
+  const isAdmin = () => {
+    return user?.role === 'admin';
+  };
+
+  const hasPremiumAccess = () => {
+    return user?.isPremium || user?.role === 'admin';
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      loading, 
+      login, 
+      register, 
+      logout,
+      grantPremiumAccess,
+      revokePremiumAccess,
+      isAdmin,
+      hasPremiumAccess
+    }}>
       {children}
     </AuthContext.Provider>
   );

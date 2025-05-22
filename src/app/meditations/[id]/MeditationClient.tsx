@@ -3,6 +3,7 @@
 import AudioPlayer from '@/components/AudioPlayer';
 import GradientCover from '@/components/GradientCover';
 import Link from 'next/link';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface Meditation {
   id: string;
@@ -24,6 +25,9 @@ const convertDurationToSeconds = (duration: string): number => {
 };
 
 export default function MeditationClient({ meditation }: MeditationClientProps) {
+  const { hasPremiumAccess } = useAuth();
+  const canAccessPremium = hasPremiumAccess();
+
   return (
     <div className="container mx-auto px-4 py-6 sm:py-8">
       <Link 
@@ -86,7 +90,7 @@ export default function MeditationClient({ meditation }: MeditationClientProps) 
             </div>
           </div>
 
-          {meditation.isPremium ? (
+          {meditation.isPremium && !canAccessPremium ? (
             <div className="bg-amber-50 p-4 rounded-lg text-center">
               <p className="text-amber-800 mb-4">Ця медитація доступна в преміум версії</p>
               <Link

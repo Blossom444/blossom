@@ -7,7 +7,7 @@ interface AudioPlayerProps {
   src: string;
   title: string;
   initialDuration: number;
-  variant?: 'purple' | 'blue' | 'green' | 'orange';
+  variant?: 'purple' | 'blue' | 'green' | 'orange' | 'red' | 'yellow';
 }
 
 export default function AudioPlayer({ src, title, initialDuration, variant = 'purple' }: AudioPlayerProps) {
