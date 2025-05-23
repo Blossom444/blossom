@@ -1,185 +1,121 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect } from 'react';
-
-interface User {
-  id: string;
-  email: string;
-  name: string;
-  isPremium: boolean;
-  role: 'user' | 'admin';
-  accessibleMeditations: string[]; // Масив ID медитацій, до яких має доступ користувач
-}
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { User } from '@/types';
+import { initialUsers } from '@/data/initialUsers';
+import { collection, query, where, getDocs, updateDoc, doc, getDoc } from 'firebase/firestore';
+import { sendTelegramMessage } from '@/utils/telegram';
+import { db } from '@/firebase/firebaseConfig';
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
   error: string | null;
   login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string) => Promise<void>;
-  logout: () => Promise<void>;
+  register: (userData: Omit<User, 'id' | 'createdAt'>) => Promise<void>;
+  logout: () => void;
   grantPremiumAccess: (userId: string) => Promise<void>;
   revokePremiumAccess: (userId: string) => Promise<void>;
   grantMeditationAccess: (targetUserId: string, meditationId: string) => Promise<void>;
   revokeMeditationAccess: (targetUserId: string, meditationId: string) => Promise<void>;
+  grantPracticeAccess: (userId: string, practiceId: string) => Promise<void>;
+  revokePracticeAccess: (userId: string, practiceId: string) => Promise<void>;
   hasPremiumAccess: () => boolean;
   hasMeditationAccess: (meditationId: string) => boolean;
   getAllUsers: () => User[];
   clearError: () => void;
+  updateUser: (userData: Partial<User>) => void;
+  isPremium: boolean;
+  activatePremium: () => void;
+  deactivatePremium: () => void;
+  resetUserPassword: (email: string) => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | null>(null);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const INITIAL_USERS: User[] = [
-  {
-    id: '1',
-    email: 'admin@blossom.com',
-    name: 'Адміністратор',
-    isPremium: true,
-    role: 'admin',
-    accessibleMeditations: [] // Адмін має доступ до всіх медитацій
-  },
-  {
-    id: '2',
-    email: 'user@example.com',
-    name: 'Тестовий користувач',
-    isPremium: false,
-    role: 'user',
-    accessibleMeditations: []
-  }
-];
-
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [users, setUsers] = useState<User[]>(initialUsers);
 
   useEffect(() => {
-    const initializeAuth = async () => {
-      try {
-        setLoading(true);
-        // Initialize users if needed
-        if (!localStorage.getItem('allUsers')) {
-          localStorage.setItem('allUsers', JSON.stringify(INITIAL_USERS));
-        }
-
-        // Check for existing session
-        const token = localStorage.getItem('authToken');
-        if (token) {
-          const userData = JSON.parse(localStorage.getItem('userData') || 'null');
-          if (userData) {
-            // Verify user still exists in allUsers
-            const allUsers = getAllUsers();
-            const existingUser = allUsers.find((u: User) => u.id === userData.id);
-            if (existingUser) {
-              setUser(existingUser);
-            } else {
-              // User no longer exists, clear session
-              localStorage.removeItem('authToken');
-              localStorage.removeItem('userData');
-            }
-          }
-        }
-      } catch (err) {
-        setError('Помилка ініціалізації аутентифікації');
-        console.error('Auth initialization error:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    initializeAuth();
-  }, []);
-
-  const clearError = () => setError(null);
-
-  const getAllUsers = () => {
-    try {
-      const users = JSON.parse(localStorage.getItem('allUsers') || '[]');
-      return Array.isArray(users) ? users : INITIAL_USERS;
-    } catch (err) {
-      console.error('Error getting users:', err);
-      return INITIAL_USERS;
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
     }
-  };
+    setLoading(false);
+  }, []);
 
   const login = async (email: string, password: string) => {
     try {
-      const allUsers = getAllUsers();
-      const foundUser = allUsers.find((u: User) => u.email === email);
+      setLoading(true);
+      const foundUser = users.find(u => u.email === email);
       
       if (!foundUser) {
         throw new Error('Користувача не знайдено');
       }
 
-      localStorage.setItem('authToken', 'mock-token');
-      localStorage.setItem('userData', JSON.stringify(foundUser));
+      // В демо-версії не перевіряємо пароль
+      const token = 'demo-token';
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(foundUser));
       setUser(foundUser);
+      setError(null);
     } catch (error) {
-      setError('Помилка входу');
-      throw error;
+      console.error('Login error:', error);
+      setError(error instanceof Error ? error.message : 'Помилка входу');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const register = async (name: string, email: string, password: string) => {
+  const register = async (userData: Omit<User, 'id' | 'createdAt'>) => {
     try {
-      const allUsers = getAllUsers();
-      
-      if (allUsers.some((u: User) => u.email === email)) {
-        throw new Error('Користувач з такою поштою вже існує');
-      }
-
+      setLoading(true);
       const newUser: User = {
+        ...userData,
         id: Date.now().toString(),
-        email,
-        name,
-        isPremium: false,
-        role: 'user',
-        accessibleMeditations: []
+        createdAt: new Date().toISOString(),
+        accessibleMeditations: [],
       };
-
-      const updatedUsers = [...allUsers, newUser];
-      localStorage.setItem('allUsers', JSON.stringify(updatedUsers));
-      
-      localStorage.setItem('authToken', 'mock-token');
-      localStorage.setItem('userData', JSON.stringify(newUser));
+      setUsers([...users, newUser]);
       setUser(newUser);
+      localStorage.setItem('user', JSON.stringify(newUser));
+      setError(null);
     } catch (error) {
+      console.error('Registration error:', error);
       setError('Помилка реєстрації');
-      throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
-  const logout = async () => {
-    try {
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('userData');
-      setUser(null);
-    } catch (error) {
-      setError('Помилка виходу');
-      throw error;
-    }
+  const logout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setUser(null);
   };
 
-  const grantPremiumAccess = async (targetUserId: string) => {
+  const grantPremiumAccess = async (userId: string) => {
     if (!user || user.role !== 'admin') {
       setError('Немає прав адміністратора');
       throw new Error('Немає прав адміністратора');
     }
 
     try {
-      const allUsers = getAllUsers();
-      const updatedUsers = allUsers.map((u: User) => 
-        u.id === targetUserId ? { ...u, isPremium: true } : u
-      );
+      const updatedUsers = users.map((u: User) => {
+        if (u.id === userId) {
+          return { ...u, isPremium: true };
+        }
+        return u;
+      });
       
-      localStorage.setItem('allUsers', JSON.stringify(updatedUsers));
+      setUsers(updatedUsers);
       
       // Якщо це поточний користувач, оновлюємо його стан
-      if (user.id === targetUserId) {
-        const updatedUser = { ...user, isPremium: true };
-        localStorage.setItem('userData', JSON.stringify(updatedUser));
-        setUser(updatedUser);
+      if (user.id === userId) {
+        setUser({ ...user, isPremium: true });
       }
     } catch (error) {
       setError('Помилка надання преміум доступу');
@@ -187,25 +123,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const revokePremiumAccess = async (targetUserId: string) => {
+  const revokePremiumAccess = async (userId: string) => {
     if (!user || user.role !== 'admin') {
       setError('Немає прав адміністратора');
       throw new Error('Немає прав адміністратора');
     }
 
     try {
-      const allUsers = getAllUsers();
-      const updatedUsers = allUsers.map((u: User) => 
-        u.id === targetUserId ? { ...u, isPremium: false } : u
-      );
+      const updatedUsers = users.map((u: User) => {
+        if (u.id === userId) {
+          return { ...u, isPremium: false };
+        }
+        return u;
+      });
       
-      localStorage.setItem('allUsers', JSON.stringify(updatedUsers));
+      setUsers(updatedUsers);
       
       // Якщо це поточний користувач, оновлюємо його стан
-      if (user.id === targetUserId) {
-        const updatedUser = { ...user, isPremium: false };
-        localStorage.setItem('userData', JSON.stringify(updatedUser));
-        setUser(updatedUser);
+      if (user.id === userId) {
+        setUser({ ...user, isPremium: false });
       }
     } catch (error) {
       setError('Помилка відкликання преміум доступу');
@@ -220,24 +156,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      const allUsers = getAllUsers();
-      const updatedUsers = allUsers.map((u: User) => {
+      const updatedUsers = users.map((u: User) => {
         if (u.id === targetUserId) {
-          const accessibleMeditations = new Set([...u.accessibleMeditations, meditationId]);
-          return { ...u, accessibleMeditations: Array.from(accessibleMeditations) };
+          const accessibleMeditations = Array.from(new Set([...u.accessibleMeditations, meditationId]));
+          return { ...u, accessibleMeditations };
         }
         return u;
       });
       
-      localStorage.setItem('allUsers', JSON.stringify(updatedUsers));
+      setUsers(updatedUsers);
       
       // Якщо це поточний користувач, оновлюємо його стан
       if (user.id === targetUserId) {
         const updatedUser = { 
           ...user, 
-          accessibleMeditations: [...new Set([...user.accessibleMeditations, meditationId])]
+          accessibleMeditations: Array.from(new Set([...user.accessibleMeditations, meditationId]))
         };
-        localStorage.setItem('userData', JSON.stringify(updatedUser));
         setUser(updatedUser);
       }
     } catch (error) {
@@ -253,8 +187,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      const allUsers = getAllUsers();
-      const updatedUsers = allUsers.map((u: User) => {
+      const updatedUsers = users.map((u: User) => {
         if (u.id === targetUserId) {
           return { 
             ...u, 
@@ -264,7 +197,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return u;
       });
       
-      localStorage.setItem('allUsers', JSON.stringify(updatedUsers));
+      setUsers(updatedUsers);
       
       // Якщо це поточний користувач, оновлюємо його стан
       if (user.id === targetUserId) {
@@ -272,12 +205,57 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           ...user, 
           accessibleMeditations: user.accessibleMeditations.filter(id => id !== meditationId)
         };
-        localStorage.setItem('userData', JSON.stringify(updatedUser));
         setUser(updatedUser);
       }
     } catch (error) {
       setError('Помилка відкликання доступу до медитації');
       throw error;
+    }
+  };
+
+  const grantPracticeAccess = async (userId: string, practiceId: string) => {
+    try {
+      const userRef = doc(db, 'users', userId);
+      const userDoc = await getDoc(userRef);
+      
+      if (!userDoc.exists()) {
+        throw new Error('Користувача не знайдено');
+      }
+
+      const userData = userDoc.data();
+      const accessiblePractices = userData.accessiblePractices || [];
+      
+      if (!accessiblePractices.includes(practiceId)) {
+        await updateDoc(userRef, {
+          accessiblePractices: [...accessiblePractices, practiceId]
+        });
+      }
+    } catch (err) {
+      console.error('Error granting practice access:', err);
+      throw err;
+    }
+  };
+
+  const revokePracticeAccess = async (userId: string, practiceId: string) => {
+    try {
+      const userRef = doc(db, 'users', userId);
+      const userDoc = await getDoc(userRef);
+      
+      if (!userDoc.exists()) {
+        throw new Error('Користувача не знайдено');
+      }
+
+      const userData = userDoc.data();
+      const accessiblePractices = userData.accessiblePractices || [];
+      
+      if (accessiblePractices.includes(practiceId)) {
+        await updateDoc(userRef, {
+          accessiblePractices: accessiblePractices.filter((id: string) => id !== practiceId)
+        });
+      }
+    } catch (err) {
+      console.error('Error revoking practice access:', err);
+      throw err;
     }
   };
 
@@ -288,6 +266,70 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const hasMeditationAccess = (meditationId: string) => {
     if (!user) return false;
     return user.isPremium || user.role === 'admin' || user.accessibleMeditations.includes(meditationId);
+  };
+
+  const getAllUsers = () => {
+    return users;
+  };
+
+  const clearError = () => {
+    setError(null);
+  };
+
+  const updateUser = (userData: Partial<User>) => {
+    if (user) {
+      const updatedUser = { ...user, ...userData };
+      setUser(updatedUser);
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+    }
+  };
+
+  const isPremium = user?.isPremium || false;
+
+  const activatePremium = () => {
+    if (user) {
+      updateUser({ isPremium: true });
+    }
+  };
+
+  const deactivatePremium = () => {
+    if (user) {
+      updateUser({ isPremium: false });
+    }
+  };
+
+  const resetUserPassword = async (email: string) => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const userRef = collection(db, 'users');
+      const q = query(userRef, where('email', '==', email));
+      const querySnapshot = await getDocs(q);
+      
+      if (querySnapshot.empty) {
+        throw new Error('Користувача з такою електронною поштою не знайдено');
+      }
+
+      const userDoc = querySnapshot.docs[0];
+      const newPassword = Math.random().toString(36).slice(-8); // Генеруємо випадковий пароль
+      
+      // Оновлюємо пароль в базі даних
+      await updateDoc(doc(db, 'users', userDoc.id), {
+        password: newPassword
+      });
+
+      // Відправляємо новий пароль через Telegram бота
+      const message = `🔐 Відновлення паролю\n\nКористувач: ${userDoc.data().name}\nEmail: ${email}\nНовий пароль: ${newPassword}`;
+      await sendTelegramMessage(message);
+      
+    } catch (err) {
+      console.error('Error resetting password:', err);
+      setError(err instanceof Error ? err.message : 'Помилка при відновленні паролю');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
   };
 
   const value = {
@@ -301,10 +343,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     revokePremiumAccess,
     grantMeditationAccess,
     revokeMeditationAccess,
+    grantPracticeAccess,
+    revokePracticeAccess,
     hasPremiumAccess,
     hasMeditationAccess,
     getAllUsers,
-    clearError
+    clearError,
+    updateUser,
+    isPremium,
+    activatePremium,
+    deactivatePremium,
+    resetUserPassword
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -312,7 +361,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 export function useAuth() {
   const context = useContext(AuthContext);
-  if (!context) {
+  if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;

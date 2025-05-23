@@ -1,9 +1,9 @@
 import './globals.css'
 import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
-import Navigation from '@/components/Navigation'
 import UpdateNotification from '@/components/UpdateNotification'
 import { AuthProvider } from '@/contexts/AuthContext'
+import Navbar from '@/components/Navbar'
 
 const inter = Inter({ subsets: ['latin', 'cyrillic'] })
 
@@ -16,8 +16,8 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  title: 'BLOSSOM - Медитації та духовні практики',
-  description: 'Платформа для медитацій та духовного розвитку',
+  title: 'BLOSSOM - Медитації та практики',
+  description: 'Платформа для медитацій та практик',
   manifest: '/manifest.json',
   icons: {
     icon: [
@@ -81,11 +81,11 @@ export default function RootLayout({
       </head>
       <body className={`${inter.className} min-h-screen bg-gray-50`}>
         <AuthProvider>
-        <Navigation />
-        <main className="min-h-[calc(100vh-4rem)] pt-16">
-          {children}
-        </main>
-        <UpdateNotification />
+          <Navbar />
+          <main className="min-h-[calc(100vh-4rem)] pt-16">
+            {children}
+          </main>
+          <UpdateNotification />
         </AuthProvider>
       </body>
     </html>

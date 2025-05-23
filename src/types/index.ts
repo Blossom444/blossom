@@ -1,8 +1,14 @@
 export interface User {
   id: string;
-  email: string;
   name: string;
-  phone: string;
+  email: string;
+  password?: string;
+  role: 'user' | 'admin';
+  isPremium: boolean;
+  createdAt: string;
+  accessibleMeditations: string[];
+  accessiblePractices: string[];
+  phone?: string;
   address?: {
     street: string;
     city: string;

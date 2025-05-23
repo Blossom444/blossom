@@ -3,6 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
+import { doc, updateDoc } from 'firebase/firestore';
+import { db } from '@/firebase/firebaseConfig';
+import { sendTelegramMessage } from '@/utils/telegram';
 
 interface User {
   id: string;
@@ -11,6 +14,7 @@ interface User {
   isPremium: boolean;
   role: 'user' | 'admin';
   accessibleMeditations: string[];
+  accessiblePractices: string[];
 }
 
 // Список всіх медитацій
@@ -32,6 +36,15 @@ const allMeditations = [
   { id: 'meditation-15', title: 'Свобода від обмежень' }
 ];
 
+// Список всіх практик
+const allPractices = [
+  { id: 'practice-1', title: 'Дихальна практика' },
+  { id: 'practice-2', title: 'Йога для початківців' },
+  { id: 'practice-3', title: 'Медитація ходьби' },
+  { id: 'practice-4', title: 'Розтяжка' },
+  { id: 'practice-5', title: 'Цигун' }
+];
+
 export default function AdminPanel() {
   const { 
     user, 
@@ -42,7 +55,8 @@ export default function AdminPanel() {
     grantMeditationAccess,
     revokeMeditationAccess,
     getAllUsers,
-    clearError 
+    clearError,
+    resetUserPassword
   } = useAuth();
   
   const [users, setUsers] = useState<User[]>([]);
@@ -51,6 +65,11 @@ export default function AdminPanel() {
   const [actionInProgress, setActionInProgress] = useState<string | null>(null);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const router = useRouter();
+  const [resetPasswordEmail, setResetPasswordEmail] = useState('');
+  const [resetPasswordStatus, setResetPasswordStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [resetPasswordError, setResetPasswordError] = useState<string | null>(null);
+  const [showMeditationDropdown, setShowMeditationDropdown] = useState<string | null>(null);
+  const [showPracticeDropdown, setShowPracticeDropdown] = useState<string | null>(null);
 
   useEffect(() => {
     if (!authLoading) {
@@ -58,6 +77,7 @@ export default function AdminPanel() {
         router.push('/');
         return;
       }
+      console.log('AdminPanel mounted, loading users...');
       loadUsers();
     }
   }, [authLoading, user, router]);
@@ -72,12 +92,49 @@ export default function AdminPanel() {
   const loadUsers = async () => {
     try {
       setLoading(true);
+      console.log('Loading users...');
       const allUsers = getAllUsers();
+      console.log('Loaded users:', allUsers);
+      
+      if (!Array.isArray(allUsers)) {
+        console.error('Invalid users data:', allUsers);
+        setError('Помилка формату даних користувачів');
+        return;
+      }
+
       setUsers(allUsers);
       setError(null);
     } catch (err) {
-      setError('Помилка завантаження користувачів');
       console.error('Error loading users:', err);
+      setError('Помилка завантаження користувачів');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUserAction = async (user: User) => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // Оновлюємо статус преміум в базі даних
+      const userRef = doc(db, 'users', user.id);
+      await updateDoc(userRef, {
+        isPremium: !user.isPremium
+      });
+
+      // Оновлюємо локальний стан
+      setUsers(users.map(u => 
+        u.id === user.id ? { ...u, isPremium: !u.isPremium } : u
+      ));
+
+      // Відправляємо повідомлення через Telegram
+      const message = `🔄 Зміна преміум статусу\n\nКористувач: ${user.name}\nEmail: ${user.email}\nНовий статус: ${!user.isPremium ? 'Premium' : 'Звичайний'}`;
+      await sendTelegramMessage(message);
+
+    } catch (err) {
+      console.error('Error updating user:', err);
+      setError(err instanceof Error ? err.message : 'Помилка при оновленні користувача');
     } finally {
       setLoading(false);
     }
@@ -86,16 +143,27 @@ export default function AdminPanel() {
   const handlePremiumToggle = async (targetUser: User) => {
     try {
       setActionInProgress(targetUser.id);
+      console.log('Toggling premium access for user:', targetUser.id);
+      
       if (targetUser.isPremium) {
         await revokePremiumAccess(targetUser.id);
       } else {
         await grantPremiumAccess(targetUser.id);
       }
-      await loadUsers();
+      
+      // Оновлюємо локальний стан
+      setUsers(users.map(u => 
+        u.id === targetUser.id ? { ...u, isPremium: !u.isPremium } : u
+      ));
+
+      // Відправляємо повідомлення через Telegram
+      const message = `🔄 Зміна преміум статусу\n\nКористувач: ${targetUser.name}\nEmail: ${targetUser.email}\nНовий статус: ${!targetUser.isPremium ? 'Premium' : 'Звичайний'}`;
+      await sendTelegramMessage(message);
+
       setError(null);
     } catch (err) {
-      setError('Помилка зміни статусу преміум доступу');
       console.error('Premium access toggle error:', err);
+      setError('Помилка зміни статусу преміум доступу');
     } finally {
       setActionInProgress(null);
     }
@@ -104,18 +172,96 @@ export default function AdminPanel() {
   const handleMeditationAccessToggle = async (targetUser: User, meditationId: string) => {
     try {
       setActionInProgress(`${targetUser.id}-${meditationId}`);
+      
       if (targetUser.accessibleMeditations.includes(meditationId)) {
         await revokeMeditationAccess(targetUser.id, meditationId);
       } else {
         await grantMeditationAccess(targetUser.id, meditationId);
       }
-      await loadUsers();
+
+      // Оновлюємо локальний стан
+      setUsers(users.map(u => {
+        if (u.id === targetUser.id) {
+          const meditation = allMeditations.find(m => m.id === meditationId);
+          const accessibleMeditations = u.accessibleMeditations.includes(meditationId)
+            ? u.accessibleMeditations.filter(id => id !== meditationId)
+            : [...u.accessibleMeditations, meditationId];
+          
+          return { ...u, accessibleMeditations };
+        }
+        return u;
+      }));
+
+      // Відправляємо повідомлення через Telegram
+      const meditation = allMeditations.find(m => m.id === meditationId);
+      const message = `🎯 Зміна доступу до медитації\n\nКористувач: ${targetUser.name}\nEmail: ${targetUser.email}\nМедитація: ${meditation?.title}\nДія: ${targetUser.accessibleMeditations.includes(meditationId) ? 'Відкликано доступ' : 'Надано доступ'}`;
+      await sendTelegramMessage(message);
+
       setError(null);
     } catch (err) {
       setError('Помилка зміни доступу до медитації');
       console.error('Meditation access toggle error:', err);
     } finally {
       setActionInProgress(null);
+    }
+  };
+
+  const handlePracticeAccessToggle = async (targetUser: User, practiceId: string) => {
+    try {
+      setActionInProgress(`${targetUser.id}-${practiceId}`);
+      
+      if (targetUser.accessiblePractices.includes(practiceId)) {
+        await revokePracticeAccess(targetUser.id, practiceId);
+      } else {
+        await grantPracticeAccess(targetUser.id, practiceId);
+      }
+
+      // Оновлюємо локальний стан
+      setUsers(users.map(u => {
+        if (u.id === targetUser.id) {
+          const practice = allPractices.find(p => p.id === practiceId);
+          const accessiblePractices = u.accessiblePractices.includes(practiceId)
+            ? u.accessiblePractices.filter(id => id !== practiceId)
+            : [...u.accessiblePractices, practiceId];
+          
+          return { ...u, accessiblePractices };
+        }
+        return u;
+      }));
+
+      // Відправляємо повідомлення через Telegram
+      const practice = allPractices.find(p => p.id === practiceId);
+      const message = `🎯 Зміна доступу до практики\n\nКористувач: ${targetUser.name}\nEmail: ${targetUser.email}\nПрактика: ${practice?.title}\nДія: ${targetUser.accessiblePractices.includes(practiceId) ? 'Відкликано доступ' : 'Надано доступ'}`;
+      await sendTelegramMessage(message);
+
+      setError(null);
+    } catch (err) {
+      setError('Помилка зміни доступу до практики');
+      console.error('Practice access toggle error:', err);
+    } finally {
+      setActionInProgress(null);
+    }
+  };
+
+  const handleResetPassword = async () => {
+    if (!resetPasswordEmail) {
+      setResetPasswordStatus('error');
+      setResetPasswordError('Будь ласка, введіть email користувача');
+      return;
+    }
+
+    try {
+      setResetPasswordStatus('loading');
+      console.log('Attempting to reset password for:', resetPasswordEmail);
+      await resetUserPassword(resetPasswordEmail);
+      console.log('Password reset successful');
+      setResetPasswordStatus('success');
+      setResetPasswordEmail('');
+      setResetPasswordError('');
+    } catch (err) {
+      console.error('Error resetting password:', err);
+      setResetPasswordStatus('error');
+      setResetPasswordError(err instanceof Error ? err.message : 'Помилка при відновленні паролю');
     }
   };
 
@@ -140,235 +286,161 @@ export default function AdminPanel() {
   }
 
   return (
-    <div className="p-4">
-      <h2 className="text-2xl font-bold mb-4">Управління користувачами</h2>
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-8">Панель адміністратора</h1>
       
-      {error && (
-        <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-lg flex items-center justify-between">
-          <p>{error}</p>
-          <button 
-            onClick={() => setError(null)}
-            className="text-red-500 hover:text-red-700"
+      {/* Password Reset Section */}
+      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+        <h2 className="text-xl font-semibold mb-4">Відновлення паролю</h2>
+        <div className="flex gap-4 items-end">
+          <div className="flex-1">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Email користувача
+            </label>
+            <input
+              type="email"
+              value={resetPasswordEmail}
+              onChange={(e) => setResetPasswordEmail(e.target.value)}
+              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Введіть email користувача"
+            />
+          </div>
+          <button
+            onClick={handleResetPassword}
+            disabled={resetPasswordStatus === 'loading'}
+            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            ✕
+            {resetPasswordStatus === 'loading' ? 'Відновлення...' : 'Відновити пароль'}
           </button>
         </div>
-      )}
-
-      {/* Мобільний перегляд */}
-      <div className="md:hidden">
-        {users.map((u) => (
-          <div 
-            key={u.id} 
-            className={`mb-4 p-4 rounded-lg border ${actionInProgress === u.id ? 'bg-gray-50' : 'bg-white'}`}
-          >
-            <div className="flex justify-between items-center mb-2">
-              <div className="font-medium text-gray-900">{u.name}</div>
-              <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                u.role === 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'
-              }`}>
-                {u.role === 'admin' ? 'Адмін' : 'Користувач'}
-              </span>
-            </div>
-            
-            <div className="text-sm text-gray-500 mb-2">{u.email}</div>
-            
-            <div className="flex justify-between items-center mb-3">
-              <div className="text-sm font-medium">Преміум статус:</div>
-              <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                u.isPremium ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-              }`}>
-                {u.isPremium ? 'Так' : 'Ні'}
-              </span>
-            </div>
-            
-            {u.role !== 'admin' && (
-              <>
-                <button
-                  onClick={() => handlePremiumToggle(u)}
-                  disabled={actionInProgress === u.id}
-                  className={`w-full px-4 py-2 rounded-md text-sm font-medium text-white mb-4 ${
-                    actionInProgress === u.id
-                      ? 'bg-gray-400 cursor-not-allowed'
-                      : u.isPremium 
-                        ? 'bg-red-600 hover:bg-red-700'
-                        : 'bg-green-600 hover:bg-green-700'
-                  }`}
-                >
-                  {actionInProgress === u.id ? (
-                    <span className="flex items-center justify-center">
-                      <span className="animate-spin h-4 w-4 mr-2 border-b-2 border-white rounded-full"></span>
-                      Обробка...
-                    </span>
-                  ) : (
-                    u.isPremium ? 'Відкликати преміум' : 'Надати преміум'
-                  )}
-                </button>
-
-                <button
-                  onClick={() => setSelectedUser(selectedUser?.id === u.id ? null : u)}
-                  className="w-full px-4 py-2 rounded-md text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200"
-                >
-                  {selectedUser?.id === u.id ? 'Сховати медитації' : 'Показати медитації'}
-                </button>
-
-                {selectedUser?.id === u.id && (
-                  <div className="mt-4 space-y-2">
-                    <h3 className="font-medium text-gray-900">Доступні медитації:</h3>
-                    {allMeditations.map((meditation) => (
-                      <div key={meditation.id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                        <span className="text-sm">{meditation.title}</span>
-                        <button
-                          onClick={() => handleMeditationAccessToggle(u, meditation.id)}
-                          disabled={actionInProgress === `${u.id}-${meditation.id}`}
-                          className={`px-3 py-1 rounded text-xs font-medium ${
-                            actionInProgress === `${u.id}-${meditation.id}`
-                              ? 'bg-gray-300 cursor-not-allowed'
-                              : u.accessibleMeditations.includes(meditation.id)
-                                ? 'bg-red-100 text-red-700 hover:bg-red-200'
-                                : 'bg-green-100 text-green-700 hover:bg-green-200'
-                          }`}
-                        >
-                          {actionInProgress === `${u.id}-${meditation.id}` ? (
-                            <span className="animate-spin h-3 w-3 border-b-2 border-current rounded-full"></span>
-                          ) : (
-                            u.accessibleMeditations.includes(meditation.id) ? 'Відкликати' : 'Надати'
-                          )}
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </>
-            )}
-          </div>
-        ))}
+        {resetPasswordError && (
+          <p className="mt-2 text-red-600 text-sm">{resetPasswordError}</p>
+        )}
+        {resetPasswordStatus === 'success' && (
+          <p className="mt-2 text-green-600 text-sm">
+            Пароль успішно відновлено. Новий пароль надіслано через Telegram.
+          </p>
+        )}
       </div>
 
-      {/* Десктопний перегляд */}
-      <div className="hidden md:block bg-white rounded-lg shadow overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Користувач
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Email
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Роль
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Преміум
-              </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Дії
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {users.map((u) => (
-              <tr key={u.id} className={actionInProgress === u.id ? 'bg-gray-50' : ''}>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900">{u.name}</div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-500">{u.email}</div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                    u.role === 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'
-                  }`}>
-                    {u.role === 'admin' ? 'Адмін' : 'Користувач'}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                    u.isPremium ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                  }`}>
-                    {u.isPremium ? 'Так' : 'Ні'}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  {u.role !== 'admin' && (
-                    <div className="flex items-center justify-end space-x-2">
-                      <button
-                        onClick={() => handlePremiumToggle(u)}
-                        disabled={actionInProgress === u.id}
-                        className={`px-4 py-2 rounded-md text-sm font-medium text-white ${
-                          actionInProgress === u.id
-                            ? 'bg-gray-400 cursor-not-allowed'
-                            : u.isPremium 
-                              ? 'bg-red-600 hover:bg-red-700'
-                              : 'bg-green-600 hover:bg-green-700'
-                        }`}
-                      >
-                        {actionInProgress === u.id ? (
-                          <span className="flex items-center">
-                            <span className="animate-spin h-4 w-4 mr-2 border-b-2 border-white rounded-full"></span>
-                            Обробка...
-                          </span>
-                        ) : (
-                          u.isPremium ? 'Відкликати преміум' : 'Надати преміум'
-                        )}
-                      </button>
-
-                      <button
-                        onClick={() => setSelectedUser(selectedUser?.id === u.id ? null : u)}
-                        className="px-4 py-2 rounded-md text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200"
-                      >
-                        {selectedUser?.id === u.id ? 'Сховати медитації' : 'Медитації'}
-                      </button>
-                    </div>
-                  )}
-                </td>
+      {/* Users List */}
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <h2 className="text-xl font-semibold mb-4">Список користувачів</h2>
+        {error && (
+          <div className="mb-4 p-4 bg-red-50 text-red-700 rounded-lg">
+            {error}
+          </div>
+        )}
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Ім'я
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Email
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Статус
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Доступ
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Дії
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Модальне вікно з медитаціями */}
-      {selectedUser && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-medium">Доступні медитації для {selectedUser.name}</h3>
-              <button
-                onClick={() => setSelectedUser(null)}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                ✕
-              </button>
-            </div>
-            <div className="space-y-2">
-              {allMeditations.map((meditation) => (
-                <div key={meditation.id} className="flex items-center justify-between p-3 bg-gray-50 rounded">
-                  <span className="text-sm">{meditation.title}</span>
-                  <button
-                    onClick={() => handleMeditationAccessToggle(selectedUser, meditation.id)}
-                    disabled={actionInProgress === `${selectedUser.id}-${meditation.id}`}
-                    className={`px-4 py-2 rounded text-sm font-medium ${
-                      actionInProgress === `${selectedUser.id}-${meditation.id}`
-                        ? 'bg-gray-300 cursor-not-allowed'
-                        : selectedUser.accessibleMeditations.includes(meditation.id)
-                          ? 'bg-red-100 text-red-700 hover:bg-red-200'
-                          : 'bg-green-100 text-green-700 hover:bg-green-200'
-                    }`}
-                  >
-                    {actionInProgress === `${selectedUser.id}-${meditation.id}` ? (
-                      <span className="animate-spin h-4 w-4 border-b-2 border-current rounded-full"></span>
-                    ) : (
-                      selectedUser.accessibleMeditations.includes(meditation.id) ? 'Відкликати' : 'Надати'
-                    )}
-                  </button>
-                </div>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {users.map((user) => (
+                <tr key={user.id}>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm font-medium text-gray-900">{user.name}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-500">{user.email}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                      user.isPremium ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                    }`}>
+                      {user.isPremium ? 'Premium' : 'Звичайний'}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex gap-2">
+                      <div className="relative">
+                        <button
+                          onClick={() => setShowMeditationDropdown(showMeditationDropdown === user.id ? null : user.id)}
+                          className="px-3 py-1 bg-blue-100 text-blue-800 rounded hover:bg-blue-200 transition-colors"
+                        >
+                          Медитації
+                        </button>
+                        {showMeditationDropdown === user.id && (
+                          <div className="absolute z-10 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200">
+                            <div className="p-2 max-h-60 overflow-y-auto">
+                              {allMeditations.map((meditation) => (
+                                <label key={meditation.id} className="flex items-center p-2 hover:bg-gray-50 cursor-pointer">
+                                  <input
+                                    type="checkbox"
+                                    checked={user.accessibleMeditations.includes(meditation.id)}
+                                    onChange={() => handleMeditationAccessToggle(user, meditation.id)}
+                                    className="mr-2"
+                                  />
+                                  <span className="text-sm">{meditation.title}</span>
+                                </label>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      <div className="relative">
+                        <button
+                          onClick={() => setShowPracticeDropdown(showPracticeDropdown === user.id ? null : user.id)}
+                          className="px-3 py-1 bg-purple-100 text-purple-800 rounded hover:bg-purple-200 transition-colors"
+                        >
+                          Практики
+                        </button>
+                        {showPracticeDropdown === user.id && (
+                          <div className="absolute z-10 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200">
+                            <div className="p-2 max-h-60 overflow-y-auto">
+                              {allPractices.map((practice) => (
+                                <label key={practice.id} className="flex items-center p-2 hover:bg-gray-50 cursor-pointer">
+                                  <input
+                                    type="checkbox"
+                                    checked={user.accessiblePractices?.includes(practice.id)}
+                                    onChange={() => handlePracticeAccessToggle(user, practice.id)}
+                                    className="mr-2"
+                                  />
+                                  <span className="text-sm">{practice.title}</span>
+                                </label>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <button
+                      onClick={() => handlePremiumToggle(user)}
+                      disabled={actionInProgress === user.id}
+                      className={`px-3 py-1 rounded ${
+                        user.isPremium
+                          ? 'bg-red-100 text-red-800 hover:bg-red-200'
+                          : 'bg-green-100 text-green-800 hover:bg-green-200'
+                      } transition-colors`}
+                    >
+                      {user.isPremium ? 'Деактивувати Premium' : 'Активувати Premium'}
+                    </button>
+                  </td>
+                </tr>
               ))}
-            </div>
-          </div>
+            </tbody>
+          </table>
         </div>
-      )}
+      </div>
     </div>
   );
 } 

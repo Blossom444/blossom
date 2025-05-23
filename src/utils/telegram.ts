@@ -51,4 +51,34 @@ ${orderData.firstName} ${orderData.lastName}
     console.error('Error sending message to Telegram:', error);
     return false;
   }
-} 
+}
+
+export const sendTelegramMessage = async (message: string): Promise<void> => {
+  const botToken = process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.NEXT_PUBLIC_TELEGRAM_CHAT_ID;
+
+  if (!botToken || !chatId) {
+    throw new Error('Telegram credentials not configured');
+  }
+
+  try {
+    const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text: message,
+        parse_mode: 'HTML',
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to send Telegram message');
+    }
+  } catch (error) {
+    console.error('Error sending Telegram message:', error);
+    throw error;
+  }
+}; 

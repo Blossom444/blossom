@@ -16,7 +16,7 @@ export const meditations: Meditation[] = [
     duration: "15 хв",
     description: "Медитація для встановлення позитивних намірів та цілей на день.",
     variant: 'orange',
-    audioUrl: "/audio/meditations/morning-meditation.mp3",
+    audioUrl: "/static/audio/meditations/morning-meditation.mp3",
     isPremium: false,
     category: 'Ранкові'
   },
@@ -26,7 +26,7 @@ export const meditations: Meditation[] = [
     duration: "20 хв",
     description: "Практика усвідомленості для повного занурення в теперішній момент.",
     variant: 'blue',
-    audioUrl: "/audio/meditations/mindfulness.mp3",
+    audioUrl: "/static/audio/meditations/mindfulness.mp3",
     isPremium: false,
     category: 'Усвідомленість'
   },
@@ -36,7 +36,7 @@ export const meditations: Meditation[] = [
     duration: "10 хв",
     description: "Медитація для досягнення балансу між розумом та емоціями.",
     variant: 'purple',
-    audioUrl: "/audio/meditations/harmony.mp3",
+    audioUrl: "/static/audio/meditations/harmony.mp3",
     isPremium: false,
     category: 'Вечірні'
   },
@@ -46,7 +46,7 @@ export const meditations: Meditation[] = [
     duration: "12 хв",
     description: "Практика для повного розслаблення тіла та розуму.",
     variant: 'green',
-    audioUrl: "/audio/meditations/relaxation.mp3",
+    audioUrl: "/static/audio/meditations/relaxation.mp3",
     isPremium: true,
     category: 'Розслаблення'
   }

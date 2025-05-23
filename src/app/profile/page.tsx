@@ -2,11 +2,16 @@
 
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function ProfilePage() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -14,7 +19,7 @@ export default function ProfilePage() {
     }
   }, [user, loading, router]);
 
-  if (loading) {
+  if (!isClient || loading) {
     return (
       <div className="container mx-auto px-4 py-8 mt-16">
         <div className="animate-pulse">
