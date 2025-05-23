@@ -5,7 +5,7 @@ export const revalidate = 0;
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 import { meditations } from '@/data/meditations';
 import GradientCover from '@/components/GradientCover';
 import MeditationCard from '@/components/MeditationCard';

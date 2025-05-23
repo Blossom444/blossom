@@ -1,6 +1,6 @@
 'use client';
 
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
 import GradientCover from '@/components/GradientCover';
 import AudioPlayer from '@/components/AudioPlayer';

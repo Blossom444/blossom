@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { sendTelegramMessage, testTelegramBot } from '@/utils/telegram';
 import UserManagement from './admin/UserManagement';
