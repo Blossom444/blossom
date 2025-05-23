@@ -4,7 +4,7 @@ const nextConfig = {
   reactStrictMode: true,
   output: 'standalone',
   images: {
-    domains: ['localhost'],
+    domains: ['localhost', 'vercel.app', 'vercel-production.up.railway.app'],
     unoptimized: true,
   },
   // Security and optimization
@@ -15,6 +15,10 @@ const nextConfig = {
   experimental: {
     optimizeCss: true,
     scrollRestoration: true,
+  },
+  // Ensure proper handling of environment variables
+  env: {
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
   },
 }
 
