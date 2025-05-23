@@ -10,4 +10,65 @@
 body {
   color: rgb(var(--foreground-rgb));
   background: rgb(var(--background-rgb));
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+}
+
+/* Додаткові стилі для кращого відображення */
+.prose {
+  max-width: 65ch;
+  margin: 0 auto;
+}
+
+.prose img {
+  margin: 2rem auto;
+  border-radius: 0.5rem;
+}
+
+/* Стилі для PDF-подібного відображення */
+.pdf-container {
+  background: white;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border-radius: 0.5rem;
+  padding: 2rem;
+  margin: 2rem auto;
+  max-width: 800px;
+}
+
+.pdf-content {
+  font-family: 'Inter', sans-serif;
+  line-height: 1.6;
+  color: #333;
+}
+
+.pdf-content h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: #1a1a1a;
+}
+
+.pdf-content h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 2rem 0 1rem;
+  color: #2a2a2a;
+}
+
+.pdf-content p {
+  margin-bottom: 1rem;
+}
+
+.pdf-content ul, .pdf-content ol {
+  margin: 1rem 0;
+  padding-left: 2rem;
+}
+
+.pdf-content li {
+  margin-bottom: 0.5rem;
 } 

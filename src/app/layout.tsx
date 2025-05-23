@@ -54,7 +54,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="uk">
+    <html lang="uk" className="h-full">
       <head>
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -79,13 +79,15 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${inter.className} min-h-screen bg-gray-50`}>
+      <body className={`${inter.className} h-full bg-gray-50 antialiased`}>
         <AuthProvider>
-          <Navbar />
-          <main className="min-h-[calc(100vh-4rem)] pt-16">
-            {children}
-          </main>
-          <UpdateNotification />
+          <div className="min-h-screen flex flex-col">
+            <Navbar />
+            <main className="flex-1 pt-16">
+              {children}
+            </main>
+            <UpdateNotification />
+          </div>
         </AuthProvider>
       </body>
     </html>
