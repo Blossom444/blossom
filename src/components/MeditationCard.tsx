@@ -52,7 +52,7 @@ export default function MeditationCard({ meditation, isAccessible }: MeditationC
           {isAccessible ? (
             <Link
               href={`/meditations/${meditation.id}`}
-              className="block w-full text-center bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 transition-colors"
+              className="block w-full text-center bg-[#8B4513] text-white px-4 py-2 rounded-md hover:bg-[#6B3410] transition-colors"
             >
               Почати медитацію
             </Link>
