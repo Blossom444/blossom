@@ -26,14 +26,6 @@ export default function Navbar() {
     if (user) {
       return (
         <>
-          {isAdmin() && (
-            <Link 
-              href="/admin"
-              className={`${isActive('/admin') ? 'text-[#8B4513] border-b-2 border-[#8B4513]' : 'text-white hover:text-[#8B4513]'} px-3 py-2 rounded-md text-sm font-medium`}
-            >
-              Адмін панель
-            </Link>
-          )}
           <Link 
             href="/profile"
             className={`${isActive('/profile') ? 'text-[#8B4513] border-b-2 border-[#8B4513]' : 'text-white hover:text-[#8B4513]'} px-3 py-2 rounded-md text-sm font-medium`}
@@ -72,14 +64,6 @@ export default function Navbar() {
     if (user) {
       return (
         <>
-          {isAdmin() && (
-            <Link 
-              href="/admin"
-              className={`block text-base ${isActive('/admin') ? 'text-[#8B4513]' : 'text-white hover:text-[#8B4513]'}`}
-            >
-              Адмін панель
-            </Link>
-          )}
           <Link 
             href="/profile"
             className={`block text-base ${isActive('/profile') ? 'text-[#8B4513]' : 'text-white hover:text-[#8B4513]'}`}
@@ -109,12 +93,6 @@ export default function Navbar() {
           className="block bg-white/10 backdrop-blur-md border border-white/20 text-white text-base px-4 py-2 rounded-md hover:bg-white/20 transition-all duration-300 text-center mt-2"
         >
           Реєстрація
-        </Link>
-        <Link 
-          href="/admin/login"
-          className="block text-base text-white/60 hover:text-[#8B4513] mt-4 text-center"
-        >
-          Вхід для адміністратора
         </Link>
       </>
     );
@@ -173,12 +151,6 @@ export default function Navbar() {
               Книга змін
             </Link>
             <AuthButtons />
-            <Link 
-              href="/admin/login"
-              className="px-3 py-2 rounded-md text-sm font-medium text-white/60 hover:text-[#8B4513] transition-colors duration-300"
-            >
-              Адмін
-            </Link>
           </div>
 
           {/* Mobile menu button */}

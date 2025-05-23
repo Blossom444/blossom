@@ -31,7 +31,7 @@ export default function MeditationCard({ meditation, isAccessible }: MeditationC
             className="w-full h-full object-cover"
           />
           {meditation.isPremium && (
-            <span className="absolute top-2 right-2 text-xs px-2 py-1 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white">
+            <span className="absolute top-2 right-2 text-xs px-2 py-1 rounded-full bg-[#8B4513] text-white">
               Premium
             </span>
           )}
@@ -44,7 +44,7 @@ export default function MeditationCard({ meditation, isAccessible }: MeditationC
         </div>
         <p className="text-gray-600 text-sm mb-4">{meditation.description}</p>
         <div className="flex justify-between items-center">
-          <span className="text-xs px-2 py-1 rounded-full bg-purple-100 text-purple-800">
+          <span className="text-xs px-2 py-1 rounded-full bg-[#8B4513] text-white">
             {meditation.category}
           </span>
         </div>
@@ -59,7 +59,7 @@ export default function MeditationCard({ meditation, isAccessible }: MeditationC
           ) : (
             <Link
               href="/premium"
-              className="block w-full text-center bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-md hover:opacity-90 transition-opacity"
+              className="block w-full text-center bg-[#8B4513] text-white px-4 py-2 rounded-md hover:bg-[#6B3410] transition-colors"
             >
               Отримати доступ
             </Link>

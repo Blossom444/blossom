@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import GradientCover from '@/components/GradientCover';
 import MeditationCard from '@/components/MeditationCard';
 
 interface Meditation {
@@ -50,7 +49,7 @@ export default function MeditationsPage() {
       description: 'Медитація для зняття напруження та стресу',
       duration: 10,
       category: 'stress',
-      isPremium: true,
+      isPremium: false,
       audioUrl: '/meditations/stress-relief.mp3',
       imageUrl: '/images/meditations/meditation-2.jpg',
       variant: 'orange'
@@ -83,7 +82,7 @@ export default function MeditationsPage() {
       description: 'Медитація для розвитку почуття вдячності',
       duration: 8,
       category: 'gratitude',
-      isPremium: false,
+      isPremium: true,
       audioUrl: '/meditations/gratitude.mp3',
       imageUrl: '/images/meditations/meditation-5.jpg',
       variant: 'yellow'
@@ -105,7 +104,7 @@ export default function MeditationsPage() {
       description: 'Енергійна медитація для початку дня',
       duration: 10,
       category: 'focus',
-      isPremium: false,
+      isPremium: true,
       audioUrl: '/meditations/morning.mp3',
       imageUrl: '/images/meditations/meditation-7.jpg',
       variant: 'orange'
@@ -127,7 +126,7 @@ export default function MeditationsPage() {
       description: 'Практика вдячності за щоденні радощі',
       duration: 10,
       category: 'gratitude',
-      isPremium: false,
+      isPremium: true,
       audioUrl: '/meditations/daily-gratitude.mp3',
       imageUrl: '/images/meditations/meditation-9.jpg',
       variant: 'yellow'
@@ -149,7 +148,7 @@ export default function MeditationsPage() {
       description: 'Медитація для зняття фізичного та емоційного напруження',
       duration: 15,
       category: 'stress',
-      isPremium: false,
+      isPremium: true,
       audioUrl: '/meditations/tension-relief.mp3',
       imageUrl: '/images/meditations/meditation-11.jpg',
       variant: 'green'
@@ -171,7 +170,7 @@ export default function MeditationsPage() {
       description: 'Медитація для зменшення тривоги та страху',
       duration: 15,
       category: 'anxiety',
-      isPremium: false,
+      isPremium: true,
       audioUrl: '/meditations/anxiety.mp3',
       imageUrl: '/images/meditations/meditation-13.jpg',
       variant: 'red'
@@ -193,7 +192,7 @@ export default function MeditationsPage() {
       description: 'Медитація для глибокого розслаблення та відновлення',
       duration: 20,
       category: 'stress',
-      isPremium: false,
+      isPremium: true,
       audioUrl: '/meditations/deep-relaxation.mp3',
       imageUrl: '/images/meditations/meditation-15.jpg',
       variant: 'purple'
@@ -212,8 +211,6 @@ export default function MeditationsPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <GradientCover title="Медитації" />
-      
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
         <h1 className="text-4xl font-bold mb-8 text-center text-gray-900">Медитації</h1>
         
