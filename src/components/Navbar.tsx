@@ -83,20 +83,20 @@ export default function Navbar() {
           {isAdmin() && (
             <Link 
               href="/admin"
-              className={`block text-xl ${isActive('/admin') ? 'text-[#8B4513]' : 'text-white hover:text-[#8B4513]'}`}
+              className={`block text-base ${isActive('/admin') ? 'text-[#8B4513]' : 'text-white hover:text-[#8B4513]'}`}
             >
               Адмін панель
             </Link>
           )}
           <Link 
             href="/profile"
-            className={`block text-xl ${isActive('/profile') ? 'text-[#8B4513]' : 'text-white hover:text-[#8B4513]'}`}
+            className={`block text-base ${isActive('/profile') ? 'text-[#8B4513]' : 'text-white hover:text-[#8B4513]'}`}
           >
             Мій профіль
           </Link>
           <button
             onClick={() => logout()}
-            className="block text-xl text-white hover:text-[#8B4513]"
+            className="block text-base text-white hover:text-[#8B4513]"
           >
             Вийти
           </button>
@@ -108,13 +108,13 @@ export default function Navbar() {
       <>
         <Link 
           href="/login"
-          className="block text-xl text-white hover:text-[#8B4513]"
+          className="block text-base text-white hover:text-[#8B4513]"
         >
           Увійти
         </Link>
         <Link 
           href="/register"
-          className="block bg-white/10 backdrop-blur-md border border-white/20 text-white text-xl px-4 py-3 rounded-md hover:bg-white/20 transition-all duration-300 text-center mt-4"
+          className="block bg-white/10 backdrop-blur-md border border-white/20 text-white text-base px-4 py-2 rounded-md hover:bg-white/20 transition-all duration-300 text-center mt-2"
         >
           Реєстрація
         </Link>
@@ -212,11 +212,11 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {isMenuOpen && (
-        <div className="md:hidden fixed inset-0 bg-black/95 backdrop-blur-md z-50">
-          <div className="px-4 pt-20 pb-3 space-y-6">
+        <div className="md:hidden absolute top-16 left-0 right-0 bg-black/95 backdrop-blur-md shadow-lg">
+          <div className="px-4 py-4 space-y-4">
             <Link
               href="/meditations"
-              className={`block text-xl ${
+              className={`block text-base ${
                 isActive('/meditations')
                   ? 'text-[#8B4513]'
                   : 'text-white hover:text-[#8B4513]'
@@ -226,7 +226,7 @@ export default function Navbar() {
             </Link>
             <Link
               href="/practices"
-              className={`block text-xl ${
+              className={`block text-base ${
                 isActive('/practices')
                   ? 'text-[#8B4513]'
                   : 'text-white hover:text-[#8B4513]'
@@ -236,7 +236,7 @@ export default function Navbar() {
             </Link>
             <Link
               href="/planner"
-              className={`block text-xl ${
+              className={`block text-base ${
                 isActive('/planner')
                   ? 'text-[#8B4513]'
                   : 'text-white hover:text-[#8B4513]'
