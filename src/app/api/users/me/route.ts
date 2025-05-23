@@ -1,36 +1,34 @@
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { NextResponse } from 'next/server';
-import { headers } from 'next/headers';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
-    const headersList = headers();
-    const token = headersList.get('authorization')?.split(' ')[1];
+    const session = await getServerSession(authOptions);
 
-    if (!token) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
+    if (!session?.user) {
+      return new NextResponse(
+        JSON.stringify({ error: 'Unauthorized' }),
         { status: 401 }
       );
     }
 
-    // Тут буде ваша логіка отримання даних користувача
-    // Наразі повертаємо тестові дані
-    return NextResponse.json({
-      _id: '1',
-      name: 'Test User',
-      email: 'test@example.com',
-      role: 'user',
-      isPremium: false,
-      accessibleMeditations: [],
-      accessiblePractices: [],
-      createdAt: new Date().toISOString()
-    });
+    return new NextResponse(
+      JSON.stringify({
+        id: session.user.id,
+        name: session.user.name,
+        email: session.user.email,
+        role: session.user.role,
+        isPremium: session.user.isPremium
+      }),
+      { status: 200 }
+    );
   } catch (error) {
     console.error('Error fetching user data:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
+    return new NextResponse(
+      JSON.stringify({ error: 'Internal Server Error' }),
       { status: 500 }
     );
   }
