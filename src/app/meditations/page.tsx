@@ -240,7 +240,6 @@ export default function MeditationsPage() {
             <MeditationCard
               key={meditation.id}
               meditation={meditation}
-              isAccessible={!!user && (!meditation.isPremium || user.isPremium)}
             />
           ))}
         </div>
