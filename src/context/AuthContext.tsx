@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { useSession } from 'next-auth/react';
+import { useSession, signIn, signOut } from 'next-auth/react';
 
 interface User {
   _id: string;
@@ -30,18 +30,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+      const result = await signIn('credentials', {
+        email,
+        password,
+        redirect: false,
       });
 
-      if (!response.ok) {
-        throw new Error('Login failed');
+      if (result?.error) {
+        throw new Error(result.error);
       }
 
-      const data = await response.json();
-      setUser(data.user);
+      // Отримуємо дані користувача після успішного входу
+      const response = await fetch('/api/auth/me');
+      if (response.ok) {
+        const data = await response.json();
+        setUser(data.user);
+      }
     } catch (error) {
       console.error('Login error:', error);
       throw error;
@@ -50,7 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     try {
-      await fetch('/api/auth/logout', { method: 'POST' });
+      await signOut({ redirect: false });
       setUser(null);
     } catch (error) {
       console.error('Logout error:', error);
@@ -72,19 +76,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const checkAuth = async () => {
-      try {
-        const response = await fetch('/api/auth/me');
-        if (response.ok) {
-          const data = await response.json();
-          setUser(data.user);
+      if (status === 'authenticated' && session?.user) {
+        try {
+          const response = await fetch('/api/auth/me');
+          if (response.ok) {
+            const data = await response.json();
+            setUser(data.user);
+          }
+        } catch (error) {
+          console.error('Auth check error:', error);
         }
-      } catch (error) {
-        console.error('Auth check error:', error);
+      } else if (status === 'unauthenticated') {
+        setUser(null);
       }
     };
 
     checkAuth();
-  }, []);
+  }, [session, status]);
 
   return (
     <AuthContext.Provider value={{ user, login, logout, hasPremiumAccess, hasMeditationAccess, hasPracticeAccess }}>

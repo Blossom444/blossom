@@ -9,7 +9,7 @@ export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
-  const { user, loading, logout } = useAuth();
+  const { user, logout } = useAuth();
 
   const isAdmin = () => {
     return user?.role === 'admin';
@@ -23,10 +23,6 @@ export default function Navbar() {
   const isHomePage = pathname === '/';
 
   const AuthButtons = () => {
-    if (loading) {
-      return null;
-    }
-
     if (user) {
       return (
         <>
@@ -73,10 +69,6 @@ export default function Navbar() {
   };
 
   const MobileAuthButtons = () => {
-    if (loading) {
-      return null;
-    }
-
     if (user) {
       return (
         <>
