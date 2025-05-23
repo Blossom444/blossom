@@ -55,7 +55,149 @@ export default function MeditationsPage() {
       imageUrl: '/images/meditation-2.jpg',
       variant: 'orange'
     },
-    // Додайте більше медитацій тут
+    {
+      id: '3',
+      title: 'Глибокий сон',
+      description: 'Медитація для глибокого та відновлюючого сну',
+      duration: 20,
+      category: 'sleep',
+      isPremium: false,
+      audioUrl: '/meditations/deep-sleep.mp3',
+      imageUrl: '/images/meditation-3.jpg',
+      variant: 'blue'
+    },
+    {
+      id: '4',
+      title: 'Концентрація уваги',
+      description: 'Медитація для покращення концентрації та фокусу',
+      duration: 12,
+      category: 'focus',
+      isPremium: true,
+      audioUrl: '/meditations/focus.mp3',
+      imageUrl: '/images/meditation-4.jpg',
+      variant: 'green'
+    },
+    {
+      id: '5',
+      title: 'Практика вдячності',
+      description: 'Медитація для розвитку почуття вдячності',
+      duration: 8,
+      category: 'gratitude',
+      isPremium: false,
+      audioUrl: '/meditations/gratitude.mp3',
+      imageUrl: '/images/meditation-5.jpg',
+      variant: 'yellow'
+    },
+    {
+      id: '6',
+      title: 'Зменшення тривоги',
+      description: 'Медитація для зменшення тривожності',
+      duration: 15,
+      category: 'anxiety',
+      isPremium: true,
+      audioUrl: '/meditations/anxiety-relief.mp3',
+      imageUrl: '/images/meditation-6.jpg',
+      variant: 'red'
+    },
+    {
+      id: '7',
+      title: 'Ранкова медитація',
+      description: 'Енергійна медитація для початку дня',
+      duration: 10,
+      category: 'focus',
+      isPremium: false,
+      audioUrl: '/meditations/morning.mp3',
+      imageUrl: '/images/meditation-7.jpg',
+      variant: 'orange'
+    },
+    {
+      id: '8',
+      title: 'Вечірнє розслаблення',
+      description: 'Медитація для розслаблення після важкого дня',
+      duration: 15,
+      category: 'stress',
+      isPremium: true,
+      audioUrl: '/meditations/evening-relax.mp3',
+      imageUrl: '/images/meditation-8.jpg',
+      variant: 'purple'
+    },
+    {
+      id: '9',
+      title: 'Медитація вдячності',
+      description: 'Практика вдячності за щоденні радощі',
+      duration: 10,
+      category: 'gratitude',
+      isPremium: false,
+      audioUrl: '/meditations/daily-gratitude.mp3',
+      imageUrl: '/images/meditation-9.jpg',
+      variant: 'yellow'
+    },
+    {
+      id: '10',
+      title: 'Спокійний сон',
+      description: 'Медитація для спокійного та міцного сну',
+      duration: 20,
+      category: 'sleep',
+      isPremium: true,
+      audioUrl: '/meditations/peaceful-sleep.mp3',
+      imageUrl: '/images/meditation-10.jpg',
+      variant: 'blue'
+    },
+    {
+      id: '11',
+      title: 'Зняття напруження',
+      description: 'Медитація для зняття фізичного та емоційного напруження',
+      duration: 15,
+      category: 'stress',
+      isPremium: false,
+      audioUrl: '/meditations/tension-relief.mp3',
+      imageUrl: '/images/meditation-11.jpg',
+      variant: 'green'
+    },
+    {
+      id: '12',
+      title: 'Медитація фокусу',
+      description: 'Покращення концентрації та продуктивності',
+      duration: 12,
+      category: 'focus',
+      isPremium: true,
+      audioUrl: '/meditations/productivity.mp3',
+      imageUrl: '/images/meditation-12.jpg',
+      variant: 'orange'
+    },
+    {
+      id: '13',
+      title: 'Зменшення тривожності',
+      description: 'Медитація для зменшення тривоги та страху',
+      duration: 15,
+      category: 'anxiety',
+      isPremium: false,
+      audioUrl: '/meditations/anxiety.mp3',
+      imageUrl: '/images/meditation-13.jpg',
+      variant: 'red'
+    },
+    {
+      id: '14',
+      title: 'Вдячність за життя',
+      description: 'Медитація для розвитку вдячності за все хороше',
+      duration: 10,
+      category: 'gratitude',
+      isPremium: true,
+      audioUrl: '/meditations/life-gratitude.mp3',
+      imageUrl: '/images/meditation-14.jpg',
+      variant: 'yellow'
+    },
+    {
+      id: '15',
+      title: 'Глибоке розслаблення',
+      description: 'Медитація для глибокого розслаблення та відновлення',
+      duration: 20,
+      category: 'stress',
+      isPremium: false,
+      audioUrl: '/meditations/deep-relaxation.mp3',
+      imageUrl: '/images/meditation-15.jpg',
+      variant: 'purple'
+    }
   ];
 
   const filteredMeditations = selectedCategory === 'all'

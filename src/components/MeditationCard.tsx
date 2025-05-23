@@ -24,11 +24,18 @@ export default function MeditationCard({ meditation, isAccessible }: MeditationC
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
       {meditation.imageUrl && (
-        <img
-          src={meditation.imageUrl}
-          alt={meditation.title}
-          className="w-full h-40 object-cover mb-4"
-        />
+        <div className="relative h-48 w-full">
+          <img
+            src={meditation.imageUrl}
+            alt={meditation.title}
+            className="w-full h-full object-cover"
+          />
+          {meditation.isPremium && (
+            <span className="absolute top-2 right-2 text-xs px-2 py-1 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white">
+              Premium
+            </span>
+          )}
+        </div>
       )}
       <div className="p-6">
         <div className="flex justify-between items-start mb-4">
@@ -40,11 +47,6 @@ export default function MeditationCard({ meditation, isAccessible }: MeditationC
           <span className="text-xs px-2 py-1 rounded-full bg-purple-100 text-purple-800">
             {meditation.category}
           </span>
-          {meditation.isPremium && (
-            <span className="text-xs px-2 py-1 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white">
-              Premium
-            </span>
-          )}
         </div>
         <div className="mt-4">
           {isAccessible ? (
