@@ -1,9 +1,11 @@
 'use client';
 
-import { useAuth } from '@/context/AuthContext';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import AudioPlayer from '@/components/AudioPlayer';
+import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
 import GradientCover from '@/components/GradientCover';
-import AudioPlayer from '@/components/AudioPlayer';
 
 interface Meditation {
   id: string;
@@ -20,14 +22,63 @@ interface MeditationClientProps {
   meditation: Meditation;
 }
 
-const convertDurationToSeconds = (duration: string): number => {
-  const [minutes, seconds] = duration.split(':').map(Number);
-  return minutes * 60 + seconds;
-};
-
 export default function MeditationClient({ meditation }: MeditationClientProps) {
-  const { hasPremiumAccess, hasMeditationAccess } = useAuth();
-  const hasAccess = !meditation.isPremium || hasPremiumAccess() || hasMeditationAccess(meditation.id);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [volume, setVolume] = useState(1);
+  const [isMuted, setIsMuted] = useState(false);
+  const [playbackRate, setPlaybackRate] = useState(1);
+  const router = useRouter();
+  const { user } = useAuth();
+
+  const handlePlayPause = () => {
+    setIsPlaying(!isPlaying);
+  };
+
+  const handleTimeUpdate = (time: number) => {
+    setCurrentTime(time);
+  };
+
+  const handleDurationChange = (duration: number) => {
+    setDuration(duration);
+  };
+
+  const handleVolumeChange = (newVolume: number) => {
+    setVolume(newVolume);
+    setIsMuted(newVolume === 0);
+  };
+
+  const handleMuteToggle = () => {
+    if (isMuted) {
+      setVolume(1);
+      setIsMuted(false);
+    } else {
+      setVolume(0);
+      setIsMuted(true);
+    }
+  };
+
+  const handlePlaybackRateChange = (rate: number) => {
+    setPlaybackRate(rate);
+  };
+
+  const handleSeek = (time: number) => {
+    setCurrentTime(time);
+  };
+
+  const handlePremiumAccess = () => {
+    if (!user) {
+      router.push('/login?redirect=/meditations');
+    } else {
+      router.push('/subscription');
+    }
+  };
+
+  const convertDurationToSeconds = (duration: string) => {
+    const [minutes, seconds] = duration.split(':').map(Number);
+    return minutes * 60 + seconds;
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -60,26 +111,39 @@ export default function MeditationClient({ meditation }: MeditationClientProps) 
           <h1 className="text-2xl sm:text-3xl font-bold mb-4">{meditation.title}</h1>
           <p className="text-gray-600 mb-6">{meditation.description}</p>
 
-          {hasAccess ? (
-            <AudioPlayer 
+          {meditation.isPremium && !user?.isPremium ? (
+            <div className="bg-white rounded-lg shadow-lg p-6 text-center">
+              <h2 className="text-xl font-semibold mb-4">Преміум контент</h2>
+              <p className="text-gray-600 mb-6">
+                Ця медитація доступна тільки для преміум користувачів. Отримайте доступ до всіх медитацій та інших преміум функцій.
+              </p>
+              <button
+                onClick={handlePremiumAccess}
+                className="bg-[#8B4513] text-white px-6 py-3 rounded-lg hover:bg-[#6B3410] transition-colors"
+              >
+                {user ? 'Отримати преміум доступ' : 'Увійти для доступу'}
+              </button>
+            </div>
+          ) : (
+            <AudioPlayer
               src={meditation.audioUrl}
               title={meditation.title}
               initialDuration={convertDurationToSeconds(meditation.duration)}
               variant={meditation.variant}
+              isPlaying={isPlaying}
+              currentTime={currentTime}
+              duration={duration}
+              volume={volume}
+              isMuted={isMuted}
+              playbackRate={playbackRate}
+              onPlayPause={handlePlayPause}
+              onTimeUpdate={handleTimeUpdate}
+              onDurationChange={handleDurationChange}
+              onVolumeChange={handleVolumeChange}
+              onMuteToggle={handleMuteToggle}
+              onPlaybackRateChange={handlePlaybackRateChange}
+              onSeek={handleSeek}
             />
-          ) : (
-            <div className="bg-gray-50 p-6 rounded-lg text-center">
-              <h3 className="text-lg font-semibold mb-2">Потрібен преміум доступ</h3>
-              <p className="text-gray-600 mb-4">
-                Ця медитація доступна тільки для користувачів з преміум доступом.
-              </p>
-              <Link
-                href="/premium"
-                className="inline-block bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors"
-              >
-                Отримати преміум доступ
-              </Link>
-            </div>
           )}
         </div>
       </div>

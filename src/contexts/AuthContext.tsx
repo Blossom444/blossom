@@ -159,7 +159,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const hasMeditationAccess = (meditationId: string) => {
-    return !!user?.accessibleMeditations.includes(meditationId);
+    return !!user?.isPremium || !!user?.accessibleMeditations?.includes(meditationId);
   };
 
   return (

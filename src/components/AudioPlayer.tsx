@@ -133,7 +133,7 @@ export default function AudioPlayer({ src, title, initialDuration, variant = 'pu
         />
         <div className="flex justify-between text-xs sm:text-sm text-gray-500 mt-1">
           <span>{formatTime(currentTime)}</span>
-          <span>{initialDuration || formatTime(duration)}</span>
+          <span>{formatTime(duration)}</span>
         </div>
       </div>
 
@@ -143,7 +143,7 @@ export default function AudioPlayer({ src, title, initialDuration, variant = 'pu
             onClick={togglePlay}
             disabled={disabled}
             className={`w-8 h-8 sm:w-12 sm:h-12 flex items-center justify-center rounded-full text-white transition-colors ${
-              disabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-primary hover:bg-primary-600'
+              disabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#8B4513] hover:bg-[#6B3410]'
             }`}
           >
             {isPlaying ? (

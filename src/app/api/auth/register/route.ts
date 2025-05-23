@@ -1,28 +1,43 @@
 import { NextResponse } from 'next/server';
-import bcrypt from 'bcryptjs';
 import { connectToDatabase } from '@/lib/mongodb';
-import User from '@/models/User';
+import bcrypt from 'bcryptjs';
 
 export async function POST(request: Request) {
   try {
     const { name, email, password } = await request.json();
 
     if (!name || !email || !password) {
-      return new NextResponse('Missing required fields', { status: 400 });
+      return NextResponse.json(
+        { error: 'Name, email and password are required' },
+        { status: 400 }
+      );
     }
 
-    await connectToDatabase();
+    const mongoose = await connectToDatabase();
+    const User = mongoose.models.User || mongoose.model('User', new mongoose.Schema({
+      name: String,
+      email: String,
+      password: String,
+      role: String,
+      isPremium: Boolean,
+      accessibleMeditations: [String],
+      accessiblePractices: [String],
+      createdAt: String
+    }));
 
-    // Перевірка чи існує користувач з таким email
+    // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return new NextResponse('User already exists', { status: 400 });
+      return NextResponse.json(
+        { error: 'User already exists' },
+        { status: 400 }
+      );
     }
 
-    // Хешування пароля
+    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Створення нового користувача
+    // Create new user
     const user = await User.create({
       name,
       email,
@@ -30,23 +45,27 @@ export async function POST(request: Request) {
       role: 'user',
       isPremium: false,
       accessibleMeditations: [],
-      accessiblePractices: []
+      accessiblePractices: [],
+      createdAt: new Date().toISOString()
     });
 
-    // Видалення пароля з відповіді
-    const userWithoutPassword = {
-      id: user._id,
+    const userResponse = {
+      _id: user._id.toString(),
       name: user.name,
       email: user.email,
       role: user.role,
       isPremium: user.isPremium,
       accessibleMeditations: user.accessibleMeditations,
-      accessiblePractices: user.accessiblePractices
+      accessiblePractices: user.accessiblePractices,
+      createdAt: user.createdAt
     };
 
-    return NextResponse.json(userWithoutPassword);
+    return NextResponse.json(userResponse);
   } catch (error) {
-    console.error('Error registering user:', error);
-    return new NextResponse('Internal Server Error', { status: 500 });
+    console.error('Registration error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 } 
