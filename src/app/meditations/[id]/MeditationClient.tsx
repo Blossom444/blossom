@@ -23,49 +23,8 @@ interface MeditationClientProps {
 }
 
 export default function MeditationClient({ meditation }: MeditationClientProps) {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [volume, setVolume] = useState(1);
-  const [isMuted, setIsMuted] = useState(false);
-  const [playbackRate, setPlaybackRate] = useState(1);
   const router = useRouter();
   const { user } = useAuth();
-
-  const handlePlayPause = () => {
-    setIsPlaying(!isPlaying);
-  };
-
-  const handleTimeUpdate = (time: number) => {
-    setCurrentTime(time);
-  };
-
-  const handleDurationChange = (duration: number) => {
-    setDuration(duration);
-  };
-
-  const handleVolumeChange = (newVolume: number) => {
-    setVolume(newVolume);
-    setIsMuted(newVolume === 0);
-  };
-
-  const handleMuteToggle = () => {
-    if (isMuted) {
-      setVolume(1);
-      setIsMuted(false);
-    } else {
-      setVolume(0);
-      setIsMuted(true);
-    }
-  };
-
-  const handlePlaybackRateChange = (rate: number) => {
-    setPlaybackRate(rate);
-  };
-
-  const handleSeek = (time: number) => {
-    setCurrentTime(time);
-  };
 
   const handlePremiumAccess = () => {
     if (!user) {
@@ -101,7 +60,7 @@ export default function MeditationClient({ meditation }: MeditationClientProps) 
             imageUrl={`/images/meditations/${meditation.id}.jpg`}
           />
           {meditation.isPremium && (
-            <div className="absolute top-4 right-4 bg-yellow-400 text-sm px-3 py-1 rounded-full">
+            <div className="absolute top-4 right-4 bg-gradient-to-r from-yellow-400 to-yellow-600 text-sm px-3 py-1 rounded-full">
               Premium
             </div>
           )}
@@ -130,19 +89,6 @@ export default function MeditationClient({ meditation }: MeditationClientProps) 
               title={meditation.title}
               initialDuration={convertDurationToSeconds(meditation.duration)}
               variant={meditation.variant}
-              isPlaying={isPlaying}
-              currentTime={currentTime}
-              duration={duration}
-              volume={volume}
-              isMuted={isMuted}
-              playbackRate={playbackRate}
-              onPlayPause={handlePlayPause}
-              onTimeUpdate={handleTimeUpdate}
-              onDurationChange={handleDurationChange}
-              onVolumeChange={handleVolumeChange}
-              onMuteToggle={handleMuteToggle}
-              onPlaybackRateChange={handlePlaybackRateChange}
-              onSeek={handleSeek}
             />
           )}
         </div>
