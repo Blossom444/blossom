@@ -4,14 +4,14 @@ import { useState, useRef, useEffect } from 'react';
 import GradientCover from './GradientCover';
 
 interface AudioPlayerProps {
-  src: string;
+  audioUrl: string;
   title: string;
   initialDuration: number;
   variant?: 'purple' | 'blue' | 'green' | 'orange' | 'red' | 'yellow';
   disabled?: boolean;
 }
 
-export default function AudioPlayer({ src, title, initialDuration, variant = 'purple', disabled = false }: AudioPlayerProps) {
+export default function AudioPlayer({ audioUrl, title, initialDuration, variant = 'purple', disabled = false }: AudioPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
@@ -41,46 +41,50 @@ export default function AudioPlayer({ src, title, initialDuration, variant = 'pu
     const audio = audioRef.current;
     if (!audio) return;
 
-    const updateTime = () => {
+    const handleLoadedMetadata = () => {
+      setDuration(audio.duration);
+    };
+
+    const handleTimeUpdate = () => {
       setCurrentTime(audio.currentTime);
       if (audio.duration) {
         setProgress((audio.currentTime / audio.duration) * 100);
       }
     };
-    
-    const updateDuration = () => {
-      setDuration(audio.duration);
+
+    const handleEnded = () => {
+      setIsPlaying(false);
+      setCurrentTime(0);
     };
 
-    const onEnded = () => setIsPlaying(false);
-
-    audio.addEventListener('timeupdate', updateTime);
-    audio.addEventListener('loadedmetadata', updateDuration);
-    audio.addEventListener('ended', onEnded);
+    audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+    audio.addEventListener('timeupdate', handleTimeUpdate);
+    audio.addEventListener('ended', handleEnded);
 
     return () => {
-      audio.removeEventListener('timeupdate', updateTime);
-      audio.removeEventListener('loadedmetadata', updateDuration);
-      audio.removeEventListener('ended', onEnded);
+      audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      audio.removeEventListener('timeupdate', handleTimeUpdate);
+      audio.removeEventListener('ended', handleEnded);
     };
   }, []);
 
   const togglePlay = () => {
-    if (!audioRef.current || disabled) return;
-    
-    if (isPlaying) {
-      audioRef.current.pause();
-    } else {
-      audioRef.current.play();
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play();
+      }
+      setIsPlaying(!isPlaying);
     }
-    setIsPlaying(!isPlaying);
   };
 
-  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!audioRef.current || disabled) return;
-    const time = parseFloat(e.target.value);
-    audioRef.current.currentTime = time;
-    setCurrentTime(time);
+  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const time = Number(e.target.value);
+    if (audioRef.current) {
+      audioRef.current.currentTime = time;
+      setCurrentTime(time);
+    }
   };
 
   const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -94,17 +98,19 @@ export default function AudioPlayer({ src, title, initialDuration, variant = 'pu
   };
 
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!audioRef.current || disabled) return;
-    const value = parseFloat(e.target.value);
-    audioRef.current.volume = value;
-    setVolume(value);
+    const newVolume = Number(e.target.value);
+    if (audioRef.current) {
+      audioRef.current.volume = newVolume;
+      setVolume(newVolume);
+    }
   };
 
   const handlePlaybackRateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    if (!audioRef.current || disabled) return;
-    const rate = parseFloat(e.target.value);
-    audioRef.current.playbackRate = rate;
-    setPlaybackRate(rate);
+    const rate = Number(e.target.value);
+    if (audioRef.current) {
+      audioRef.current.playbackRate = rate;
+      setPlaybackRate(rate);
+    }
   };
 
   const formatTime = (time: number) => {
@@ -119,81 +125,73 @@ export default function AudioPlayer({ src, title, initialDuration, variant = 'pu
         <GradientCover title={title} variant={variant} />
       </div>
 
-      <audio ref={audioRef} src={src} />
+      <audio ref={audioRef} src={audioUrl} />
       
-      <div className="mb-2 sm:mb-4">
-        <input
-          type="range"
-          min={0}
-          max={duration || 0}
-          value={currentTime}
-          onChange={handleTimeChange}
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xl font-semibold text-gray-900">{title}</h2>
+        <select
+          value={playbackRate}
+          onChange={handlePlaybackRateChange}
+          className={`bg-gray-100 text-gray-700 px-3 py-1 rounded-lg ${disabled ? 'cursor-not-allowed opacity-70' : 'cursor-pointer'}`}
           disabled={disabled}
-          className={`w-full h-1.5 sm:h-2 bg-gray-200 rounded-lg appearance-none ${disabled ? 'cursor-not-allowed opacity-70' : 'cursor-pointer'}`}
-        />
-        <div className="flex justify-between text-xs sm:text-sm text-gray-500 mt-1">
-          <span>{formatTime(currentTime)}</span>
-          <span>{formatTime(duration)}</span>
+        >
+          {playbackRates.map((rate) => (
+            <option key={rate} value={rate}>
+              {rate}x
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="flex items-center gap-4 mb-4">
+        <button
+          onClick={togglePlay}
+          className={`w-12 h-12 flex items-center justify-center rounded-full bg-[#8B4513] text-white hover:bg-[#6B3410] transition-colors ${disabled ? 'bg-gray-400 cursor-not-allowed' : ''}`}
+          disabled={disabled}
+        >
+          {isPlaying ? (
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          ) : (
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          )}
+        </button>
+
+        <div className="flex-1">
+          <input
+            type="range"
+            min={0}
+            max={duration}
+            value={currentTime}
+            onChange={handleSeek}
+            className={`w-full h-2 bg-gray-200 rounded-lg appearance-none ${disabled ? 'cursor-not-allowed opacity-70' : 'cursor-pointer'}`}
+          />
+          <div className="flex justify-between text-sm text-gray-500 mt-1">
+            <span>{formatTime(currentTime)}</span>
+            <span>{formatTime(duration)}</span>
+          </div>
         </div>
       </div>
 
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-1 sm:space-x-4">
-          <button
-            onClick={togglePlay}
-            disabled={disabled}
-            className={`w-8 h-8 sm:w-12 sm:h-12 flex items-center justify-center rounded-full text-white transition-colors ${
-              disabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#8B4513] hover:bg-[#6B3410]'
-            }`}
-          >
-            {isPlaying ? (
-              <svg className="w-4 h-4 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 9v6m4-6v6" />
-              </svg>
-            ) : (
-              <svg className="w-4 h-4 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-              </svg>
-            )}
-          </button>
-
-          {!isMobile && (
-            <div className="flex items-center space-x-2">
-              <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072M17.95 6.05a8 8 0 010 11.9M6.5 8.788l-1.77.9A1 1 0 004 10.527v2.946a1 1 0 00.73.839l1.77.9A1 1 0 007.5 14.273V9.727a1 1 0 00-1-1z M11 5.882V18.118a1 1 0 01-1.553.832l-3.7-2.466" />
-              </svg>
-              <input
-                type="range"
-                min={0}
-                max={1}
-                step={0.1}
-                value={volume}
-                onChange={handleVolumeChange}
-                disabled={disabled}
-                className={`w-16 sm:w-24 h-1.5 sm:h-2 bg-gray-200 rounded-lg appearance-none ${
-                  disabled ? 'cursor-not-allowed opacity-70' : 'cursor-pointer'
-                }`}
-              />
-            </div>
-          )}
-
-          {!isMobile && (
-            <select
-              value={playbackRate}
-              onChange={handlePlaybackRateChange}
-              disabled={disabled}
-              className={`rounded px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs sm:text-sm ${
-                disabled ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-gray-100 text-gray-700'
-              }`}
-            >
-              {playbackRates.map((rate) => (
-                <option key={rate} value={rate}>
-                  {rate}x
-                </option>
-              ))}
-            </select>
-          )}
-        </div>
+      <div className="flex items-center gap-2">
+        {!isMobile && (
+          <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15.536a5 5 0 001.414 1.414m2.828-9.9a9 9 0 012.728-2.728" />
+          </svg>
+        )}
+        <input
+          type="range"
+          min={0}
+          max={1}
+          step={0.1}
+          value={volume}
+          onChange={handleVolumeChange}
+          className={`w-24 h-2 bg-gray-200 rounded-lg appearance-none ${disabled ? 'cursor-not-allowed opacity-70' : 'cursor-pointer'}`}
+        />
       </div>
     </div>
   );
