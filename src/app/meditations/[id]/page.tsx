@@ -241,26 +241,43 @@ function MeditationContent({ id }: { id: string }) {
   const getImageUrl = (variant: string) => {
     switch (variant) {
       case 'purple':
-        return '/images/meditation-purple.jpg';
+        return '/images/meditations/meditation-1.jpg';
       case 'blue':
-        return '/images/meditation-blue.jpg';
+        return '/images/meditations/meditation-2.jpg';
       case 'green':
-        return '/images/meditation-green.jpg';
+        return '/images/meditations/meditation-3.jpg';
       case 'orange':
-        return '/images/meditation-orange.jpg';
+        return '/images/meditations/meditation-4.jpg';
       case 'red':
-        return '/images/meditation-red.jpg';
+        return '/images/meditations/meditation-5.jpg';
       case 'yellow':
-        return '/images/meditation-yellow.jpg';
+        return '/images/meditations/meditation-6.jpg';
       default:
-        return '/images/meditation-default.jpg';
+        return '/images/meditation.jpg';
     }
   };
 
   const getAudioUrl = (id: string) => {
-    // Перевіряємо чи існує файл
-    const audioPath = `/meditations/meditation-${id}.mp3`;
-    return audioPath;
+    // Мапінг ID медитацій до реальних файлів
+    const audioMap: { [key: string]: string } = {
+      '1': '/meditations/morning-meditation.mp3',
+      '2': '/meditations/stress-relief..mp3',
+      '3': '/meditations/evening-meditation.mp3',
+      '4': '/meditations/focus-meditation.mp3',
+      '5': '/meditations/meditation-5.mp3',
+      '6': '/meditations/meditation-6.mp3',
+      '7': '/meditations/meditation-7.mp3',
+      '8': '/meditations/meditation-8.mp3',
+      '9': '/meditations/meditation-9.mp3',
+      '10': '/meditations/meditation-10.mp3',
+      '11': '/meditations/meditation-11.mp3',
+      '12': '/meditations/meditation-12.mp3',
+      '13': '/meditations/meditation-13.mp3',
+      '14': '/meditations/meditation-14.mp3',
+      '15': '/meditations/meditation-15.mp3'
+    };
+
+    return audioMap[id] || '/meditations/morning-meditation.mp3';
   };
 
   return (
@@ -274,7 +291,7 @@ function MeditationContent({ id }: { id: string }) {
               className={`w-full h-full object-cover ${meditation.isPremium ? 'filter blur-sm' : ''}`}
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
-                target.src = '/images/meditation-default.jpg';
+                target.src = '/images/meditation.jpg';
               }}
             />
           </div>

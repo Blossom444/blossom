@@ -44,6 +44,7 @@ export default function AudioPlayer({ audioUrl, title, initialDuration = 0, vari
     if (!audio) return;
 
     const handleLoadedMetadata = () => {
+      console.log('Audio loaded:', audioUrl);
       setDuration(audio.duration);
       setIsLoading(false);
     };
@@ -86,6 +87,7 @@ export default function AudioPlayer({ audioUrl, title, initialDuration = 0, vari
       if (isPlaying) {
         await audioRef.current.pause();
       } else {
+        console.log('Playing audio:', audioUrl);
         await audioRef.current.play();
       }
       setIsPlaying(!isPlaying);
@@ -158,6 +160,7 @@ export default function AudioPlayer({ audioUrl, title, initialDuration = 0, vari
     return (
       <div className="text-center p-4 bg-red-50 rounded-lg">
         <p className="text-red-600">{error}</p>
+        <p className="text-sm text-gray-500 mt-2">URL: {audioUrl}</p>
       </div>
     );
   }
