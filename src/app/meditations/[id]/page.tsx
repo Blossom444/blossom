@@ -241,25 +241,25 @@ function MeditationContent({ id }: { id: string }) {
   const getImageUrl = (variant: string) => {
     switch (variant) {
       case 'purple':
-        return '/meditation-purple.jpg';
+        return '/images/meditation-purple.jpg';
       case 'blue':
-        return '/meditation-blue.jpg';
+        return '/images/meditation-blue.jpg';
       case 'green':
-        return '/meditation-green.jpg';
+        return '/images/meditation-green.jpg';
       case 'orange':
-        return '/meditation-orange.jpg';
+        return '/images/meditation-orange.jpg';
       case 'red':
-        return '/meditation-red.jpg';
+        return '/images/meditation-red.jpg';
       case 'yellow':
-        return '/meditation-yellow.jpg';
+        return '/images/meditation-yellow.jpg';
       default:
-        return '/meditation-default.jpg';
+        return '/images/meditation-default.jpg';
     }
   };
 
   const getAudioUrl = (id: string) => {
     // Перевіряємо чи існує файл
-    const audioPath = `/meditations/${id}.mp3`;
+    const audioPath = `/meditations/meditation-${id}.mp3`;
     return audioPath;
   };
 
@@ -274,7 +274,7 @@ function MeditationContent({ id }: { id: string }) {
               className={`w-full h-full object-cover ${meditation.isPremium ? 'filter blur-sm' : ''}`}
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
-                target.src = '/meditation-default.jpg';
+                target.src = '/images/meditation-default.jpg';
               }}
             />
           </div>

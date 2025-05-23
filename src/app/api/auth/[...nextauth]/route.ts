@@ -14,23 +14,28 @@ const handler = NextAuth({
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          return null;
-        }
+        try {
+          if (!credentials?.email || !credentials?.password) {
+            throw new Error('Email and password required');
+          }
 
-        // Тут буде ваша логіка перевірки користувача
-        // Наразі повертаємо тестового користувача
-        if (credentials.email === 'admin@example.com' && credentials.password === 'admin123') {
-          return {
-            id: '1',
-            name: 'Admin User',
-            email: 'admin@example.com',
-            role: 'admin',
-            isPremium: true
-          };
-        }
+          // Тут буде ваша логіка перевірки користувача
+          // Наразі повертаємо тестового користувача
+          if (credentials.email === 'admin@example.com' && credentials.password === 'admin123') {
+            return {
+              id: '1',
+              name: 'Admin User',
+              email: 'admin@example.com',
+              role: 'admin',
+              isPremium: true
+            };
+          }
 
-        return null;
+          throw new Error('Invalid credentials');
+        } catch (error) {
+          console.error('Auth error:', error);
+          throw error;
+        }
       }
     })
   ],
@@ -41,6 +46,7 @@ const handler = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
+        token.id = user.id;
         token.role = user.role;
         token.isPremium = user.isPremium;
       }
@@ -48,6 +54,7 @@ const handler = NextAuth({
     },
     async session({ session, token }) {
       if (session.user) {
+        session.user.id = token.id;
         session.user.role = token.role;
         session.user.isPremium = token.isPremium;
       }
@@ -58,6 +65,7 @@ const handler = NextAuth({
     signIn: '/login',
     error: '/login',
   },
+  debug: process.env.NODE_ENV === 'development',
 });
 
 export { handler as GET, handler as POST }; 

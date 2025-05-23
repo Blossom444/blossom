@@ -60,7 +60,8 @@ export default function AudioPlayer({ audioUrl, title, initialDuration = 0, vari
       setCurrentTime(0);
     };
 
-    const handleError = () => {
+    const handleError = (e: Event) => {
+      console.error('Audio error:', e);
       setError('Помилка завантаження аудіо файлу');
       setIsLoading(false);
     };
@@ -76,20 +77,22 @@ export default function AudioPlayer({ audioUrl, title, initialDuration = 0, vari
       audio.removeEventListener('ended', handleEnded);
       audio.removeEventListener('error', handleError);
     };
-  }, []);
+  }, [audioUrl]);
 
-  const togglePlay = () => {
+  const togglePlay = async () => {
     if (!audioRef.current) return;
     
-    if (isPlaying) {
-      audioRef.current.pause();
-    } else {
-      audioRef.current.play().catch(err => {
-        setError('Помилка відтворення аудіо');
-        console.error('Playback error:', err);
-      });
+    try {
+      if (isPlaying) {
+        await audioRef.current.pause();
+      } else {
+        await audioRef.current.play();
+      }
+      setIsPlaying(!isPlaying);
+    } catch (err) {
+      console.error('Playback error:', err);
+      setError('Помилка відтворення аудіо');
     }
-    setIsPlaying(!isPlaying);
   };
 
   const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
