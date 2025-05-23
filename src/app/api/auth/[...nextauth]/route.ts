@@ -1,9 +1,5 @@
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import { connectToDatabase } from '@/lib/mongodb';
-import { ObjectId } from 'mongodb';
-import bcrypt from 'bcryptjs';
-import mongoose from 'mongoose';
 
 const handler = NextAuth({
   providers: [
@@ -16,7 +12,7 @@ const handler = NextAuth({
       async authorize(credentials) {
         try {
           if (!credentials?.email || !credentials?.password) {
-            throw new Error('Email and password required');
+            return null;
           }
 
           // Тестовий адміністратор
@@ -30,14 +26,15 @@ const handler = NextAuth({
             };
           }
 
-          throw new Error('Invalid credentials');
+          return null;
         } catch (error) {
           console.error('Auth error:', error);
-          throw error;
+          return null;
         }
       }
     })
   ],
+  secret: process.env.NEXTAUTH_SECRET || 'your-secret-key',
   session: {
     strategy: 'jwt',
     maxAge: 30 * 24 * 60 * 60, // 30 днів
