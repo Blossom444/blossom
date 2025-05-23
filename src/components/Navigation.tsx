@@ -84,7 +84,7 @@ export default function Navigation() {
           href="/login"
           className="px-4 py-2 rounded-md text-sm font-medium bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 transition-all duration-300"
         >
-          Зареєструватись
+          Увійти
         </Link>
         <Link 
           href="/register"
@@ -132,13 +132,13 @@ export default function Navigation() {
       <>
         <Link 
           href="/login"
-          className="block text-xl text-white hover:text-white/80"
+          className="block text-xl text-white hover:text-[#8B4513]"
         >
-          Зареєструватись
+          Увійти
         </Link>
         <Link 
           href="/register"
-          className="block bg-white/10 backdrop-blur-md border border-white/20 text-white text-xl px-4 py-3 rounded-md hover:bg-white/20 transition-all duration-300 text-center mt-8"
+          className="block bg-white/10 backdrop-blur-md border border-white/20 text-white text-xl px-4 py-3 rounded-md hover:bg-white/20 transition-all duration-300 text-center mt-4"
         >
           Реєстрація
         </Link>
@@ -169,30 +169,28 @@ export default function Navigation() {
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:block">
-            <div className="ml-10 flex items-center space-x-4">
-              <Link
-                href="/meditations"
-                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors duration-300 ${
-                  isActive('/meditations')
-                    ? 'text-[#8B4513] border-b-2 border-[#8B4513]'
-                    : 'text-white hover:text-[#8B4513]'
-                }`}
-              >
-                Медитації
-              </Link>
-              <Link
-                href="/planner"
-                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors duration-300 ${
-                  isActive('/planner')
-                    ? 'text-[#8B4513] border-b-2 border-[#8B4513]'
-                    : 'text-white hover:text-[#8B4513]'
-                }`}
-              >
-                Книга змін
-              </Link>
-              <AuthButtons />
-            </div>
+          <div className="hidden md:flex items-center space-x-4">
+            <Link
+              href="/meditations"
+              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors duration-300 ${
+                isActive('/meditations')
+                  ? 'text-[#8B4513] border-b-2 border-[#8B4513]'
+                  : 'text-white hover:text-[#8B4513]'
+              }`}
+            >
+              Медитації
+            </Link>
+            <Link
+              href="/planner"
+              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors duration-300 ${
+                isActive('/planner')
+                  ? 'text-[#8B4513] border-b-2 border-[#8B4513]'
+                  : 'text-white hover:text-[#8B4513]'
+              }`}
+            >
+              Книга змін
+            </Link>
+            <AuthButtons />
           </div>
 
           {/* Mobile menu button */}
@@ -231,28 +229,28 @@ export default function Navigation() {
       {/* Mobile menu */}
       {isMenuOpen && (
         <div className="md:hidden fixed inset-0 bg-black/95 backdrop-blur-md z-50">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            <div className="flex flex-col space-y-4 p-4">
-              <Link
-                href="/meditations"
-                className={`block text-xl ${
-                  isActive('/meditations')
-                    ? 'text-[#8B4513]'
-                    : 'text-white hover:text-[#8B4513]'
-                }`}
-              >
-                Медитації
-              </Link>
-              <Link
-                href="/planner"
-                className={`block text-xl ${
-                  isActive('/planner')
-                    ? 'text-[#8B4513]'
-                    : 'text-white hover:text-[#8B4513]'
-                }`}
-              >
-                Книга змін
-              </Link>
+          <div className="px-4 pt-20 pb-3 space-y-6">
+            <Link
+              href="/meditations"
+              className={`block text-xl ${
+                isActive('/meditations')
+                  ? 'text-[#8B4513]'
+                  : 'text-white hover:text-[#8B4513]'
+              }`}
+            >
+              Медитації
+            </Link>
+            <Link
+              href="/planner"
+              className={`block text-xl ${
+                isActive('/planner')
+                  ? 'text-[#8B4513]'
+                  : 'text-white hover:text-[#8B4513]'
+              }`}
+            >
+              Книга змін
+            </Link>
+            <div className="pt-4 border-t border-white/10">
               <MobileAuthButtons />
             </div>
           </div>
