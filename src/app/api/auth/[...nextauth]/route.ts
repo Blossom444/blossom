@@ -15,62 +15,41 @@ const handler = NextAuth({
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          throw new Error('Email and password required');
+          return null;
         }
 
-        const mongoose = await connectToDatabase();
-        const User = mongoose.models.User || mongoose.model('User', new mongoose.Schema({
-          name: String,
-          email: String,
-          password: String,
-          role: String,
-          isPremium: Boolean,
-          accessibleMeditations: [String],
-          accessiblePractices: [String]
-        }));
-
-        const user = await User.findOne({ email: credentials.email });
-
-        if (!user) {
-          throw new Error('No user found');
+        // Тут буде ваша логіка перевірки користувача
+        // Наразі повертаємо тестового користувача
+        if (credentials.email === 'admin@example.com' && credentials.password === 'admin123') {
+          return {
+            id: '1',
+            name: 'Admin User',
+            email: 'admin@example.com',
+            role: 'admin',
+            isPremium: true
+          };
         }
 
-        const isValid = await bcrypt.compare(credentials.password, user.password);
-
-        if (!isValid) {
-          throw new Error('Invalid password');
-        }
-
-        return {
-          id: user._id.toString(),
-          name: user.name,
-          email: user.email,
-          role: user.role,
-          isPremium: user.isPremium,
-          accessibleMeditations: user.accessibleMeditations || [],
-          accessiblePractices: user.accessiblePractices || [],
-        };
+        return null;
       }
     })
   ],
+  session: {
+    strategy: 'jwt',
+    maxAge: 30 * 24 * 60 * 60, // 30 днів
+  },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id;
         token.role = user.role;
         token.isPremium = user.isPremium;
-        token.accessibleMeditations = user.accessibleMeditations;
-        token.accessiblePractices = user.accessiblePractices;
       }
       return token;
     },
     async session({ session, token }) {
-      if (token) {
-        session.user.id = token.id;
+      if (session.user) {
         session.user.role = token.role;
         session.user.isPremium = token.isPremium;
-        session.user.accessibleMeditations = token.accessibleMeditations;
-        session.user.accessiblePractices = token.accessiblePractices;
       }
       return session;
     }
@@ -78,9 +57,6 @@ const handler = NextAuth({
   pages: {
     signIn: '/login',
     error: '/login',
-  },
-  session: {
-    strategy: 'jwt',
   },
 });
 

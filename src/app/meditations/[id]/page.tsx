@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import AudioPlayer from '@/components/AudioPlayer';
+import { AuthProvider } from '@/contexts/AuthContext';
 
 interface Meditation {
   id: string;
@@ -175,19 +176,19 @@ interface PageProps {
   };
 }
 
-export default function MeditationPage({ params }: PageProps) {
+function MeditationContent({ id }: { id: string }) {
   const router = useRouter();
   const { user } = useAuth();
   const [meditation, setMeditation] = useState<Meditation | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const foundMeditation = allMeditations.find(m => m.id === params.id);
+    const foundMeditation = allMeditations.find(m => m.id === id);
     if (foundMeditation) {
       setMeditation(foundMeditation);
     }
     setIsLoading(false);
-  }, [params.id]);
+  }, [id]);
 
   if (isLoading) {
     return (
@@ -268,5 +269,13 @@ export default function MeditationPage({ params }: PageProps) {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function MeditationPage({ params }: PageProps) {
+  return (
+    <AuthProvider>
+      <MeditationContent id={params.id} />
+    </AuthProvider>
   );
 } 
