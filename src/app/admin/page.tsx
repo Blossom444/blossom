@@ -2,7 +2,6 @@
 
 export const dynamic = 'force-dynamic';
 export const dynamicParams = true;
-export const revalidate = false;
 
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';

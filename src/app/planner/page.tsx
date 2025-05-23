@@ -2,7 +2,6 @@
 
 export const dynamic = 'force-dynamic';
 export const dynamicParams = true;
-export const revalidate = false;
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
