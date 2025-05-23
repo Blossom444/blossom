@@ -1,15 +1,5 @@
 import { meditations as meditationsData } from '@/data/meditations';
-
-export interface Meditation {
-  id: string;
-  title: string;
-  description: string;
-  duration: string;
-  variant: 'orange' | 'blue' | 'purple' | 'green' | 'red' | 'yellow';
-  audioUrl: string;
-  isPremium: boolean;
-  category?: string;
-}
+import { Meditation } from '@/types';
 
 // Конвертуємо масив в об'єкт для легшого доступу
 export const meditations: Record<string, Meditation> = meditationsData.reduce((acc, meditation) => {

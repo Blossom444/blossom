@@ -2,12 +2,12 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  password?: string;
+  password: string;
   role: 'user' | 'admin';
   isPremium: boolean;
-  createdAt: string;
   accessibleMeditations: string[];
   accessiblePractices: string[];
+  createdAt: string;
   phone?: string;
   address?: {
     street: string;
@@ -15,6 +15,30 @@ export interface User {
     postalCode: string;
     region: string;
   };
+}
+
+export interface Meditation {
+  id: string;
+  title: string;
+  description: string;
+  duration: number;
+  audioUrl: string;
+  imageUrl: string;
+  category: string;
+  variant: 'orange' | 'blue' | 'purple' | 'green' | 'red' | 'yellow';
+  isPremium: boolean;
+}
+
+export interface Practice {
+  id: string;
+  title: string;
+  description: string;
+  duration: number;
+  videoUrl: string;
+  imageUrl: string;
+  category: string;
+  type: 'text' | 'video' | 'audio';
+  isPremium: boolean;
 }
 
 export interface Order {

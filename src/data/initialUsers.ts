@@ -9,7 +9,8 @@ export const initialUsers: User[] = [
     role: 'admin',
     isPremium: true,
     createdAt: new Date().toISOString(),
-    accessibleMeditations: ['meditation-1', 'meditation-2', 'meditation-3', 'meditation-4']
+    accessibleMeditations: ['meditation-1', 'meditation-2', 'meditation-3', 'meditation-4'],
+    accessiblePractices: []
   },
   {
     id: '2',
@@ -19,6 +20,7 @@ export const initialUsers: User[] = [
     role: 'user',
     isPremium: false,
     createdAt: new Date().toISOString(),
-    accessibleMeditations: ['meditation-1', 'meditation-2']
+    accessibleMeditations: ['meditation-1', 'meditation-2'],
+    accessiblePractices: []
   },
 ]; 

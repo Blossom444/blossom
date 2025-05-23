@@ -23,14 +23,7 @@ export default function Register() {
     setIsLoading(true);
 
     try {
-      await register({
-        name: formData.name,
-        email: formData.email,
-        password: formData.password,
-        role: 'user',
-        isPremium: false,
-        accessibleMeditations: []
-      });
+      await register(formData.name, formData.email, formData.password);
       router.push('/profile');
     } catch (err) {
       setError('Помилка при реєстрації');
