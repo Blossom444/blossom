@@ -3,6 +3,7 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import { connectToDatabase } from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 import bcrypt from 'bcryptjs';
+import mongoose from 'mongoose';
 
 const handler = NextAuth({
   providers: [
@@ -17,8 +18,18 @@ const handler = NextAuth({
           throw new Error('Email and password required');
         }
 
-        const { db } = await connectToDatabase();
-        const user = await db.collection('users').findOne({ email: credentials.email });
+        const mongoose = await connectToDatabase();
+        const User = mongoose.models.User || mongoose.model('User', new mongoose.Schema({
+          name: String,
+          email: String,
+          password: String,
+          role: String,
+          isPremium: Boolean,
+          accessibleMeditations: [String],
+          accessiblePractices: [String]
+        }));
+
+        const user = await User.findOne({ email: credentials.email });
 
         if (!user) {
           throw new Error('No user found');
