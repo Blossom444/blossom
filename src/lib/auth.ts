@@ -1,54 +1,46 @@
-import { NextAuthOptions } from 'next-auth';
+import { AuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import { connectToDatabase } from './mongodb';
-import User from '@/models/User';
-import bcrypt from 'bcryptjs';
 
-export const authOptions: NextAuthOptions = {
+export const authOptions: AuthOptions = {
   providers: [
     CredentialsProvider({
       name: 'Credentials',
       credentials: {
-        email: { label: 'Email', type: 'email' },
-        password: { label: 'Password', type: 'password' }
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          throw new Error('Email and password required');
+        try {
+          if (!credentials?.email || !credentials?.password) {
+            return null;
+          }
+
+          // Тестовий адміністратор
+          if (credentials.email === 'admin@blossom.com' && credentials.password === 'admin123') {
+            return {
+              id: '1',
+              name: 'Admin User',
+              email: 'admin@blossom.com',
+              role: 'admin',
+              isPremium: true
+            };
+          }
+
+          return null;
+        } catch (error) {
+          console.error('Auth error:', error);
+          return null;
         }
-
-        await connectToDatabase();
-
-        const user = await User.findOne({ email: credentials.email });
-
-        if (!user) {
-          throw new Error('No user found with this email');
-        }
-
-        const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
-
-        if (!isPasswordValid) {
-          throw new Error('Invalid password');
-        }
-
-        return {
-          id: user._id.toString(),
-          email: user.email,
-          name: user.name,
-          role: user.role,
-          isPremium: user.isPremium
-        };
       }
     })
   ],
+  secret: process.env.NEXTAUTH_SECRET || 'your-secret-key',
   session: {
-    strategy: 'jwt'
-  },
-  pages: {
-    signIn: '/login'
+    strategy: 'jwt' as const,
+    maxAge: 30 * 24 * 60 * 60, // 30 днів
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user }: { token: any; user: any }) {
       if (user) {
         token.id = user.id;
         token.role = user.role;
@@ -56,13 +48,18 @@ export const authOptions: NextAuthOptions = {
       }
       return token;
     },
-    async session({ session, token }) {
-      if (token) {
+    async session({ session, token }: { session: any; token: any }) {
+      if (session.user) {
         session.user.id = token.id;
         session.user.role = token.role;
         session.user.isPremium = token.isPremium;
       }
       return session;
     }
-  }
+  },
+  pages: {
+    signIn: '/login',
+    error: '/login',
+  },
+  debug: process.env.NODE_ENV === 'development',
 }; 
