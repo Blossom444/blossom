@@ -12,17 +12,17 @@ export async function GET() {
       return new NextResponse('Unauthorized', { status: 401 });
     }
 
-    const user = await User.findOne({ email: session.user.email });
-    if (!user || user.role !== 'admin') {
-      return new NextResponse('Forbidden', { status: 403 });
+    await connectToDatabase();
+
+    const user = await User.findOne({ email: session.user.email }).select('-password');
+
+    if (!user) {
+      return new NextResponse('User not found', { status: 404 });
     }
 
-    await connectToDatabase();
-    const users = await User.find({}, { password: 0 });
-
-    return NextResponse.json(users);
+    return NextResponse.json(user);
   } catch (error) {
-    console.error('Error fetching users:', error);
+    console.error('Error fetching user data:', error);
     return new NextResponse('Internal Server Error', { status: 500 });
   }
 } 

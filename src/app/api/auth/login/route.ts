@@ -1,50 +1,28 @@
 import { NextResponse } from 'next/server';
-import connectDB from '@/lib/mongodb';
-import User from '@/models/User';
-import bcrypt from 'bcryptjs';
+import { signIn } from 'next-auth/react';
+import { authOptions } from '@/lib/auth';
 
-export async function POST(req: Request) {
+export async function POST(request: Request) {
   try {
-    const { email, password } = await req.json();
+    const { email, password } = await request.json();
 
-    await connectDB();
-
-    // Find user
-    const user = await User.findOne({ email });
-    if (!user) {
-      return NextResponse.json(
-        { error: 'Invalid credentials' },
-        { status: 401 }
-      );
+    if (!email || !password) {
+      return new NextResponse('Missing required fields', { status: 400 });
     }
 
-    // Check password
-    const isValid = await bcrypt.compare(password, user.password);
-    if (!isValid) {
-      return NextResponse.json(
-        { error: 'Invalid credentials' },
-        { status: 401 }
-      );
+    const result = await signIn('credentials', {
+      email,
+      password,
+      redirect: false
+    });
+
+    if (result?.error) {
+      return new NextResponse(result.error, { status: 401 });
     }
 
-    // Remove password from response
-    const userWithoutPassword = {
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      isPremium: user.isPremium,
-      accessibleMeditations: user.accessibleMeditations,
-      accessiblePractices: user.accessiblePractices,
-      createdAt: user.createdAt,
-    };
-
-    return NextResponse.json(userWithoutPassword);
+    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Login error:', error);
-    return NextResponse.json(
-      { error: 'Error logging in' },
-      { status: 500 }
-    );
+    console.error('Error logging in:', error);
+    return new NextResponse('Internal Server Error', { status: 500 });
   }
 } 

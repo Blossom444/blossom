@@ -1,12 +1,41 @@
 'use client';
 
-import AdminPanel from '@/components/AdminPanel';
+import { useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import UserManagement from '@/components/admin/UserManagement';
+import GradientCover from '@/components/GradientCover';
 
-export default function AdminPage() {
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Адмін панель</h1>
-      <AdminPanel />
-    </div>
-  );
+export default function AdminPanel() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/admin/login');
+    } else if (status === 'authenticated' && session?.user?.role !== 'admin') {
+      router.push('/');
+    }
+  }, [status, session, router]);
+
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+      </div>
+    );
+  }
+
+  if (status === 'authenticated' && session?.user?.role === 'admin') {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <GradientCover title="Адмін-панель" variant="purple" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <UserManagement />
+        </div>
+      </div>
+    );
+  }
+
+  return null;
 } 
