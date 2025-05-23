@@ -16,24 +16,15 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  title: 'BLOSSOM - Медитації та практики',
-  description: 'Платформа для медитацій та практик',
+  title: 'BLOSSOM - Ваш особистий путівник до трансформації та розвитку',
+  description: 'BLOSSOM - це платформа для медитацій та особистого розвитку. Почати медитацію або відкрити Книгу змін.',
+  keywords: 'медитація, особистий розвиток, трансформація, BLOSSOM, книга змін',
+  viewport: 'width=device-width, initial-scale=1, maximum-scale=1',
+  themeColor: '#8B4513',
   manifest: '/manifest.json',
   icons: {
-    icon: [
-      { url: '/favicon.ico' },
-      { url: '/icons/icon-72x72.png', sizes: '72x72', type: 'image/png' },
-      { url: '/icons/icon-96x96.png', sizes: '96x96', type: 'image/png' },
-      { url: '/icons/icon-128x128.png', sizes: '128x128', type: 'image/png' },
-      { url: '/icons/icon-144x144.png', sizes: '144x144', type: 'image/png' },
-      { url: '/icons/icon-152x152.png', sizes: '152x152', type: 'image/png' },
-      { url: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
-      { url: '/icons/icon-384x384.png', sizes: '384x384', type: 'image/png' },
-      { url: '/icons/icon-512x512.png', sizes: '512x512', type: 'image/png' },
-    ],
-    apple: [
-      { url: '/apple-touch-icon.png' },
-    ],
+    icon: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
   },
   appleWebApp: {
     capable: true,
