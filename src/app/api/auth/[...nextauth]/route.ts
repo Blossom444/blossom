@@ -19,13 +19,12 @@ const handler = NextAuth({
             throw new Error('Email and password required');
           }
 
-          // Тут буде ваша логіка перевірки користувача
-          // Наразі повертаємо тестового користувача
-          if (credentials.email === 'admin@example.com' && credentials.password === 'admin123') {
+          // Тестовий адміністратор
+          if (credentials.email === 'admin@blossom.com' && credentials.password === 'admin123') {
             return {
               id: '1',
               name: 'Admin User',
-              email: 'admin@example.com',
+              email: 'admin@blossom.com',
               role: 'admin',
               isPremium: true
             };
