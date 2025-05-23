@@ -3,10 +3,10 @@
 import { useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import UserManagement from '@/components/admin/UserManagement';
+import AdminPanel from '@/components/AdminPanel';
 import GradientCover from '@/components/GradientCover';
 
-export default function AdminPanel() {
+export default function AdminPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
@@ -31,7 +31,7 @@ export default function AdminPanel() {
       <div className="min-h-screen bg-gray-50">
         <GradientCover title="Адмін-панель" variant="purple" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <UserManagement />
+          <AdminPanel />
         </div>
       </div>
     );

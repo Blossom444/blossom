@@ -1,10 +1,10 @@
-import connectDB from '../lib/mongodb';
+import { connectToDatabase } from '../lib/mongodb';
 import User from '../models/User';
 import bcrypt from 'bcryptjs';
 
 async function createAdmin() {
   try {
-    await connectDB();
+    await connectToDatabase();
 
     const adminEmail = 'admin2@blossom.com';
     const adminPassword = 'admin123456';

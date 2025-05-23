@@ -3,6 +3,18 @@
 import { useState } from 'react';
 import MeditationCard from './MeditationCard';
 
+interface Meditation {
+  id: string;
+  title: string;
+  duration: number;
+  description: string;
+  variant: 'orange' | 'blue' | 'purple' | 'green' | 'red' | 'yellow';
+  audioUrl?: string;
+  videoUrl?: string;
+  isPremium: boolean;
+  category: string;
+}
+
 interface User {
   accessibleMeditations: string[];
   accessiblePractices: string[];
@@ -16,13 +28,13 @@ interface AccessibleContentProps {
 export default function AccessibleContent({ user }: AccessibleContentProps) {
   const [activeTab, setActiveTab] = useState<'meditations' | 'practices'>('meditations');
 
-  const meditations = [
+  const meditations: Meditation[] = [
     {
       id: '1',
       title: 'Спокійне дихання',
-      duration: '10 хв',
+      duration: 10,
       description: 'Медитація для заспокоєння та зосередження',
-      variant: 'audio',
+      variant: 'purple',
       audioUrl: '/meditations/breathing.mp3',
       isPremium: false,
       category: 'Дихання'
@@ -30,9 +42,9 @@ export default function AccessibleContent({ user }: AccessibleContentProps) {
     {
       id: '2',
       title: 'Глибока релаксація',
-      duration: '15 хв',
+      duration: 15,
       description: 'Медитація для глибокого розслаблення',
-      variant: 'audio',
+      variant: 'purple',
       audioUrl: '/meditations/relaxation.mp3',
       isPremium: true,
       category: 'Релаксація'
@@ -40,13 +52,13 @@ export default function AccessibleContent({ user }: AccessibleContentProps) {
     // Додайте більше медитацій за потреби
   ];
 
-  const practices = [
+  const practices: Meditation[] = [
     {
       id: '1',
       title: 'Йога для початківців',
-      duration: '20 хв',
+      duration: 20,
       description: 'Базові асани для початківців',
-      variant: 'video',
+      variant: 'purple',
       videoUrl: '/practices/yoga-basics.mp4',
       isPremium: false,
       category: 'Йога'
@@ -54,9 +66,9 @@ export default function AccessibleContent({ user }: AccessibleContentProps) {
     {
       id: '2',
       title: 'Розтяжка',
-      duration: '15 хв',
+      duration: 15,
       description: 'Комплекс вправ для розтяжки',
-      variant: 'video',
+      variant: 'purple',
       videoUrl: '/practices/stretching.mp4',
       isPremium: true,
       category: 'Розтяжка'

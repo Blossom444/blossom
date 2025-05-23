@@ -1,61 +1,32 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 
 interface User {
-  id: string;
+  _id: string;
   name: string;
   email: string;
-  role: string;
+  role: 'user' | 'admin';
   isPremium: boolean;
   accessibleMeditations: string[];
   accessiblePractices: string[];
 }
 
-export default function UserManagement() {
+interface UserManagementProps {
+  users: User[];
+  onUpdateUser: (userId: string, updates: Partial<User>) => Promise<void>;
+  onDeleteUser: (userId: string) => Promise<void>;
+}
+
+export default function UserManagement({ users, onUpdateUser, onDeleteUser }: UserManagementProps) {
   const { data: session } = useSession();
-  const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   const [editingUser, setEditingUser] = useState<User | null>(null);
-
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  const fetchUsers = async () => {
-    try {
-      const response = await fetch('/api/users');
-      if (!response.ok) {
-        throw new Error('Failed to fetch users');
-      }
-      const data = await response.json();
-      setUsers(data);
-    } catch (error) {
-      setError('Failed to load users');
-      console.error('Error fetching users:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [error, setError] = useState('');
 
   const handleUpdateUser = async (user: User) => {
     try {
-      const response = await fetch(`/api/users/${user.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(user),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to update user');
-      }
-
-      const updatedUser = await response.json();
-      setUsers(users.map(u => u.id === updatedUser.id ? updatedUser : u));
+      await onUpdateUser(user._id, user);
       setEditingUser(null);
     } catch (error) {
       setError('Failed to update user');
@@ -64,33 +35,14 @@ export default function UserManagement() {
   };
 
   const handleDeleteUser = async (userId: string) => {
-    if (!confirm('Are you sure you want to delete this user?')) {
-      return;
-    }
-
+    if (!confirm('Are you sure you want to delete this user?')) return;
     try {
-      const response = await fetch(`/api/users/${userId}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to delete user');
-      }
-
-      setUsers(users.filter(u => u.id !== userId));
+      await onDeleteUser(userId);
     } catch (error) {
       setError('Failed to delete user');
       console.error('Error deleting user:', error);
     }
   };
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
-      </div>
-    );
-  }
 
   if (error) {
     return (
@@ -131,9 +83,9 @@ export default function UserManagement() {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {users.map((user) => (
-                <tr key={user.id}>
+                <tr key={user._id}>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    {editingUser?.id === user.id ? (
+                    {editingUser?._id === user._id ? (
                       <input
                         type="text"
                         value={editingUser.name}
@@ -148,10 +100,10 @@ export default function UserManagement() {
                     <div className="text-sm text-gray-900">{user.email}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    {editingUser?.id === user.id ? (
+                    {editingUser?._id === user._id ? (
                       <select
                         value={editingUser.role}
-                        onChange={(e) => setEditingUser({ ...editingUser, role: e.target.value })}
+                        onChange={(e) => setEditingUser({ ...editingUser, role: e.target.value as 'user' | 'admin' })}
                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
                       >
                         <option value="user">User</option>
@@ -164,7 +116,7 @@ export default function UserManagement() {
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    {editingUser?.id === user.id ? (
+                    {editingUser?._id === user._id ? (
                       <input
                         type="checkbox"
                         checked={editingUser.isPremium}
@@ -180,7 +132,7 @@ export default function UserManagement() {
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    {editingUser?.id === user.id ? (
+                    {editingUser?._id === user._id ? (
                       <div className="space-x-2">
                         <button
                           onClick={() => handleUpdateUser(editingUser)}
@@ -204,7 +156,7 @@ export default function UserManagement() {
                           Edit
                         </button>
                         <button
-                          onClick={() => handleDeleteUser(user.id)}
+                          onClick={() => handleDeleteUser(user._id)}
                           className="text-red-600 hover:text-red-900"
                         >
                           Delete

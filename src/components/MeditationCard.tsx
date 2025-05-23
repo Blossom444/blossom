@@ -5,9 +5,9 @@ import Link from 'next/link';
 interface Meditation {
   id: string;
   title: string;
-  duration: string;
+  duration: number;
   description: string;
-  variant: 'audio' | 'video';
+  variant: 'orange' | 'blue' | 'purple' | 'green' | 'red' | 'yellow';
   audioUrl?: string;
   videoUrl?: string;
   isPremium: boolean;
@@ -25,7 +25,7 @@ export default function MeditationCard({ meditation, isAccessible }: MeditationC
       <div className="p-6">
         <div className="flex justify-between items-start mb-4">
           <h3 className="text-lg font-semibold text-gray-900">{meditation.title}</h3>
-          <span className="text-sm text-gray-500">{meditation.duration}</span>
+          <span className="text-sm text-gray-500">{meditation.duration} хв</span>
         </div>
         <p className="text-gray-600 text-sm mb-4">{meditation.description}</p>
         <div className="flex justify-between items-center">
@@ -44,7 +44,7 @@ export default function MeditationCard({ meditation, isAccessible }: MeditationC
               href={`/meditations/${meditation.id}`}
               className="block w-full text-center bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 transition-colors"
             >
-              Почати {meditation.variant === 'audio' ? 'медитацію' : 'практику'}
+              Почати медитацію
             </Link>
           ) : (
             <Link
