@@ -10,7 +10,7 @@ export default function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
-  const { user, loading, logout } = useAuth();
+  const { user, logout } = useAuth();
 
   // Функція для перевірки чи користувач є адміністратором
   const isAdmin = () => {
@@ -47,10 +47,6 @@ export default function Navigation() {
   const isHomePage = pathname === '/';
 
   const AuthButtons = () => {
-    if (loading) {
-      return null;
-    }
-
     if (user) {
       return (
         <>
@@ -97,10 +93,6 @@ export default function Navigation() {
   };
 
   const MobileAuthButtons = () => {
-    if (loading) {
-      return null;
-    }
-
     if (user) {
       return (
         <>
