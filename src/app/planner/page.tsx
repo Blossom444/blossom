@@ -47,14 +47,15 @@ export default function PlannerPage() {
 
   return (
     <div className="min-h-screen relative">
-      <div className="absolute inset-0">
+      <div className="fixed inset-0 w-full h-full">
         <Image
           src="/images/planners/planner-details.jpg"
           alt="Background"
-          fill
-          className="object-cover"
+          width={1920}
+          height={1080}
+          className="w-full h-full object-cover"
           priority
-          sizes="100vw"
+          quality={100}
           style={{ filter: 'brightness(0.7)' }}
         />
       </div>

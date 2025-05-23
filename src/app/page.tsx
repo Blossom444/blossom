@@ -15,14 +15,15 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen relative">
-      <div className="absolute inset-0">
+      <div className="fixed inset-0 w-full h-full">
         <Image
           src="/images/IMG_8991.jpg"
           alt="Background"
-          fill
-          className="object-cover"
+          width={1920}
+          height={1080}
+          className="w-full h-full object-cover"
           priority
-          sizes="100vw"
+          quality={100}
         />
       </div>
       
