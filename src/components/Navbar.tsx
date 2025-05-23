@@ -145,7 +145,7 @@ export default function Navbar() {
 
   return (
     <nav className={`fixed top-0 left-0 right-0 w-full z-50 transition-all duration-300 ${
-      isScrolled ? 'bg-black/80 backdrop-blur-md shadow-lg' : 'bg-transparent'
+      isScrolled ? 'bg-black/80 backdrop-blur-md shadow-lg' : 'bg-black/50 backdrop-blur-md'
     }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
@@ -176,6 +176,16 @@ export default function Navbar() {
               }`}
             >
               Медитації
+            </Link>
+            <Link
+              href="/practices"
+              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors duration-300 ${
+                isActive('/practices')
+                  ? 'text-[#8B4513] border-b-2 border-[#8B4513]'
+                  : 'text-white hover:text-[#8B4513]'
+              }`}
+            >
+              Практики
             </Link>
             <Link
               href="/planner"
@@ -236,6 +246,16 @@ export default function Navbar() {
               }`}
             >
               Медитації
+            </Link>
+            <Link
+              href="/practices"
+              className={`block text-xl ${
+                isActive('/practices')
+                  ? 'text-[#8B4513]'
+                  : 'text-white hover:text-[#8B4513]'
+              }`}
+            >
+              Практики
             </Link>
             <Link
               href="/planner"
