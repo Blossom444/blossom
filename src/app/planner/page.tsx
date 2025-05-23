@@ -41,7 +41,7 @@ export default function PlannerPage() {
 
   useEffect(() => {
     setMounted(true);
-    const img = new window.Image();
+    const img = document.createElement('img');
     img.src = '/images/planners/planner-details.jpg';
     img.onload = () => setImageLoaded(true);
   }, []);

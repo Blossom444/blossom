@@ -10,7 +10,7 @@ export default function HomePage() {
 
   useEffect(() => {
     setMounted(true);
-    const img = new window.Image();
+    const img = document.createElement('img');
     img.src = '/images/IMG_8991.jpg';
     img.onload = () => setImageLoaded(true);
   }, []);
