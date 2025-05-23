@@ -6,12 +6,12 @@ import GradientCover from './GradientCover';
 interface AudioPlayerProps {
   audioUrl: string;
   title: string;
-  initialDuration: number;
+  initialDuration?: number;
   variant?: 'purple' | 'blue' | 'green' | 'orange' | 'red' | 'yellow';
   disabled?: boolean;
 }
 
-export default function AudioPlayer({ audioUrl, title, initialDuration, variant = 'purple', disabled = false }: AudioPlayerProps) {
+export default function AudioPlayer({ audioUrl, title, initialDuration = 0, variant = 'purple', disabled = false }: AudioPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
