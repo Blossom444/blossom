@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import PlannerCard from '@/components/PlannerCard';
 import GradientCover from '@/components/GradientCover';
 
@@ -37,25 +38,26 @@ const planners = [
 
 export default function PlannerPage() {
   const [mounted, setMounted] = useState(false);
-  const [imageLoaded, setImageLoaded] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    const img = document.createElement('img');
-    img.src = '/images/planners/planner-details.jpg';
-    img.onload = () => setImageLoaded(true);
   }, []);
 
   if (!mounted) return null;
 
   return (
     <div className="min-h-screen relative">
-      <div 
-        className={`absolute inset-0 bg-[url('/images/planners/planner-details.jpg')] bg-cover bg-center bg-fixed transition-opacity duration-500 ${
-          imageLoaded ? 'opacity-100' : 'opacity-0'
-        }`}
-        style={{ filter: 'brightness(0.7)' }}
-      />
+      <div className="absolute inset-0">
+        <Image
+          src="/images/planners/planner-details.jpg"
+          alt="Background"
+          fill
+          className="object-cover"
+          priority
+          sizes="100vw"
+          style={{ filter: 'brightness(0.7)' }}
+        />
+      </div>
       
       <div className="relative min-h-screen bg-black/30 backdrop-blur-sm">
         <div className="bg-black/50 backdrop-blur-md py-6 sm:py-8 md:py-12">

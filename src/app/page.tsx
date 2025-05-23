@@ -6,24 +6,25 @@ import { useEffect, useState } from 'react';
 
 export default function HomePage() {
   const [mounted, setMounted] = useState(false);
-  const [imageLoaded, setImageLoaded] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    const img = document.createElement('img');
-    img.src = '/images/IMG_8991.jpg';
-    img.onload = () => setImageLoaded(true);
   }, []);
 
   if (!mounted) return null;
 
   return (
     <div className="min-h-screen relative">
-      <div 
-        className={`absolute inset-0 bg-[url('/images/IMG_8991.jpg')] bg-cover bg-center bg-fixed transition-opacity duration-500 ${
-          imageLoaded ? 'opacity-100' : 'opacity-0'
-        }`}
-      />
+      <div className="absolute inset-0">
+        <Image
+          src="/images/IMG_8991.jpg"
+          alt="Background"
+          fill
+          className="object-cover"
+          priority
+          sizes="100vw"
+        />
+      </div>
       
       <div className="relative min-h-screen flex items-center justify-center">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
