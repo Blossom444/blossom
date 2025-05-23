@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import GradientCover from '@/components/GradientCover';
+import { signIn } from 'next-auth/react';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -36,7 +37,18 @@ export default function RegisterPage() {
         throw new Error(data);
       }
 
-      router.push('/login');
+      // Автоматично входимо після реєстрації
+      const result = await signIn('credentials', {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        throw new Error('Failed to login after registration');
+      }
+
+      router.push('/profile');
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
