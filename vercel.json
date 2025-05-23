@@ -30,5 +30,18 @@
   "framework": "nextjs",
   "outputDirectory": ".next",
   "regions": ["fra1"],
-  "public": true
+  "public": true,
+  "security": {
+    "headers": {
+      "x-frame-options": "DENY",
+      "x-content-type-options": "nosniff",
+      "x-xss-protection": "1; mode=block"
+    }
+  },
+  "auth": {
+    "enabled": false
+  },
+  "protection": {
+    "enabled": false
+  }
 } 
