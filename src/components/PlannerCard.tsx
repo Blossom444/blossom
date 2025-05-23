@@ -14,6 +14,7 @@ interface PlannerCardProps {
 
 export default function PlannerCard({ color, colorName, imageUrl, isAvailable, price }: PlannerCardProps) {
   const [showOrderForm, setShowOrderForm] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   const handleOrderClick = () => {
     if (isAvailable) {
@@ -23,44 +24,50 @@ export default function PlannerCard({ color, colorName, imageUrl, isAvailable, p
 
   return (
     <>
-      <div className="bg-white rounded-lg shadow-md overflow-hidden">
-        <div className="relative h-[400px]">
+      <div 
+        className="bg-[#F5F5DC]/20 backdrop-blur-md rounded-lg overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl border border-[#F5F5DC]/30"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        <div className="relative h-40 sm:h-48 md:h-64 bg-black/10">
           <Image
             src={imageUrl}
-            alt={`Планер ${colorName}`}
+            alt={`Комплект BLOSSOM ${colorName}`}
             fill
-            className="object-contain"
+            className="object-contain p-2"
+            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 25vw"
             priority
           />
         </div>
-        <div className="p-4">
-          <h3 className="text-lg font-semibold mb-2">
-            Планер {colorName}
-          </h3>
-          <div className="flex items-center justify-between mb-4">
+        
+        <div className="p-3 sm:p-4">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-sm sm:text-base md:text-lg font-semibold text-[#F5F5DC] drop-shadow-md">
+              Комплект BLOSSOM {colorName}
+            </h3>
             <div 
-              className="w-6 h-6 rounded-full border-2 border-gray-200" 
+              className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 rounded-full border-2 border-[#F5F5DC]/50" 
               style={{ backgroundColor: color }}
             />
-            <span className="text-lg font-bold">{price} грн</span>
           </div>
-          <button
-            className={`w-full px-4 py-2 rounded-lg text-base font-medium transition-all duration-300
-              ${isAvailable 
-                ? 'bg-white/20 backdrop-blur-sm text-primary border-2 border-primary hover:bg-primary hover:text-white'
-                : 'bg-gray-100 text-gray-400 cursor-not-allowed border-2 border-gray-300'
-              }`}
-            onClick={handleOrderClick}
+          <p className="text-xs sm:text-sm md:text-base text-[#F5F5DC]/90 mb-2 sm:mb-3 md:mb-4">{price} грн</p>
+          <button 
+            className={`w-full py-1.5 sm:py-2 px-3 sm:px-4 rounded-md transition-colors duration-300 text-xs sm:text-sm md:text-base ${
+              isAvailable 
+                ? 'bg-amber-500/80 hover:bg-amber-600 text-white' 
+                : 'bg-gray-500/50 text-gray-300 cursor-not-allowed'
+            }`}
             disabled={!isAvailable}
+            onClick={handleOrderClick}
           >
-            {isAvailable ? 'Замовити' : 'Немає в наявності'}
+            {isAvailable ? 'Купити' : 'Немає в наявності'}
           </button>
         </div>
       </div>
 
       {showOrderForm && (
         <OrderForm
-          productName={`Планер "${colorName}"`}
+          productName={`Комплект BLOSSOM "${colorName}"`}
           price={price}
           onClose={() => setShowOrderForm(false)}
         />
