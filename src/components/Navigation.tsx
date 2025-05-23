@@ -50,14 +50,6 @@ export default function Navigation() {
     if (user) {
       return (
         <>
-          {isAdmin() && (
-            <Link 
-              href="/admin"
-              className={`${isActive('/admin') ? 'text-[#8B4513] border-b-2 border-[#8B4513]' : 'text-white hover:text-[#8B4513]'} px-3 py-2 rounded-md text-sm font-medium`}
-            >
-              Адмін панель
-            </Link>
-          )}
           <Link 
             href="/profile"
             className={`${isActive('/profile') ? 'text-[#8B4513] border-b-2 border-[#8B4513]' : 'text-white hover:text-[#8B4513]'} px-3 py-2 rounded-md text-sm font-medium`}
@@ -96,14 +88,6 @@ export default function Navigation() {
     if (user) {
       return (
         <>
-          {isAdmin() && (
-            <Link 
-              href="/admin"
-              className={`block text-xl ${isActive('/admin') ? 'text-[#8B4513]' : 'text-white hover:text-[#8B4513]'}`}
-            >
-              Адмін панель
-            </Link>
-          )}
           <Link 
             href="/profile"
             className={`block text-xl ${isActive('/profile') ? 'text-[#8B4513]' : 'text-white hover:text-[#8B4513]'}`}

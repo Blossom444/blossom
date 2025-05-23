@@ -12,6 +12,7 @@ interface Meditation {
   videoUrl?: string;
   isPremium: boolean;
   category: string;
+  imageUrl?: string;
 }
 
 interface MeditationCardProps {
@@ -22,6 +23,13 @@ interface MeditationCardProps {
 export default function MeditationCard({ meditation, isAccessible }: MeditationCardProps) {
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+      {meditation.imageUrl && (
+        <img
+          src={meditation.imageUrl}
+          alt={meditation.title}
+          className="w-full h-40 object-cover mb-4"
+        />
+      )}
       <div className="p-6">
         <div className="flex justify-between items-start mb-4">
           <h3 className="text-lg font-semibold text-gray-900">{meditation.title}</h3>

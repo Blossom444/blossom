@@ -1,13 +1,21 @@
 'use client';
 
-export const dynamic = 'force-dynamic';
-export const dynamicParams = true;
-
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { meditations } from '@/data/meditations';
 import GradientCover from '@/components/GradientCover';
 import MeditationCard from '@/components/MeditationCard';
+
+interface Meditation {
+  id: string;
+  title: string;
+  description: string;
+  duration: number;
+  category: string;
+  isPremium: boolean;
+  audioUrl: string;
+  imageUrl: string;
+  variant: 'orange' | 'blue' | 'purple' | 'green' | 'red' | 'yellow';
+}
 
 export default function MeditationsPage() {
   const { user } = useAuth();
@@ -17,91 +25,104 @@ export default function MeditationsPage() {
 
   const categories = [
     { id: 'all', name: 'Всі' },
-    { id: 'beginner', name: 'Для початківців' },
-    { id: 'intermediate', name: 'Середній рівень' },
-    { id: 'advanced', name: 'Просунутий рівень' }
+    { id: 'stress', name: 'Стрес' },
+    { id: 'sleep', name: 'Сон' },
+    { id: 'anxiety', name: 'Тривога' },
+    { id: 'focus', name: 'Концентрація' },
+    { id: 'gratitude', name: 'Вдячність' }
   ];
 
-  const filteredMeditations = meditations.filter(meditation => {
-    if (selectedCategory === 'all') return true;
-    return meditation.category === selectedCategory;
-  });
+  const meditations: Meditation[] = [
+    {
+      id: '1',
+      title: 'Спокійний вечір',
+      description: 'Медитація для розслаблення та підготовки до сну',
+      duration: 15,
+      category: 'sleep',
+      isPremium: false,
+      audioUrl: '/meditations/calm-evening.mp3',
+      imageUrl: '/images/meditation-1.jpg',
+      variant: 'purple'
+    },
+    {
+      id: '2',
+      title: 'Зняття стресу',
+      description: 'Медитація для зняття напруження та стресу',
+      duration: 10,
+      category: 'stress',
+      isPremium: true,
+      audioUrl: '/meditations/stress-relief.mp3',
+      imageUrl: '/images/meditation-2.jpg',
+      variant: 'orange'
+    },
+    // Додайте більше медитацій тут
+  ];
+
+  const filteredMeditations = selectedCategory === 'all'
+    ? meditations
+    : meditations.filter(m => m.category === selectedCategory);
 
   const totalPages = Math.ceil(filteredMeditations.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentMeditations = filteredMeditations.slice(startIndex, endIndex);
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  const paginatedMeditations = filteredMeditations.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <GradientCover title="Медитації" variant="purple" />
+    <div className="min-h-screen bg-black text-white">
+      <GradientCover title="Медитації" />
       
-      <div className="container mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
+        <h1 className="text-4xl font-bold mb-8 text-center">Медитації</h1>
+        
         {/* Категорії */}
-        <div className="mb-8 overflow-x-auto">
-          <div className="flex space-x-2 min-w-max">
-            {categories.map(category => (
-              <button
-                key={category.id}
-                onClick={() => {
-                  setSelectedCategory(category.id);
-                  setCurrentPage(1);
-                }}
-                className={`px-4 py-2 rounded-full whitespace-nowrap ${
-                  selectedCategory === category.id
-                    ? 'bg-purple-600 text-white'
-                    : 'bg-white text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                {category.name}
-              </button>
-            ))}
-          </div>
+        <div className="flex flex-wrap justify-center gap-4 mb-12">
+          {categories.map(category => (
+            <button
+              key={category.id}
+              onClick={() => {
+                setSelectedCategory(category.id);
+                setCurrentPage(1);
+              }}
+              className={`px-6 py-2 rounded-full transition-all duration-300 ${
+                selectedCategory === category.id
+                  ? 'bg-[#8B4513] text-white'
+                  : 'bg-white/10 text-white hover:bg-white/20'
+              }`}
+            >
+              {category.name}
+            </button>
+          ))}
         </div>
 
-        {/* Медитації */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {currentMeditations.map(meditation => (
+        {/* Сітка медитацій */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {paginatedMeditations.map(meditation => (
             <MeditationCard
               key={meditation.id}
               meditation={meditation}
-              isAccessible={!!user?.isPremium || !!user?.accessibleMeditations?.includes(meditation.id)}
+              isAccessible={!!user && (!meditation.isPremium || user.isPremium)}
             />
           ))}
         </div>
 
         {/* Пагінація */}
         {totalPages > 1 && (
-          <div className="mt-8 flex justify-center space-x-2">
+          <div className="flex justify-center mt-12 gap-2">
             <button
-              onClick={() => handlePageChange(currentPage - 1)}
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
-              className="px-4 py-2 rounded-md bg-white text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 rounded-md bg-white/10 text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/20 transition-all duration-300"
             >
               Попередня
             </button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-              <button
-                key={page}
-                onClick={() => handlePageChange(page)}
-                className={`px-4 py-2 rounded-md ${
-                  currentPage === page
-                    ? 'bg-purple-600 text-white'
-                    : 'bg-white text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                {page}
-              </button>
-            ))}
+            <span className="px-4 py-2 text-white">
+              Сторінка {currentPage} з {totalPages}
+            </span>
             <button
-              onClick={() => handlePageChange(currentPage + 1)}
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
               disabled={currentPage === totalPages}
-              className="px-4 py-2 rounded-md bg-white text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 rounded-md bg-white/10 text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/20 transition-all duration-300"
             >
               Наступна
             </button>
