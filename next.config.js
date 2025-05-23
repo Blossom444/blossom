@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 // Updated configuration for better image handling and deployment
+// Test commit for deployment verification
 const nextConfig = {
   reactStrictMode: true,
   output: 'standalone',
