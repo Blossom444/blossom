@@ -1,4 +1,12 @@
 {
+  "version": 2,
+  "public": true,
+  "buildCommand": "next build",
+  "devCommand": "next dev",
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "outputDirectory": ".next",
+  "regions": ["fra1"],
   "headers": [
     {
       "source": "/(.*)",
@@ -17,18 +25,5 @@
         }
       ]
     }
-  ],
-  "git": {
-    "deploymentEnabled": {
-      "main": true,
-      "fix-deployment": true
-    }
-  },
-  "buildCommand": "next build",
-  "devCommand": "next dev",
-  "installCommand": "npm install",
-  "framework": "nextjs",
-  "outputDirectory": ".next",
-  "regions": ["fra1"],
-  "public": true
+  ]
 } 
