@@ -238,19 +238,35 @@ function MeditationContent({ id }: { id: string }) {
     return minutes * 60 + seconds;
   };
 
+  const getImageUrl = (variant: string) => {
+    switch (variant) {
+      case 'purple':
+        return '/images/meditation-purple.jpg';
+      case 'blue':
+        return '/images/meditation-blue.jpg';
+      case 'green':
+        return '/images/meditation-green.jpg';
+      case 'orange':
+        return '/images/meditation-orange.jpg';
+      case 'red':
+        return '/images/meditation-red.jpg';
+      case 'yellow':
+        return '/images/meditation-yellow.jpg';
+      default:
+        return '/images/meditation-default.jpg';
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
         <div className="relative rounded-lg overflow-hidden shadow-xl mb-8">
           <div className="aspect-w-16 aspect-h-9">
-            <div className={`w-full h-full bg-gradient-to-br ${
-              meditation.variant === 'purple' ? 'from-purple-500 to-purple-700' :
-              meditation.variant === 'blue' ? 'from-blue-500 to-blue-700' :
-              meditation.variant === 'green' ? 'from-green-500 to-green-700' :
-              meditation.variant === 'orange' ? 'from-orange-500 to-orange-700' :
-              meditation.variant === 'red' ? 'from-red-500 to-red-700' :
-              'from-yellow-500 to-yellow-700'
-            }`} />
+            <img
+              src={getImageUrl(meditation.variant)}
+              alt={meditation.title}
+              className={`w-full h-full object-cover ${meditation.isPremium ? 'filter blur-sm' : ''}`}
+            />
           </div>
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
