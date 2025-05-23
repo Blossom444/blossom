@@ -145,13 +145,13 @@ export default function Navigation() {
   };
 
   return (
-    <nav className={`fixed w-full z-50 transition-all duration-300 ${
-      isScrolled ? 'bg-black/80 backdrop-blur-md' : 'bg-transparent'
+    <nav className={`fixed top-0 left-0 right-0 w-full z-50 transition-all duration-300 ${
+      isScrolled ? 'bg-black/80 backdrop-blur-md shadow-lg' : 'bg-transparent'
     }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
-            <Link href="/" className="text-white text-xl font-bold">
+            <Link href="/" className="text-white text-xl font-bold hover:text-[#8B4513] transition-colors duration-300">
               BLOSSOM
             </Link>
           </div>

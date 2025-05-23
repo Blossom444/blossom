@@ -27,7 +27,7 @@ const convertDurationToSeconds = (duration: string): number => {
 
 export default function MeditationClient({ meditation }: MeditationClientProps) {
   const { hasPremiumAccess, hasMeditationAccess } = useAuth();
-  const hasAccess = hasPremiumAccess() || hasMeditationAccess(meditation.id);
+  const hasAccess = !meditation.isPremium || hasPremiumAccess() || hasMeditationAccess(meditation.id);
 
   return (
     <div className="container mx-auto px-4 py-8">

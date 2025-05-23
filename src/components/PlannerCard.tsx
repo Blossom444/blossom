@@ -29,7 +29,7 @@ export default function PlannerCard({ color, colorName, imageUrl, isAvailable, p
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <div className="relative h-40 sm:h-48 md:h-64 bg-black/10">
+        <div className="relative h-32 sm:h-40 md:h-48 lg:h-64 bg-black/10">
           <Image
             src={imageUrl}
             alt={`Комплект BLOSSOM ${colorName}`}
@@ -40,19 +40,19 @@ export default function PlannerCard({ color, colorName, imageUrl, isAvailable, p
           />
         </div>
         
-        <div className="p-3 sm:p-4">
-          <div className="flex items-center justify-between mb-2">
+        <div className="p-2 sm:p-3 md:p-4">
+          <div className="flex items-center justify-between mb-1 sm:mb-2">
             <h3 className="text-sm sm:text-base md:text-lg font-semibold text-[#F5F5DC] drop-shadow-md">
               Комплект BLOSSOM {colorName}
             </h3>
             <div 
-              className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 rounded-full border-2 border-[#F5F5DC]/50" 
+              className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 rounded-full border-2 border-[#F5F5DC]/50" 
               style={{ backgroundColor: color }}
             />
           </div>
-          <p className="text-xs sm:text-sm md:text-base text-[#F5F5DC]/90 mb-2 sm:mb-3 md:mb-4">{price} грн</p>
+          <p className="text-xs sm:text-sm md:text-base text-[#F5F5DC]/90 mb-1 sm:mb-2 md:mb-3">{price} грн</p>
           <button 
-            className={`w-full py-1.5 sm:py-2 px-3 sm:px-4 rounded-md transition-colors duration-300 text-xs sm:text-sm md:text-base ${
+            className={`w-full py-1 sm:py-1.5 md:py-2 px-2 sm:px-3 md:px-4 rounded-md transition-colors duration-300 text-xs sm:text-sm md:text-base ${
               isAvailable 
                 ? 'bg-amber-500/80 hover:bg-amber-600 text-white' 
                 : 'bg-gray-500/50 text-gray-300 cursor-not-allowed'
