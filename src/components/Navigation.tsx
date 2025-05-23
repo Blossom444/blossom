@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -9,6 +9,7 @@ export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
   const { user, loading, logout } = useAuth();
 
   // Функція для перевірки чи користувач є адміністратором
@@ -43,10 +44,11 @@ export default function Navigation() {
   }, [isMenuOpen]);
 
   const isActive = (path: string) => pathname === path;
+  const isHomePage = pathname === '/';
 
   const AuthButtons = () => {
     if (loading) {
-      return null; // Don't show anything while loading
+      return null;
     }
 
     if (user) {
@@ -96,7 +98,7 @@ export default function Navigation() {
 
   const MobileAuthButtons = () => {
     if (loading) {
-      return null; // Don't show anything while loading
+      return null;
     }
 
     if (user) {
@@ -151,6 +153,16 @@ export default function Navigation() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
+            {!isHomePage && (
+              <button
+                onClick={() => router.back()}
+                className="md:hidden text-white mr-4 hover:text-[#8B4513] transition-colors duration-300"
+              >
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+            )}
             <Link href="/" className="text-white text-xl font-bold hover:text-[#8B4513] transition-colors duration-300">
               BLOSSOM
             </Link>
@@ -218,31 +230,31 @@ export default function Navigation() {
 
       {/* Mobile menu */}
       {isMenuOpen && (
-        <div className="md:hidden bg-black/90 backdrop-blur-md">
+        <div className="md:hidden fixed inset-0 bg-black/95 backdrop-blur-md z-50">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            <Link
-              href="/meditations"
-              className={`block px-3 py-2 rounded-md text-base font-medium ${
-                isActive('/meditations')
-                  ? 'text-[#8B4513]'
-                  : 'text-white hover:text-[#8B4513]'
-              }`}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Медитації
-            </Link>
-            <Link
-              href="/planner"
-              className={`block px-3 py-2 rounded-md text-base font-medium ${
-                isActive('/planner')
-                  ? 'text-[#8B4513]'
-                  : 'text-white hover:text-[#8B4513]'
-              }`}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Книга змін
-            </Link>
-            <MobileAuthButtons />
+            <div className="flex flex-col space-y-4 p-4">
+              <Link
+                href="/meditations"
+                className={`block text-xl ${
+                  isActive('/meditations')
+                    ? 'text-[#8B4513]'
+                    : 'text-white hover:text-[#8B4513]'
+                }`}
+              >
+                Медитації
+              </Link>
+              <Link
+                href="/planner"
+                className={`block text-xl ${
+                  isActive('/planner')
+                    ? 'text-[#8B4513]'
+                    : 'text-white hover:text-[#8B4513]'
+                }`}
+              >
+                Книга змін
+              </Link>
+              <MobileAuthButtons />
+            </div>
           </div>
         </div>
       )}
