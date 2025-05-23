@@ -1,8 +1,8 @@
+'use client';
+
 export const dynamic = 'force-dynamic';
 export const dynamicParams = true;
 export const revalidate = 0;
-
-'use client';
 
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
