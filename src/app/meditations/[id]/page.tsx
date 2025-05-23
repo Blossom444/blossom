@@ -164,38 +164,5 @@ interface PageProps {
 }
 
 export default function MeditationPage({ params }: PageProps) {
-  const [meditation, setMeditation] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const found = allMeditations.find(m => m.id === params.id);
-    setMeditation(found || null);
-    setLoading(false);
-  }, [params.id]);
-
-  if (loading) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-center">
-          <div className="animate-pulse h-8 w-32 bg-gray-200 rounded"></div>
-        </div>
-      </div>
-    );
-  }
-
-  if (!meditation) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold text-red-600">Медитацію не знайдено</h1>
-        <p className="mt-4">ID: {params.id}</p>
-        <div className="mt-6">
-          <a href="/meditations" className="text-primary hover:underline">
-            ← Повернутися до списку медитацій
-          </a>
-        </div>
-      </div>
-    );
-  }
-
-  return <MeditationClient meditation={meditation} />;
+  return <MeditationClient id={params.id} />;
 } 
