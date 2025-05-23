@@ -49,4 +49,33 @@ export async function PATCH(
       { status: 500 }
     );
   }
+}
+
+export async function DELETE(
+  req: Request,
+  { params }: { params: { userId: string } }
+) {
+  try {
+    const { userId } = params;
+
+    await connectDB();
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return NextResponse.json(
+        { error: 'User not found' },
+        { status: 404 }
+      );
+    }
+
+    await user.deleteOne();
+
+    return NextResponse.json({ message: 'User deleted successfully' });
+  } catch (error) {
+    console.error('User deletion error:', error);
+    return NextResponse.json(
+      { error: 'Error deleting user' },
+      { status: 500 }
+    );
+  }
 } 

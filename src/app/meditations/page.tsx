@@ -233,113 +233,94 @@ export default function MeditationsPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl sm:text-3xl font-bold text-center mb-8">Медитації</h1>
-      
-      {/* Фільтр категорій */}
-      <div className="mb-8 overflow-x-auto">
-        <div className="flex space-x-2 sm:space-x-4 min-w-max pb-2">
-          {categories.map((category) => (
-            <button
-              key={category}
-              onClick={() => setSelectedCategory(category)}
-              className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-sm sm:text-base whitespace-nowrap transition-colors ${
-                selectedCategory === category
-                  ? 'bg-primary text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              {category === 'all' ? 'Всі' : category}
-            </button>
-          ))}
-        </div>
-      </div>
-      
-      {/* Відображення інформації про сторінки */}
-      <div className="mb-4 text-xs sm:text-sm text-gray-500 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1">
-        <div className="bg-gray-100 rounded-full px-2 py-1 inline-block w-fit">
-          Сторінка {currentPage} з {totalPages}
-        </div>
-        <div>
-          Показано <span className="font-medium">{currentMeditations.length}</span> з <span className="font-medium">{filteredMeditations.length}</span> медитацій
-        </div>
-      </div>
-      
-      {/* Сітка медитацій */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        {currentMeditations.map((meditation) => (
-          <Link
-            key={meditation.id}
-            href={`/meditations/${meditation.id}`}
-            className="block transform transition-transform hover:scale-[1.02]"
-          >
-            <div className="bg-white rounded-lg shadow-md overflow-hidden">
-              <div className="relative aspect-square">
-                <GradientCover
-                  title={meditation.title}
-                  variant={meditation.variant as any}
-                  imageUrl={`/images/meditations/${meditation.id}.jpg`}
-                />
-                {meditation.isPremium && (
-                  <div className="absolute top-2 right-2 bg-yellow-400 text-xs sm:text-sm px-2 py-1 rounded-full">
-                    Premium
-                  </div>
-                )}
-              </div>
-              <div className="p-3 sm:p-4">
-                <h3 className="font-semibold text-base sm:text-lg mb-1">{meditation.title}</h3>
-                <p className="text-sm sm:text-base text-gray-600 mb-2">{meditation.duration}</p>
-                <p className="text-xs sm:text-sm text-gray-500 line-clamp-2">{meditation.description}</p>
-              </div>
-            </div>
-          </Link>
-        ))}
-      </div>
-      
-      {/* Пагінація */}
-      {totalPages > 1 && (
-        <div className="flex justify-center items-center space-x-2 mt-8">
-          <button
-            onClick={goToPrevPage}
-            disabled={currentPage === 1}
-            className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-sm sm:text-base ${
-              currentPage === 1
-                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                : 'bg-primary text-white hover:bg-primary-600'
-            }`}
-          >
-            Попередня
-          </button>
+    <div className="min-h-screen bg-black text-white">
+      <GradientCover title="Медитації" variant="purple" />
+      <div className="relative z-10 pt-24 pb-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <h1 className="text-3xl font-bold text-center mb-8">Медитації</h1>
           
-          <div className="flex space-x-1 sm:space-x-2">
-            {getPageNumbers().map((pageNum) => (
+          {/* Категорії */}
+          <div className="flex flex-wrap justify-center gap-2 mb-8">
+            {categories.map((category) => (
               <button
-                key={pageNum}
-                onClick={() => goToPage(pageNum)}
-                className={`w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg text-sm sm:text-base ${
-                  currentPage === pageNum
-                    ? 'bg-primary text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                key={category}
+                onClick={() => {
+                  setSelectedCategory(category);
+                  setCurrentPage(1);
+                }}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors duration-300 ${
+                  selectedCategory === category
+                    ? 'bg-[#8B4513] text-white'
+                    : 'bg-white/10 text-white hover:bg-white/20'
                 }`}
               >
-                {pageNum}
+                {category === 'all' ? 'Всі' : category}
               </button>
             ))}
           </div>
 
-          <button
-            onClick={goToNextPage}
-            disabled={currentPage === totalPages}
-            className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-sm sm:text-base ${
-              currentPage === totalPages
-                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                : 'bg-primary text-white hover:bg-primary-600'
-            }`}
-          >
-            Наступна
-          </button>
+          {/* Сітка медитацій */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {currentMeditations.map((meditation) => (
+              <div
+                key={meditation.id}
+                className="bg-white/5 backdrop-blur-md rounded-lg overflow-hidden hover:bg-white/10 transition-all duration-300"
+              >
+                <div className="p-6">
+                  <div className="flex justify-between items-start mb-4">
+                    <h3 className="text-lg font-semibold">{meditation.title}</h3>
+                    <span className="text-sm text-white/60">{meditation.duration}</span>
+                  </div>
+                  <p className="text-white/80 text-sm mb-4">{meditation.description}</p>
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs px-2 py-1 rounded-full bg-white/10">
+                      {meditation.category}
+                    </span>
+                    {meditation.isPremium && (
+                      <span className="text-xs px-2 py-1 rounded-full bg-[#8B4513]">
+                        Premium
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Пагінація */}
+          {totalPages > 1 && (
+            <div className="flex justify-center items-center space-x-2 mt-8">
+              <button
+                onClick={goToPrevPage}
+                disabled={currentPage === 1}
+                className="px-3 py-1 rounded-md bg-white/10 text-white disabled:opacity-50"
+              >
+                Назад
+              </button>
+              {getPageNumbers().map((pageNum) => (
+                <button
+                  key={pageNum}
+                  onClick={() => goToPage(pageNum)}
+                  className={`px-3 py-1 rounded-md ${
+                    currentPage === pageNum
+                      ? 'bg-[#8B4513] text-white'
+                      : 'bg-white/10 text-white hover:bg-white/20'
+                  }`}
+                >
+                  {pageNum}
+                </button>
+              ))}
+              <button
+                onClick={goToNextPage}
+                disabled={currentPage === totalPages}
+                className="px-3 py-1 rounded-md bg-white/10 text-white disabled:opacity-50"
+              >
+                Вперед
+              </button>
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 } 

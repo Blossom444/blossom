@@ -17,9 +17,10 @@ interface User {
 interface UserManagementProps {
   users: User[];
   onUpdateUser: (userId: string, updates: Partial<User>) => Promise<void>;
+  onDeleteUser: (userId: string) => Promise<void>;
 }
 
-export default function UserManagement({ users, onUpdateUser }: UserManagementProps) {
+export default function UserManagement({ users, onUpdateUser, onDeleteUser }: UserManagementProps) {
   const [loading, setLoading] = useState<{ [key: string]: boolean }>({});
 
   const handleRoleChange = async (userId: string, newRole: 'user' | 'admin') => {
@@ -54,6 +55,19 @@ export default function UserManagement({ users, onUpdateUser }: UserManagementPr
     }
   };
 
+  const handleDeleteUser = async (userId: string) => {
+    if (!confirm('Ви впевнені, що хочете видалити цього користувача?')) {
+      return;
+    }
+
+    setLoading(prev => ({ ...prev, [userId]: true }));
+    try {
+      await onDeleteUser(userId);
+    } finally {
+      setLoading(prev => ({ ...prev, [userId]: false }));
+    }
+  };
+
   return (
     <div className="bg-white shadow-md rounded-lg p-6">
       <h2 className="text-2xl font-bold mb-6">Управління користувачами</h2>
@@ -66,6 +80,7 @@ export default function UserManagement({ users, onUpdateUser }: UserManagementPr
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Роль</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Медитації</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Практики</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Дії</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
@@ -125,6 +140,15 @@ export default function UserManagement({ users, onUpdateUser }: UserManagementPr
                       ))}
                     </select>
                   </div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <button
+                    onClick={() => handleDeleteUser(user._id)}
+                    disabled={loading[user._id]}
+                    className="text-red-600 hover:text-red-900 focus:outline-none focus:underline"
+                  >
+                    Видалити
+                  </button>
                 </td>
               </tr>
             ))}

@@ -102,6 +102,23 @@ export default function AdminPanel() {
     }
   };
 
+  const deleteUser = async (userId: string) => {
+    try {
+      const response = await fetch(`/api/users/${userId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete user');
+      }
+
+      await fetchUsers();
+      await sendTelegramMessage(`User ${userId} deleted`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to delete user');
+    }
+  };
+
   const handleTestTelegram = async () => {
     try {
       setTelegramTestStatus('testing');
@@ -148,7 +165,7 @@ export default function AdminPanel() {
       </div>
 
       <div className="grid gap-8">
-        <UserManagement users={users} onUpdateUser={updateUser} />
+        <UserManagement users={users} onUpdateUser={updateUser} onDeleteUser={deleteUser} />
         <MeditationAccess users={users} onUpdateUser={updateUser} />
         <PracticeAccess users={users} onUpdateUser={updateUser} />
         <PremiumManagement users={users} onUpdateUser={updateUser} />

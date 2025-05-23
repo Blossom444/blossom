@@ -118,6 +118,12 @@ export default function Navbar() {
         >
           Реєстрація
         </Link>
+        <Link 
+          href="/admin/login"
+          className="block text-base text-white/60 hover:text-[#8B4513] mt-4 text-center"
+        >
+          Вхід для адміністратора
+        </Link>
       </>
     );
   };
@@ -175,6 +181,12 @@ export default function Navbar() {
               Книга змін
             </Link>
             <AuthButtons />
+            <Link 
+              href="/admin/login"
+              className="px-3 py-2 rounded-md text-sm font-medium text-white/60 hover:text-[#8B4513] transition-colors duration-300"
+            >
+              Адмін
+            </Link>
           </div>
 
           {/* Mobile menu button */}

@@ -6,8 +6,8 @@ async function createAdmin() {
   try {
     await connectDB();
 
-    const adminEmail = 'admin@blossom.com';
-    const adminPassword = '122222111';
+    const adminEmail = 'admin2@blossom.com';
+    const adminPassword = 'admin123456';
 
     // Check if admin already exists
     const existingAdmin = await User.findOne({ email: adminEmail });
