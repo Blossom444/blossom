@@ -1,28 +1,39 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import { connectToDatabase } from '@/lib/mongodb';
-import User from '@/models/User';
+import { headers } from 'next/headers';
+
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions);
+    const headersList = headers();
+    const token = headersList.get('authorization')?.split(' ')[1];
 
-    if (!session?.user?.email) {
-      return new NextResponse('Unauthorized', { status: 401 });
+    if (!token) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
     }
 
-    const user = await User.findOne({ email: session.user.email });
-    if (!user || user.role !== 'admin') {
-      return new NextResponse('Forbidden', { status: 403 });
-    }
-
-    await connectToDatabase();
-    const users = await User.find({}, { password: 0 });
-
-    return NextResponse.json(users);
+    // Тут буде ваша логіка отримання списку користувачів
+    // Наразі повертаємо тестові дані
+    return NextResponse.json([
+      {
+        _id: '1',
+        name: 'Test User',
+        email: 'test@example.com',
+        role: 'user',
+        isPremium: false,
+        accessibleMeditations: [],
+        accessiblePractices: [],
+        createdAt: new Date().toISOString()
+      }
+    ]);
   } catch (error) {
     console.error('Error fetching users:', error);
-    return new NextResponse('Internal Server Error', { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 } 

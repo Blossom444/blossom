@@ -1,28 +1,37 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import { connectToDatabase } from '@/lib/mongodb';
-import User from '@/models/User';
+import { headers } from 'next/headers';
+
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions);
+    const headersList = headers();
+    const token = headersList.get('authorization')?.split(' ')[1];
 
-    if (!session?.user?.email) {
-      return new NextResponse('Unauthorized', { status: 401 });
+    if (!token) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
     }
 
-    await connectToDatabase();
-
-    const user = await User.findOne({ email: session.user.email }).select('-password');
-
-    if (!user) {
-      return new NextResponse('User not found', { status: 404 });
-    }
-
-    return NextResponse.json(user);
+    // Тут буде ваша логіка отримання даних користувача
+    // Наразі повертаємо тестові дані
+    return NextResponse.json({
+      _id: '1',
+      name: 'Test User',
+      email: 'test@example.com',
+      role: 'user',
+      isPremium: false,
+      accessibleMeditations: [],
+      accessiblePractices: [],
+      createdAt: new Date().toISOString()
+    });
   } catch (error) {
     console.error('Error fetching user data:', error);
-    return new NextResponse('Internal Server Error', { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 } 

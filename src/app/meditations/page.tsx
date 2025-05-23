@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useAuth } from '@/context/AuthContext';
+import { useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import MeditationCard from '@/components/MeditationCard';
+import { AuthProvider } from '@/contexts/AuthContext';
 
 interface Meditation {
   id: string;
@@ -16,7 +17,7 @@ interface Meditation {
   variant: 'orange' | 'blue' | 'purple' | 'green' | 'red' | 'yellow';
 }
 
-export default function MeditationsPage() {
+function MeditationsContent() {
   const { user } = useAuth();
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [currentPage, setCurrentPage] = useState(1);
@@ -268,5 +269,13 @@ export default function MeditationsPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function MeditationsPage() {
+  return (
+    <AuthProvider>
+      <MeditationsContent />
+    </AuthProvider>
   );
 } 
