@@ -5,6 +5,7 @@ export const dynamicParams = true;
 export const revalidate = 0;
 
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 interface Practice {
   id: string;
