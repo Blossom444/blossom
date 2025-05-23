@@ -7,11 +7,11 @@ interface AudioPlayerProps {
   audioUrl: string;
   title: string;
   initialDuration?: number;
-  variant?: 'purple' | 'blue' | 'green' | 'orange' | 'red' | 'yellow';
+  variant: 'orange' | 'blue' | 'purple' | 'green' | 'red' | 'yellow';
   disabled?: boolean;
 }
 
-export default function AudioPlayer({ audioUrl, title, initialDuration = 0, variant = 'purple', disabled = false }: AudioPlayerProps) {
+export default function AudioPlayer({ audioUrl, title, initialDuration = 0, variant, disabled = false }: AudioPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
@@ -19,6 +19,8 @@ export default function AudioPlayer({ audioUrl, title, initialDuration = 0, vari
   const [volume, setVolume] = useState(1);
   const [playbackRate, setPlaybackRate] = useState(1);
   const [isMobile, setIsMobile] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const playbackRates = [0.5, 0.75, 1, 1.25, 1.5, 2];
@@ -43,6 +45,7 @@ export default function AudioPlayer({ audioUrl, title, initialDuration = 0, vari
 
     const handleLoadedMetadata = () => {
       setDuration(audio.duration);
+      setIsLoading(false);
     };
 
     const handleTimeUpdate = () => {
@@ -57,26 +60,36 @@ export default function AudioPlayer({ audioUrl, title, initialDuration = 0, vari
       setCurrentTime(0);
     };
 
+    const handleError = () => {
+      setError('Помилка завантаження аудіо файлу');
+      setIsLoading(false);
+    };
+
     audio.addEventListener('loadedmetadata', handleLoadedMetadata);
     audio.addEventListener('timeupdate', handleTimeUpdate);
     audio.addEventListener('ended', handleEnded);
+    audio.addEventListener('error', handleError);
 
     return () => {
       audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
       audio.removeEventListener('timeupdate', handleTimeUpdate);
       audio.removeEventListener('ended', handleEnded);
+      audio.removeEventListener('error', handleError);
     };
   }, []);
 
   const togglePlay = () => {
-    if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.pause();
-      } else {
-        audioRef.current.play();
-      }
-      setIsPlaying(!isPlaying);
+    if (!audioRef.current) return;
+    
+    if (isPlaying) {
+      audioRef.current.pause();
+    } else {
+      audioRef.current.play().catch(err => {
+        setError('Помилка відтворення аудіо');
+        console.error('Playback error:', err);
+      });
     }
+    setIsPlaying(!isPlaying);
   };
 
   const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -119,13 +132,40 @@ export default function AudioPlayer({ audioUrl, title, initialDuration = 0, vari
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
+  const getVariantClasses = () => {
+    switch (variant) {
+      case 'purple':
+        return 'from-purple-500 to-purple-700';
+      case 'blue':
+        return 'from-blue-500 to-blue-700';
+      case 'green':
+        return 'from-green-500 to-green-700';
+      case 'orange':
+        return 'from-orange-500 to-orange-700';
+      case 'red':
+        return 'from-red-500 to-red-700';
+      case 'yellow':
+        return 'from-yellow-500 to-yellow-700';
+      default:
+        return 'from-gray-500 to-gray-700';
+    }
+  };
+
+  if (error) {
+    return (
+      <div className="text-center p-4 bg-red-50 rounded-lg">
+        <p className="text-red-600">{error}</p>
+      </div>
+    );
+  }
+
   return (
     <div className={`bg-white rounded-lg p-2 sm:p-4 shadow-md ${disabled ? 'opacity-90' : ''}`}>
       <div className="relative aspect-square mb-2 sm:mb-4 rounded-lg overflow-hidden">
         <GradientCover title={title} variant={variant} />
       </div>
 
-      <audio ref={audioRef} src={audioUrl} />
+      <audio ref={audioRef} src={audioUrl} preload="metadata" />
       
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-semibold text-gray-900">{title}</h2>
@@ -146,7 +186,7 @@ export default function AudioPlayer({ audioUrl, title, initialDuration = 0, vari
       <div className="flex items-center gap-4 mb-4">
         <button
           onClick={togglePlay}
-          className={`w-12 h-12 flex items-center justify-center rounded-full bg-[#8B4513] text-white hover:bg-[#6B3410] transition-colors ${disabled ? 'bg-gray-400 cursor-not-allowed' : ''}`}
+          className={`w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-r ${getVariantClasses()} text-white hover:opacity-90 transition-opacity ${disabled ? 'bg-gray-400 cursor-not-allowed' : ''}`}
           disabled={disabled}
         >
           {isPlaying ? (

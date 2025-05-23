@@ -241,20 +241,26 @@ function MeditationContent({ id }: { id: string }) {
   const getImageUrl = (variant: string) => {
     switch (variant) {
       case 'purple':
-        return '/images/meditation-purple.jpg';
+        return '/meditation-purple.jpg';
       case 'blue':
-        return '/images/meditation-blue.jpg';
+        return '/meditation-blue.jpg';
       case 'green':
-        return '/images/meditation-green.jpg';
+        return '/meditation-green.jpg';
       case 'orange':
-        return '/images/meditation-orange.jpg';
+        return '/meditation-orange.jpg';
       case 'red':
-        return '/images/meditation-red.jpg';
+        return '/meditation-red.jpg';
       case 'yellow':
-        return '/images/meditation-yellow.jpg';
+        return '/meditation-yellow.jpg';
       default:
-        return '/images/meditation-default.jpg';
+        return '/meditation-default.jpg';
     }
+  };
+
+  const getAudioUrl = (id: string) => {
+    // Перевіряємо чи існує файл
+    const audioPath = `/meditations/${id}.mp3`;
+    return audioPath;
   };
 
   return (
@@ -266,6 +272,10 @@ function MeditationContent({ id }: { id: string }) {
               src={getImageUrl(meditation.variant)}
               alt={meditation.title}
               className={`w-full h-full object-cover ${meditation.isPremium ? 'filter blur-sm' : ''}`}
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.src = '/meditation-default.jpg';
+              }}
             />
           </div>
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
@@ -277,7 +287,7 @@ function MeditationContent({ id }: { id: string }) {
 
         <div className="bg-white rounded-lg shadow-lg p-6">
           <AudioPlayer
-            audioUrl={meditation.audioUrl}
+            audioUrl={getAudioUrl(meditation.id)}
             title={meditation.title}
             initialDuration={convertDurationToSeconds(meditation.duration)}
             variant={meditation.variant}
