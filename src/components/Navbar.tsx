@@ -98,6 +98,15 @@ export default function Navbar() {
     );
   };
 
+  const menuItems = [
+    { href: '/', label: 'Головна' },
+    { href: '/meditations', label: 'Медитації' },
+    { href: '/courses', label: 'Курси' },
+    { href: '/blog', label: 'Блог' },
+    { href: '/about', label: 'Про нас' },
+    { href: '/profile', label: 'Особистий кабінет' },
+  ];
+
   return (
     <nav className="fixed top-0 left-0 right-0 w-full z-50 bg-black/80 backdrop-blur-md shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
