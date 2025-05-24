@@ -1,46 +1,41 @@
-import { AuthOptions } from 'next-auth';
+import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 
-export const authOptions: AuthOptions = {
+type UserRole = 'user' | 'admin';
+
+export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: 'Credentials',
       credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" }
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Password', type: 'password' }
       },
       async authorize(credentials) {
-        try {
-          if (!credentials?.email || !credentials?.password) {
-            return null;
-          }
-
-          // Тестовий адміністратор
-          if (credentials.email === 'admin@blossom.com' && credentials.password === 'admin123') {
-            return {
-              id: '1',
-              name: 'Admin User',
-              email: 'admin@blossom.com',
-              role: 'admin',
-              isPremium: true
-            };
-          }
-
-          return null;
-        } catch (error) {
-          console.error('Auth error:', error);
+        if (!credentials?.email || !credentials?.password) {
           return null;
         }
+
+        // Тестовий адміністратор
+        if (credentials.email === 'admin@blossom.com' && credentials.password === 'admin123') {
+          return {
+            id: '1',
+            name: 'Admin',
+            email: 'admin@blossom.com',
+            role: 'admin' as UserRole,
+            isPremium: true,
+          };
+        }
+
+        return null;
       }
     })
   ],
-  secret: process.env.NEXTAUTH_SECRET || 'your-secret-key',
   session: {
-    strategy: 'jwt' as const,
-    maxAge: 30 * 24 * 60 * 60, // 30 днів
+    strategy: 'jwt',
   },
   callbacks: {
-    async jwt({ token, user }: { token: any; user: any }) {
+    async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
         token.role = user.role;
@@ -48,11 +43,11 @@ export const authOptions: AuthOptions = {
       }
       return token;
     },
-    async session({ session, token }: { session: any; token: any }) {
-      if (session.user) {
-        session.user.id = token.id;
-        session.user.role = token.role;
-        session.user.isPremium = token.isPremium;
+    async session({ session, token }) {
+      if (token) {
+        session.user.id = token.id as string;
+        session.user.role = token.role as UserRole;
+        session.user.isPremium = token.isPremium as boolean;
       }
       return session;
     }
@@ -61,5 +56,5 @@ export const authOptions: AuthOptions = {
     signIn: '/login',
     error: '/login',
   },
-  debug: process.env.NODE_ENV === 'development',
+  secret: process.env.NEXTAUTH_SECRET,
 }; 

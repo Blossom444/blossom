@@ -1,5 +1,4 @@
 import 'next-auth';
-import { JWT } from 'next-auth/jwt';
 
 declare module 'next-auth' {
   interface User {
@@ -8,8 +7,6 @@ declare module 'next-auth' {
     email: string;
     role: 'user' | 'admin';
     isPremium: boolean;
-    accessibleMeditations?: string[];
-    accessiblePractices?: string[];
   }
 
   interface Session {
@@ -22,7 +19,5 @@ declare module 'next-auth/jwt' {
     id: string;
     role: 'user' | 'admin';
     isPremium: boolean;
-    accessibleMeditations?: string[];
-    accessiblePractices?: string[];
   }
 } 
