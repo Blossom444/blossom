@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useAuth } from '@/context/AuthContext';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { sendTelegramMessage, testTelegramBot } from '@/utils/telegram';
 import UserManagement from './admin/UserManagement';
@@ -50,7 +50,7 @@ const allPractices = [
 type Tab = 'users' | 'meditations' | 'practices' | 'premium';
 
 export default function AdminPanel() {
-  const { user } = useAuth();
+  const { data: session, status } = useSession();
   const router = useRouter();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
@@ -58,13 +58,15 @@ export default function AdminPanel() {
   const [telegramTestStatus, setTelegramTestStatus] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!user || user.role !== 'admin') {
+    if (status === 'loading') return;
+    
+    if (!session?.user || session.user.role !== 'admin') {
       router.push('/login');
       return;
     }
 
     fetchUsers();
-  }, [user, router]);
+  }, [session, status, router]);
 
   const fetchUsers = async () => {
     try {
@@ -130,8 +132,12 @@ export default function AdminPanel() {
     }
   };
 
-  if (loading) {
+  if (status === 'loading' || loading) {
     return <div>Loading...</div>;
+  }
+
+  if (!session?.user || session.user.role !== 'admin') {
+    return <div>Access denied</div>;
   }
 
   if (error) {

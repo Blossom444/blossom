@@ -13,7 +13,7 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          return null;
+          throw new Error('Email та пароль обов\'язкові');
         }
 
         // Тестовий адміністратор
@@ -27,7 +27,7 @@ export const authOptions: NextAuthOptions = {
           };
         }
 
-        return null;
+        throw new Error('Невірний email або пароль');
       }
     })
   ],

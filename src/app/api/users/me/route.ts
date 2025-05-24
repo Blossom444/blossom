@@ -9,19 +9,24 @@ export async function GET() {
     const session = await getServerSession(authOptions);
 
     if (!session?.user) {
-      return new NextResponse('Unauthorized', { status: 401 });
+      return new NextResponse(
+        JSON.stringify({ error: 'Unauthorized' }),
+        { status: 401 }
+      );
     }
 
-    // Повертаємо дані користувача з сесії
     return NextResponse.json({
       id: session.user.id,
       name: session.user.name,
       email: session.user.email,
-      role: session.user.role || 'user',
-      isPremium: session.user.isPremium || false,
+      role: session.user.role,
+      isPremium: session.user.isPremium,
     });
   } catch (error) {
-    console.error('Error in /api/users/me:', error);
-    return new NextResponse('Internal Server Error', { status: 500 });
+    console.error('Error fetching user data:', error);
+    return new NextResponse(
+      JSON.stringify({ error: 'Internal Server Error' }),
+      { status: 500 }
+    );
   }
 } 

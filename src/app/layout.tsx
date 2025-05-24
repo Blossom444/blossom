@@ -1,15 +1,15 @@
 import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import './globals.css'
-import Providers from './providers'
-import Navbar from '@/components/Navbar'
+import { SessionProvider } from '@/components/providers/SessionProvider'
+import { AuthProvider } from '@/contexts/AuthContext'
+import Header from '@/components/Header'
 
-const inter = Inter({ subsets: ['latin', 'cyrillic'] })
+const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Blossom - Медитації та практики',
-  description: 'Платформа для медитацій та практик',
+  title: 'Blossom - Медитації та Розвиток',
+  description: 'Платформа для медитацій та особистого розвитку',
 }
 
 export default function RootLayout({
@@ -25,14 +25,14 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" />
       </head>
       <body className={`${inter.className} h-full bg-gray-50 antialiased`}>
-        <Providers>
-          <div className="min-h-screen flex flex-col">
-            <Navbar />
-            <main className="flex-1 pt-16">
+        <SessionProvider>
+          <AuthProvider>
+            <Header />
+            <main className="min-h-screen bg-gray-50">
               {children}
             </main>
-          </div>
-        </Providers>
+          </AuthProvider>
+        </SessionProvider>
       </body>
     </html>
   )
