@@ -18,8 +18,17 @@ export async function POST(request: Request) {
 
   try {
     console.log('Starting registration process...');
-    const body = await request.json();
-    console.log('Received data:', body);
+    let body;
+    try {
+      body = await request.json();
+      console.log('Received data:', body);
+    } catch (parseError) {
+      console.error('Error parsing request body:', parseError);
+      return NextResponse.json(
+        { error: 'Помилка обробки даних запиту' },
+        { status: 400, headers }
+      );
+    }
     
     const { name, email, password, role = 'user' } = body;
 
@@ -43,8 +52,13 @@ export async function POST(request: Request) {
     // Підключення до бази даних
     console.log('Connecting to database...');
     try {
-      await connectToDatabase();
+      const db = await connectToDatabase();
       console.log('Database connection successful');
+      
+      // Перевіряємо підключення
+      if (!db) {
+        throw new Error('Database connection failed');
+      }
     } catch (dbError) {
       console.error('Database connection error:', dbError);
       return NextResponse.json(
