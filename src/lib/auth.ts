@@ -1,5 +1,8 @@
 import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import { compare } from 'bcryptjs';
+import { connectToDatabase } from './mongodb';
+import User from '@/models/User';
 
 type UserRole = 'user' | 'admin';
 
@@ -16,18 +19,32 @@ export const authOptions: NextAuthOptions = {
           throw new Error('Email та пароль обов\'язкові');
         }
 
-        // Тестовий адміністратор
-        if (credentials.email === 'admin@blossom.com' && credentials.password === 'admin123') {
-          return {
-            id: '1',
-            name: 'Admin',
-            email: 'admin@blossom.com',
-            role: 'admin' as UserRole,
-            isPremium: true,
-          };
-        }
+        try {
+          await connectToDatabase();
+          
+          const user = await User.findOne({ email: credentials.email });
+          
+          if (!user) {
+            throw new Error('Користувача не знайдено');
+          }
 
-        throw new Error('Невірний email або пароль');
+          const isPasswordValid = await compare(credentials.password, user.password);
+          
+          if (!isPasswordValid) {
+            throw new Error('Невірний пароль');
+          }
+
+          return {
+            id: user._id.toString(),
+            name: user.name,
+            email: user.email,
+            role: user.role as UserRole,
+            isPremium: user.isPremium,
+          };
+        } catch (error) {
+          console.error('Auth error:', error);
+          throw new Error('Помилка авторизації');
+        }
       }
     })
   ],

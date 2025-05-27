@@ -5,6 +5,7 @@ import { signIn, getSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import Link from 'next/link';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -92,9 +93,12 @@ export default function LoginPage() {
                 {isLoading ? 'Вхід...' : 'Увійти'}
               </Button>
               <div className="text-center text-sm text-gray-600 mt-4">
-                <p>Тестовий аккаунт:</p>
-                <p>Email: admin@blossom.com</p>
-                <p>Пароль: admin123</p>
+                <p>
+                  Немає облікового запису?{' '}
+                  <Link href="/register" className="text-indigo-600 hover:text-indigo-500">
+                    Зареєструватися
+                  </Link>
+                </p>
               </div>
             </form>
           </CardContent>

@@ -3,43 +3,46 @@ import mongoose from 'mongoose';
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, 'Name is required'],
-    trim: true
+    required: [true, 'Ім\'я обов\'язкове'],
+    trim: true,
   },
   email: {
     type: String,
-    required: [true, 'Email is required'],
+    required: [true, 'Email обов\'язковий'],
     unique: true,
     trim: true,
-    lowercase: true
+    lowercase: true,
   },
   password: {
     type: String,
-    required: [true, 'Password is required']
+    required: [true, 'Пароль обов\'язковий'],
+    minlength: [6, 'Пароль повинен містити мінімум 6 символів'],
   },
   role: {
     type: String,
     enum: ['user', 'admin'],
-    default: 'user'
+    default: 'user',
   },
   isPremium: {
     type: Boolean,
-    default: false
+    default: false,
   },
   accessibleMeditations: [{
-    type: String
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Meditation',
   }],
   accessiblePractices: [{
-    type: String
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Practice',
   }],
   createdAt: {
     type: Date,
-    default: Date.now
+    default: Date.now,
   },
   updatedAt: {
     type: Date,
-    default: Date.now
-  }
+    default: Date.now,
+  },
 });
 
 // Оновлення updatedAt перед кожним збереженням
@@ -48,6 +51,4 @@ userSchema.pre('save', function(next) {
   next();
 });
 
-const User = mongoose.models.User || mongoose.model('User', userSchema);
-
-export default User; 
+export default mongoose.models.User || mongoose.model('User', userSchema); 
