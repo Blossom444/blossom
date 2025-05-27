@@ -38,9 +38,24 @@ export async function connectToDatabase() {
         bufferCommands: false,
       };
 
-      cached.promise = mongoose.connect(MONGODB_URI!, opts).then((mongoose) => {
+      cached.promise = mongoose.connect(MONGODB_URI!, opts).then(async (mongoose) => {
         console.log('MongoDB connected successfully');
+        
+        // Тестовий запит для перевірки підключення
+        try {
+          const collections = await mongoose.connection.db.listCollections().toArray();
+          console.log('Available collections:', collections.map(c => c.name));
+          
+          const users = await mongoose.connection.db.collection('users').find({}).toArray();
+          console.log('Users in database:', users);
+        } catch (error) {
+          console.error('Error checking database:', error);
+        }
+        
         return mongoose;
+      }).catch((error) => {
+        console.error('MongoDB connection error:', error);
+        throw error;
       });
     }
 
