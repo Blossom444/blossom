@@ -43,11 +43,13 @@ export async function connectToDatabase() {
         
         // Тестовий запит для перевірки підключення
         try {
-          const collections = await mongoose.connection.db.listCollections().toArray();
-          console.log('Available collections:', collections.map(c => c.name));
-          
-          const users = await mongoose.connection.db.collection('users').find({}).toArray();
-          console.log('Users in database:', users);
+          if (mongoose.connection.db) {
+            const collections = await mongoose.connection.db.listCollections().toArray();
+            console.log('Available collections:', collections.map(c => c.name));
+            
+            const users = await mongoose.connection.db.collection('users').find({}).toArray();
+            console.log('Users in database:', users);
+          }
         } catch (error) {
           console.error('Error checking database:', error);
         }
