@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { MongoClient } from 'mongodb';
+import { connectToDatabase } from '@/lib/mongodb';
+import User from '@/models/User';
 
 export const dynamic = 'force-dynamic';
 
@@ -27,26 +28,10 @@ export async function GET() {
       );
     }
 
-    const client = new MongoClient(process.env.MONGODB_URI as string);
-    await client.connect();
-    const db = client.db();
-    
-    const users = await db.collection('users').find({}).toArray();
-    await client.close();
+    await connectToDatabase();
+    const users = await User.find({}, { password: 0 });
 
-    // Конвертуємо ObjectId в string та додаємо необхідні поля
-    const formattedUsers = users.map((user: any) => ({
-      _id: user._id.toString(),
-      name: user.name || 'Unknown',
-      email: user.email,
-      role: user.role || 'user',
-      isPremium: user.isPremium || false,
-      accessibleMeditations: user.accessibleMeditations || [],
-      accessiblePractices: user.accessiblePractices || [],
-      createdAt: user.createdAt || new Date().toISOString()
-    }));
-
-    return NextResponse.json(formattedUsers);
+    return NextResponse.json(users);
   } catch (error) {
     console.error('Error fetching users:', error);
     return NextResponse.json(
